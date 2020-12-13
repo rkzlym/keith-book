@@ -8,6 +8,9 @@
   },
   "scripts": {
     "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
-  }
+    "docs:build": "vuepress build docs",
+    "docs:deploy": "bash deploy.sh"
+  },
+  "repository": "https://github.com/rkzlym/keith-book.git",
+  "author": "Keith <764058263@qq.com>"
 }
