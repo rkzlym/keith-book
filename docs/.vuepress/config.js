@@ -1,5 +1,5 @@
 module.exports = {
-    base: '/keith-book/',
+    base: '/',
     title: '鸿鹄笔记',
     description: '鸿鹄的个人笔记',
     head: [
