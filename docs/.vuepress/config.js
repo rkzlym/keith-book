@@ -45,14 +45,12 @@ module.exports = {
                     title: 'Java',
                     path: '/java/',
                     collapsable: false,
-                    sidebarDepth: 1,
+                    sidebarDepth: 3,
                     children: [
-                        '/java/java基础/反射',
-                        '/java/java基础/集合',
-                        '/java/java基础/锁',
-                        '/java/java基础/线程池',
-                        '/java/java基础/IO流',
-                        '/java/java基础/JVM',
+                        '/java/Java基础',
+                        '/java/数据结构',
+                        '/java/设计模式',
+                        '/java/Spring'
                     ]
                 }
             ]
