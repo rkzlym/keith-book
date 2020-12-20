@@ -2,6 +2,123 @@
 
 ## 1. Spring IOC
 
+### 小知识点
+
+**@Resource @Autowired @Qualifier 的区别**
+
+@Autowired 根据类型注入
+
+@Qualifier 根据名称注入
+
+@Resource 根据名称注入，找不到再根据类型注入
+
+**Filter和Interceptor的区别**
+
+- Filter是基于函数回调的，而Interceptor则是基于Java反射的。
+- Filter依赖于Servlet容器，而Interceptor不依赖于Servlet容器。
+- Filter对几乎所有的请求起作用，而Interceptor只能对action请求起作用。
+- Interceptor可以访问Action的上下文，值栈里的对象，而Filter不能。
+- 在action的生命周期里，Interceptor可以被多次调用，而Filter只能在容器初始化时调用一次，
+
+**Filter生命周期方法**
+
+1. init : 服务器启动后创建Filter对象，然后调用init方法，只执行一次
+2. doFilter : 每一次请求被拦截资源时，会执行，执行多次
+3. destroy : 在服务器关闭后，Filter对象被销毁，若服务器正常关闭会执行destroy方法用于释放资源
+
+配置拦截路径 `@WebFilter("/*")`
+
+**声明式事务和编程式事务**
+
+编程式事务：通过硬编码的形式手动控制事务的提交和回滚。
+
+声明式事务：只需告诉Spring哪个方法是事务方法即可。
+
+**Spring事务异常**
+
+运行时异常：可以不用处理，默认都回滚。
+
+编译时异常：要么try-catch，要么thows，默认不回滚。
+
+**事务传播行为**
+
+REQUIRED: 如当前事务存在，方法将在该事务中运行，否则开一个新事务。
+
+REQUIRED_NEW: 开一个新事务。
+
+SUPPORTS: 如当前事务存在，方法将在该事务中运行，否则不开事务。
+
+NOT_SUPPORTED: 运行在事务中将被挂起。
+
+MANDATORY: 不在事务中运行则抛异常。
+
+NEVER: 在事务中运行则抛异常。
+
+NESTED: 嵌套在事务中运行
+
+### Spring IOC 容器 Bean的创建流程
+
+```
+refresh();
+finishBeanFactoryInitialization(beanFactory);
+beanFactory.preInstantiateSingletons();
+getBean(beanName);
+doGetBean(name, null, null, false);
+```
+
+```java
+// 从缓存中检查是否有这个Bean
+Object sharedInstance = getSingleton(beanName);
+// 如果没有，就实例化一个Bean
+if (sharedInstance != null && args == null) {
+    bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
+}
+else {
+    final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+    // 取得依赖的Bean，即创建当前Bean之前需要提前创建的Bean
+    String[] dependsOn = mbd.getDependsOn();
+    if (dependsOn != null) {
+        for (String dep : dependsOn) {
+            registerDependentBean(dep, beanName);
+            getBean(dep);
+        }
+    }
+    // 创建Bean实例
+    if (mbd.isSingleton()) {
+        sharedInstance = getSingleton(beanName, () -> createBean(beanName, mbd, args));
+        bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+    }
+}
+return (T) bean;
+```
+
+```java
+getSingleton(beanName, () -> createBean(beanName, mbd, args));
+```
+
+```java
+// 先从Map中拿
+Object singletonObject = this.singletonObjects.get(beanName);
+// 没有的话再创建
+singletonObject = singletonFactory.getObject();
+// 加到Map中
+addSingleton(beanName, singletonObject);
+```
+
+ IOC容器之一：保存单实例Bean
+
+```java
+private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+```
+
+BeanFactory：负责创建bean实例，容器里保存的所有单例Bean其实是一个map
+
+ApplicationContext：BeanFactory的子接口，基于BeanFactory创建的对象之上完成容器的功能实现
+
+### Spring 一个Bean的装配过程
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2020121916571615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
 ### 1.1 概念
 
 Spring 通过一个配置文件描述 Bean 及 Bean 之间的依赖关系，利用 Java 语言的反射功能实例化Bean 并建立 Bean 之间的依赖关系。 Spring 的 IoC 容器在完成这些底层工作的基础上，还提供了 Bean 实例缓存、生命周期管理、 Bean 实例代理、事件发布、资源装载等高级服务。
@@ -80,39 +197,44 @@ Spring容器内部是通过3级缓存来解决循环依赖 -- DefaultSingletonBe
 
 总结：Spring解决循环依赖依靠的是Bean的"中间态"的概念，"中间态"指的是已经实例化但还没初始化的状态。
 
+### 使用函数式风格创建Bean
+
+```java
+GenericApplicationContext context = new GenericApplicationContext();
+context.refresh();
+context.registerBean("user", User.class, User::new);
+User user = (User) context.getBean("user");
+```
+
 ## 2. Spring AOP 
 
-### 2.1 概念
+### 常用注解
 
-"横切"的技术，剖解开封装的对象内部，并将那些影响了多个类的公共行为封装到一个可重用模块，并将其命名为"Aspect"，即切面。所谓"切面"，简单说就是那些与业务无关，却为业务模块所共同调用的逻辑或责任封装起来，便于减少系统的重复代码，降低模块之间的耦合度，并有利于未来的可操作性和可维护性。使用"横切"技术，AOP 把软件系统分为两个部分：核心关注点和横切关注点。业务处理的主要流程是核心关注点，与之关系不大的部分是横切关注点。横切关注点的一个特点是，他们经常发生在核心关注点的多处，而各处基本相似，比如权限认证、日志、事物。AOP 的作用在于分离系统中的各种关注点，将核心关注点和横切关注点分离开来。
+@Before：前置通知，目标方法之前执行
 
-AOP 主要应用场景有：
+@After：后置通知，目标方法之后执行（必然执行）
 
-1. Authentication 权限
+@AfterReturning：返回后通知，执行方法结束前执行（异常不执行）
 
-2. Caching 缓存
+@AfterThrowing：异常通知，出现异常时执行
 
-3. Context passing 内容传递
+@Around：环绕通知，环绕目标方法执行
 
-4. Error handling 错误处理
+### Aop执行顺序
 
-5. Lazy loading 懒加载
+**Spring4**
 
-6. Debugging 调试
+正常：@Around @Before @Around @After @AfterReturning
 
-7. logging, tracing, profiling and monitoring 记录跟踪 优化 校准
+异常：@Around @Before @After @AfterThrowing
 
-8. Performance optimization 性能优化
+**Spring5**
 
-9. Persistence 持久化
+正常：@Around @Before @AfterReturning @After @Around
 
-10. Resource pooling 资源池
+异常：@Around @Before @AfterThrowing @After
 
-11. Synchronization 同步
-
-12. Transactions 事务
-
-### 2.2 关键词
+### 关键词
 
 1. 切面（aspect）：类是对物体特征的抽象，切面就是对横切关注点的抽象
 
@@ -130,7 +252,7 @@ AOP 主要应用场景有：
 
 8. 引入（introduction）：在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法或字段。
 
-### 2.3 两种代理方式
+### 两种代理方式
 
 Spring 提供了两种方式来生成代理对象: JDKProxy 和 Cglib，具体使用哪种方式生成由AopProxyFactory 根据 AdvisedSupport 对象的配置来决定。默认的策略是如果目标类是接口，则使用 JDK 动态代理技术，否则使用 Cglib 来生成代理。
 
@@ -148,21 +270,35 @@ CGLib 全称为 Code Generation Library，是一个强大的高性能，高质�
 
 将Web层进行职责解耦，将Web应用分为 模型 - 视图 - 控制器。
 
-### 3.2 主要组件
+### 3.2 九大组件
 
-1. DispatcherServlet：接收结果，响应结果，转发器
-2. HandlerMapping：根据请求Url查找Handler
-3. HandlerAdapter：处理适配器
-4. Handler：处理器
-5. ViewResolver：视图解析器
-6. View：支持不同的视图类型（jsp, freemarker, pdf）
+```java
+/* 文件上传解析器 */
+MultipartResolver multipartResolver;
+/* 区域信息解析器 */
+LocaleResolver localeResolver;
+/* 主题解析器 */
+ThemeResolver themeResolver;
+/* Handler映射信息 */
+List<HandlerMapping> handlerMappings;
+/* Handler适配器 */
+List<HandlerAdapter> handlerAdapters;
+/* 异常解析器 */
+List<HandlerExceptionResolver> handlerExceptionResolvers;
+/* 请求到视图转换器 */
+RequestToViewNameTranslator viewNameTranslator;
+/* SpringMVC中运行重定向携带数据的功能 */
+FlashMapManager flashMapManager;
+/* 视图解析器 */
+List<ViewResolver> viewResolvers;
+```
 
 ### 3.3 MVC流程
 
 1. 客户端请求提交到 DispatcherServlet.
-2. DispatcherServlet 收到请求后，查询 HandlerMapping，获取Handle.
+2. DispatcherServlet 收到请求后，遍历HandlerMapping集合得到HandlerExecutionChain，HandlerExecutionChain中包含Handler和Intercepetor (处理器和拦截器)
 3. HandlerMapping 根据Url找到具体处理器，生成处理器的对象及处理器拦截器，并返回给DispatcherServlet.
-4. DispatcherServlet 经过 HandlerAdapter 调用具体 Handler, 执行完成后返回ModelAndView给HandlerAdapter.
+4. DispatcherServlet 经过 HandlerAdapter 调用具体 Handler, 执行前置拦截器 applyPreHandle，执行目标方法返回 ModelAndView，执行后置拦截器 applyPostHandle，执行完成后返回ModelAndView给HandlerAdapter.
 5. DispatcherServlet 将ModelAndView传给ViewResolver解析后返回view.
 6. DispatcherServlet对View进行渲染并响应用户.
 
@@ -178,29 +314,133 @@ Spring Boot Batch：提供可重用函数，包括日志跟踪，事务管理，
 
 ## 5. Spring Cloud
 
-### 5.1 Api网关
+**Zuul网关作用**：Nginx的网址重定向、服务的跨域配置、JWT鉴权
 
-API Gateway 负责请求转发、合成和协议转换。所有来自客户端的请求都要先经过 API Gateway，然后路由这些请求到对应的微服务。API Gateway 将经常通过调用多个微服务来处理一个请求以及聚合多个服务的结果。它可以在 web 协议与内部使用的非 Web 友好型协议间进行转换，如HTTP 协议、WebSocket 协议。
+**Eureka**： Eureka各个节点是平等的，节点挂掉不会影响剩余节点的正常工作，只要有一台Eureka还在，就能保证注册服务可用，只不过查询到的数据可能不会最新的。Eureka还有自我保护机制，如果在15分钟内超过85%的节点都没有正常心跳，那么Eureka就认为客户端与注册中心出现了故障，此时会出现以下几种情况：
 
-### 5.2 配置中心
+1. Eureka不再从注册列表移除因为长时间没收到心跳而应该过期的服务
+2. Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上（保证当前节点依然可用）
+3. 当网络稳定时，当前实例新的注册信息会被同步到其它节点中
 
-配置中心一般用作系统的参数配置，它需要满足如下几个要求：高效获取、实时感知、分布式访问。
+**Eureka自我保护机制**
 
-### 5.3 服务跟踪（starter-sleuth）
+某时刻某一个微服务不可用了，eureka不会立即清理，依旧会对该微服务的信息进行保存
 
-随着微服务数量不断增长，需要跟踪一个请求从一个微服务到下一个微服务的传播过程， Spring Cloud Sleuth 正是解决这个问题，它在日志中引入唯一 ID，以保证微服务调用之间的一致性，这样你就能跟踪某个请求是如何从一个微服务传递到下一个。
+默认EurekaServer在一定时间内没有接收到某个微服务实例的心跳，EurekaServer将会注销该实例（默认90秒）
 
-1. 为了实现请求跟踪，当请求发送到分布式系统的入口端点时，只需要服务跟踪框架为该请求创建一个唯一的跟踪标识，同时在分布式系统内部流转的时候，框架始终保持传递该唯一标识，直到返回给请求方为止，这个唯一标识就是前文中提到的 Trace ID。通过 Trace ID 的记录，我们就能将所有请求过程日志关联起来。
+当网络分区故障发生时，微服务与EurekaServer之间无法正常通信，但微服务本身其实是健康的。当EurekaServer节点在短时间内丢失过多客户端时，那么这个节点就会进入自我保护模式，EurekaServer会保护服务注册表中的信息，不再注销任何微服务。当它收到的心跳数重新恢复到阈值以上时，该Eureka Server节点就会自动退出自我保护模式。
 
-2. 为了统计各处理单元的时间延迟，当请求达到各个服务组件时，或是处理逻辑到达某个状态时，也通过一个唯一标识来标记它的开始、具体过程以及结束，该标识就是我们前文中提到的 Span ID，对于每个 Span 来说，它必须有开始和结束两个节点，通过记录开始 Span 和结束 Span 的时间戳，就能统计出该 Span 的时间延迟，除了时间戳记录之外，它还可以包含一些其他元数据，比如：事件名称、请求信息等。
+在Spring Cloud中，可以使用eureka.server.enable-self-preservation = false 禁用自我保护模式。
 
-3. 在快速入门示例中，我们轻松实现了日志级别的跟踪信息接入，这完全归功于spring-cloudstarter-sleuth 组件的实现。在 Spring Boot 应用中，通过在工程中引入 spring-cloudstarter-sleuth 依赖之后， 它会自动的为当前应用构建起各通信通道的跟踪机制，比如：通过诸如 RabbitMQ、Kafka（或者其他任何 Spring Cloud Stream 绑定器实现的消息中间件）传递的请求。 通过 Zuul 代理传递的请求。 通过 RestTemplate 发起的请求。
+**Ribbon**
 
-### 5.4 服务熔断（Hystrix）
+Spring Cloud Ribbon是基于Netflix Ribbon实现的一套<font color=red>客户端 负载均衡</font>的工具。
 
-在微服务架构中通常会有多个服务层调用，基础服务的故障可能会导致级联故障，进而造成整个系统不可用的情况，这种现象被称为服务雪崩效应。服务雪崩效应是一种因“服务提供者”的不可用导致“服务消费者”的不可用,并将不可用逐渐放大的过程。熔断器的原理很简单，如同电力过载保护器。它可以实现快速失败，如果它在一段时间内侦测到许多类似的错误，会强迫其以后的多个调用快速失败，不再访问远程服务器，从而防止应用程序不断地尝试执行可能会失败的操作，使得应用程序继续执行而不用等待修正错误，或者浪费 CPU时间去等到长时间的超时产生。熔断器也可以使应用程序能够诊断错误是否已经修正，如果已经修正，应用程序会再次尝试调用操作。
+配置文件中列出Load Balancer后面所有的机器，Ribbon会自动的帮助你基于某种规则去连接这些机器。
 
-### 5.5 断路器 （Hystrix）
+- RoundRobinRule：轮询
 
-断路器很好理解, 当 Hystrix Command 请求后端服务失败数量超过一定比例(默认 50%), 断路器会切换到开路状态(Open). 这时所有请求会直接失败而不会发送到后端服务. 断路器保持在开路状态一段时间后(默认 5 秒), 自动切换到半开路状态(HALF-OPEN). 这时会判断下一次请求的返回情况, 如果请求成功, 断路器切回闭路状态(CLOSED), 否则重新切换到开路状态(OPEN). Hystrix 的断路器就像我们家庭电路中的保险丝, 一旦后端服务不可用, 断路器会直接切断请求链, 避免发送大量无效请求影响系统吞吐量, 并且断路器有自我检测并恢复的能力。
+- RandomRule：随机
+- AvailabilityFilteringRule：会先过滤由于多次访问故障而处于断路器跳闸状态的服务，还有并发的连接数超过阈值的服务，然后对剩余的服务列表按照轮询的方式进行访问
+- WeightedResponseTimeRule：根据平均响应时间计算所有服务的权重，响应时间越快服务权重越大被选中的概率越高。刚启动如果统计信息不足，则使用RoundRobinRule策略，等统计信息足够，会切换到WeightedResponseTimeRule。
+- RetryRule：先按照RoundRobinRule获取服务，如果获取服务失败则在指定时间内重试，获取可用的服务。
+- BestAvailableRule：会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量小的服务。
+- ZoneAvoidanceRule：复合判断Server所在区域的性能和Server的可用性选择服务器
+
+**Hystrix**
+
+当某个服务单元发生故障之后，通过断路器的故障监控（类似熔断保险丝），向调用方返回一个符合预期的、可处理的备选响应（FallBack），而不是长时间的等待或者抛出调用方无法处理的异常。
+
+**服务熔断**
+
+一般由某个服务故障或异常引起的，当某个异常条件被触发，直接熔断整个服务，而不是一直等到此服务超时。
+
+**服务降级**
+
+当某个服务熔断后，服务器将不再被调用。此时客户端可以自己准备一个本地的fallback回调，返回一个缺省值。
+
+## Spring WebFlux
+
+响应式编程 (Reactor实现)
+
+1. 响应式编程操作中，Reactor是满足Reactive规范框架
+2. Reactor有两个核心类，Mono和Flux，这两个类实现接口Publisher，提供丰富操作符
+   1. Flux返回N个元素
+   2. Mono返回0或1个元素
+3. Flux和Mono都是数据流的发布者，使用Flux和Mono都可以发出3种数据信号：元素值，错误信号，完成信号。错误信号和完成信号都代表终止信号，终止信号用于告诉订阅者数据流结束了，错误信号终止数据流同时把错误信息传递给订阅者。
+
+**具体实现**
+
+```xml
+<dependency>
+    <groupId>io.projectreactor</groupId>
+    <artifactId>reactor-core</artifactId>
+    <version>3.1.5.RELEASE</version>
+</dependency>
+```
+
+```
+@RestController
+@RequestMapping("user")
+public class UserController {
+
+    @Resource
+    UserService userService;
+
+    @GetMapping("{id}")
+    public Mono<User> getUser(@PathVariable Integer id){
+        return userService.selectOne(id);
+    }
+
+    @GetMapping("list")
+    public Flux<User> getUsers(){
+        return userService.selectAll();
+    }
+
+    @PostMapping("save")
+    public Mono<Void> saveUser(@RequestBody User user){
+        Mono<User> userMono = Mono.just(user);
+        return userService.save(userMono);
+    }
+}
+```
+
+```java
+@Service
+public class UserServiceImpl implements UserService {
+
+    private final Map<Integer, User> userMap = new HashMap<>();
+
+    public UserServiceImpl(){
+        this.userMap.put(1, new User(1, "Tom"));
+        this.userMap.put(2, new User(2, "Jerry"));
+    }
+
+    @Override
+    public Mono<User> selectOne(Integer id) {
+        return Mono.justOrEmpty(this.userMap.get(id));
+    }
+
+    @Override
+    public Flux<User> selectAll() {
+        return Flux.fromIterable(this.userMap.values());
+    }
+
+    @Override
+    public Mono<Void> save(Mono<User> user) {
+        return user.doOnNext(person -> {
+           int id = userMap.size() + 1;
+           userMap.put(id, person);
+        }).thenEmpty(Mono.empty());
+    }
+}
+```
+
+## Mybatis
+
+### Mybatis缓存
+
+一级缓存：在同一个SqlSession中，执行相同的查询sql会从缓存中取，执行增删改后失效。
+
+二级缓存：在同一个Namespace中，查询sql会先从二级缓存中找，没找到再去查询数据库。
 

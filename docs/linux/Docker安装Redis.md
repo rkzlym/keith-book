@@ -26,3 +26,7 @@ redis redis-server /etc/redis/redis.conf \
 ```java
 docker exec -it redis redis-cli
 ```
+查看Redis版本
+```java
+docker exec -it redis redis-server -v
+```

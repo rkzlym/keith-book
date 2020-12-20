@@ -2,12 +2,12 @@
 home: true
 heroImage: /favicon.ico
 heroText: 鸿鹄笔记
-tagline: 时不我待
+tagline: 昨天 是段历史，明天 是个谜团，而今天 是天赐的礼物，像珍惜礼物一样珍惜今天
 actionText: 快速上手 →
-actionLink: /zh/guide/
+actionLink: /java/
 features:
-- title: 简洁至上
-  details: 以 Markdown 为中心的项目结构，以最少的配置帮助你专注于写作。
+- title: 诗和远方
+  details: 世界不止眼前的苟且，还有诗和远方。
 - title: Vue驱动
   details: 享受 Vue + webpack 的开发体验，在 Markdown 中使用 Vue 组件，同时可以使用 Vue 来开发自定义主题。
 - title: 高性能

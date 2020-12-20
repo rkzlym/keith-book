@@ -84,6 +84,88 @@ public static void main(String[] args) {
 4. 添加过程
    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209154206861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
+#### 2.4 集合类线程不安全解决
+
+> 异常：ConcurrentModificationException
+>
+> 原因：一个线程正在修改，另一个线程来争夺，导致数据不一致异常。
+
+**同步容器**：Vector、HashTable、Collections.sychronized()生成
+
+**并发容器**：ConcurrentHashMap**、**CopyOnWriteArrayList、CopyOnWriteArraySet
+
+ConcurrentSkipListMap、ConcurrentSkipListSet、ConcurrentLinkedQueue、LinkedBlockingQueue、
+
+ArrayBlockingQueue、PriorityBlockingQueue
+
+**CopyOnWriteArrayList 源码解析**：写时加锁，复制一个新的数组，把新数组指向原来的数组
+
+#### 2.5 阻塞队列
+
+当阻塞队列为空时，从队列里获取元素的操作将会被阻塞
+
+当阻塞对位为满时，从队列里添加元素的操作将会被阻塞
+
+消息中间件MQ的核心底层原理：阻塞队列
+
+**阻塞队列Api**
+
+![image-20200128185633832](E:\Workspace\VsCode\keith-book\docs\java\Java基础.assets\阻塞队列Api.png)
+
+**常用的阻塞队列**
+
+ArrayBlockingQueue：由数组结构组成的有界阻塞队列。
+
+LinkedBlockingQueue：由链表组成的有界（大小默认值为Integer.MAX_VALUE）阻塞队列。
+
+SynchroousQueue：不存储元素的阻塞队列，即单个元素阻塞队列。
+
+#### 2.6 IO / NIO / AIO / Netty
+
+BIO：同步阻塞，等待读写命令时，线程一直处于等待状态
+
+NIO：同步非阻塞，等待读写命令时，线程可以去做别的事，使用selector轮询，遇到感兴趣的就处理(ACCEPT)
+
+AIO：异步非阻塞，临时写好处理方法，当客户端连上来时自动调用此方法
+
+Netty：基于NIO的封装
+
+缓冲区(Buffer)：就像一个数组，可以保存多个相同类型的数据，主要用于与 NIO 通道进行交互，数据是从通道读入缓冲区，从缓冲区写入通道中的。
+
+通道(Channel)：表示 IO 源与目标打开的连接，本身不能直接访问数据，只能与Buffer进行交互。
+
+选择器(Selector)：多路复用器，Selector 可以同时监控多个 SelectableChannel 的 IO 状况 (轮询式地获取选择器上已经"准备就绪"的事件) ，利用 Selector可使一个单独的线程管理多个 Channel。
+
+#### 2.7 同步、异步、阻塞、非阻塞
+
+同步异步关注的是消息通信机制
+
+例子：小明烧水有两步，开火，倒水。同步表示两步都需要小明做，异步表示不需要。
+
+阻塞非阻塞关注的是等待消息时的状态
+
+例子：阻塞表示小明烧水时需要等待水烧开，非阻塞表示小明在烧水时可以做别的事。
+
+**同步阻塞**：开火，等待（同步），不等水开不做任何事（阻塞）
+
+**同步非阻塞**：开火，等待（同步），去看电视（非阻塞），水开之后处理
+
+**异步非阻塞**：开火，去看电视（非阻塞），水开了之后事先写好程序自动处理（异步）
+
+**阻塞和非阻塞**
+
+- 阻塞式：当一个线程调用 read() 或 write()时，该线程被阻塞，直到有数据被读取或写入，该线程在此期间不
+  能执行其他任务。因此，在完成网络通信进行 IO 操作时，由于线程会阻塞，<font color=blue>服务器端必须为每个客户端都提供一个独立的线程进行处理</font>，当服务器端需要处理大量客户端时，性能急剧下降。
+- 非阻塞式：当线程从某通道进行读写数据时，若没有数据可用时，该线程可以进行其他任务。线程通常将非阻塞 IO 的空闲时间用于在其他通道上执行 IO 操作，所以单独的线程可以管理多个输入和输出通道。因此，NIO <font color=blue>可以让服务器端使用一个线程来同时处理连接到服务器端的多个客户端</font>。
+
+#### 2.8 对象的深浅拷贝
+
+浅拷贝：只复制一个对象，对象内部存在的指向其他对象数组或者引用则不复制
+
+深拷贝：对象，对象内部的引用均复制
+
+> clone方法执行的是浅拷贝，如要实现深拷贝，对象内部的引用对象需重写clone方法
+
 ### 3. IO流
 
 #### 3.1 流的分类
@@ -464,6 +546,21 @@ GC是什么（分代收集算法）
 java -XX:+PrintCommandLineFlags -version
 ```
 
+**查看JMM系统默认值**
+
+> -XX: +|- Attribute
+
+```powershell
+java -XX:+PrintCommandLineFlags -verison	# 查看初始参数
+java -XX:+PrintFlagsInitial					# 查看初始默认值
+java -XX: MetaspaceSize=128m				# 修改元空间大小
+java -XX: MaxTenuringThreshold=15			# 修改养老区的大小
+java -XX:+PrintFlagsFinal -version			# 主要查看修改更新, 有 := 表示修改之后的参数值
+
+jinfo -flags 5988							# 查询5988进程的所有配置
+java -XX:+PrintFlagsFinal -Xss128k T		# 运行Java命令的同时打印出参数,T:运行java类的名字
+```
+
 #### 6.5 引用
 
 - 强引用：OOM也不回收
@@ -622,14 +719,54 @@ try {
 
 ### 3. 锁
 
-#### 3.1 Sychronized 和 Lock
+#### 3.2 各类锁
+
+**公平锁**：每个线程获取锁时先查看此锁维护的等待队列，为空就占有锁，否则就加入等待队列。
+
+**非公平锁**：直接尝试占有锁，若失败，再采用类似公平锁的方式。
+
+**可重入锁（递归锁）**：在同一个线程的外层方法获取锁的时候，进入内层方法会自动获取锁。避免死锁。
+
+**对象锁**：将sychronized放在普通同步方法中，sychronized同步监视器为普通对象
+
+**全局锁**：将sychronized放在静态同步方法中，sychronized同步监视器为类对象
+
+**自旋锁**：尝试获取锁的线程不会立即阻塞，而是采用循环的方式去尝试获取锁。
+
+**自适应自旋锁**：循环多次发现等待时间过长，切换为阻塞状态。
+
+**独占锁**：该锁一次只能被一个线程所占有。
+
+**共享锁**：该锁可以被多个线程锁持有。
+
+**读写锁**：可以多人读，但只允许一人写。
+
+**锁粗化**：如一个方法内加了多个锁，JVM认为没必要，于是将其合并为一个锁。
+
+**锁消除**：JVM认为有些代码块无需加锁，于是删除了那个锁。
+
+**偏向锁**：一段同步代码一直被一个线程访问，该线程会自动获得锁。
+
+**轻量级锁**：当锁是偏向锁的时候，被另外线程访问，其它线程会通过自旋的形式尝试获取锁。
+
+**重量级锁**：当锁是轻量级锁的时候，另一个线程自旋到一定次数未得到锁则进入阻塞。
+
+**分段锁**：将数据分为多段，每次只给一段加锁。
+
+**CountDownLatch**：被减少到零之后才放行，否则阻塞等待。
+
+**CyclicBarrier**：先到的被阻塞，直到达到指定值时释放
+
+**Semaphore**：多共享资源的互斥使用，并发线程数的控制。
+
+**AQS (AbstractQueuedSynchronizer)**：基于先进先出的等待队列为实现锁和同步提供一个框架
+
+#### 3.2 Sychronized 和 Lock
 
 1. Sychronized：非公平，悲观，独享，互斥，可重入的重量级
-
 2. Lock
-   ReentrantLock：可公平，悲观，独享，互斥，可重入，重量级锁。
-
- ReentrantReadWriteLock：可公平，悲观，写独享，读共享，读写，可重入，重量级锁。
+   1. ReentrantLock：可公平，悲观，独享，互斥，可重入，重量级锁。
+   2. ReentrantReadWriteLock：可公平，悲观，写独享，读共享，读写，可重入，重量级锁。
 
 **Sychronized 和 ReentrantLock 的区别**
 
@@ -639,9 +776,28 @@ try {
 4. synchronized非公平锁，Lock两者皆可
 5. synchronized只能随机或全部唤醒，Lock可以使用Condition精确唤醒
 
-#### 3.2 锁分类
+**Sychronized 和 ReentrantLock 的使用场景**
 
-##### 3.2.1 按性质分类
+sychronized如果抢不到锁，就会一直等待
+
+reentrantLock有tryLock机制，如果等待超时可以放弃等待
+
+```java
+if (lock.tryLock(3L, TimeUnit.SECONDS)){	// 3秒超时
+    lock.lock();
+    try{
+        // 业务逻辑
+    } finally {
+        lock.unlock();
+    }
+} else {
+    // 放弃等待后执行
+}
+```
+
+#### 3.3 锁分类
+
+##### 3.3.1 按性质分类
 
 公平锁：多个线程按照申请锁的顺序来获取锁。
 非公平锁：多个线程获取锁的顺序并不是按照申请锁的顺序。
@@ -657,7 +813,7 @@ try {
 
 可重入锁：同一个线程在外层方法获取锁的时候，在进入内层加锁方法会自动获取锁。
 
-##### 3.2.2 按照设计分类
+##### 3.3.2 按照设计分类
 
 自旋锁：采用循环的方式去尝试获取锁。
 自适应自旋锁：循环多次发现等待时间过长，切换为阻塞状态。
@@ -671,13 +827,125 @@ try {
 
 分段锁：将数据分为多段，每次只给一段加锁。
 
-#### 3. LockSupport
+#### 3.3 线程等待和唤醒
 
-概念：线程的等待唤醒机制（wait / notify）
+##### 3.3.1 Object: wait, notify
 
-三种让线程等待唤醒的方法
+1. 都需要在同步代码块中执行(synchronized)
 
-1. 使用Object中的wait()方法让线程等待，使用Object中的notify()方法唤醒线程
-2. 使用JUC包中Condition的await()方法让线程等待，使用signal()方法唤醒线程
-3. LockSupport类可以阻塞当前线程以及唤醒指定被阻塞的线程 pack() unpack()
+2. 先wait再notify，等待中的线程才会被唤醒，否则无法唤醒
+
+##### 3.3.2 Condition: await, signal
+
+1. 都需要在同步代码块中执行
+2. 先await再signal，等待中的线程才会被唤醒，否则无法唤醒
+
+##### 3.3.3 LockSupport: pack, unpack
+
+线程阻塞工具类，可以让线程在任意位置阻塞，阻塞后也有对应的唤醒方法，底层调用Unsafe的native方法
+
+线程阻塞需要消耗Permit，Permit最多存在1个
+
+当调用park方法时
+
+- 如果有凭证，直接消耗掉这个凭证然后正常退出
+- 如果无凭证，就阻塞等待凭证可用
+
+当调用unpark方法时
+
+- 增加一个凭证，但凭证最多有1个
+
+#### 3.4 AQS (AbstractQueuedSynchronizer)
+
+概念：是用来构建锁或者其它同步组件的重量级基础框架及整个JUC体系的基石，通过内置的FIFO队列来完成资源获取线程的排队工作，并通过一个int类型变量表示持有锁的状态
+
+同步器：ReentrantLock, CountDownLatch, Semaphore等
+
+如果共享资源被占用，就需要一定的阻塞等待唤醒机制来保证锁的分配。这个机制主要用的是CLH队列的变体实现的，将暂时获取不到锁的线程加入到队列中，这个队列就是AQS的抽象表现。它将请求共享资源的线程封装成队列的节点（Node），通过CAS、自旋以及LockSupport.park()的方式，维护state变量的状态，使并发达到同步的控制效果。
+
+AQS总结：state变量 + CLH变种的双端队列，Node中存放的是线程
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201218203120948.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+非公平锁和公平锁的唯一区别：公平锁获取同步状态时多了一个限制条件 hasQueuedPredecessors，该方法是公平锁加锁时判断等待队列中是否存在有效节点的方法
+
+源码说明
+
+```java
+final void lock() {
+    if (compareAndSetState(0, 1))
+        setExclusiveOwnerThread(Thread.currentThread());	// 第一个线程抢到锁
+    else
+        acquire(1);	// 第二个线程及后续线程抢占
+}
+```
+
+```java
+public final void acquire(int arg) {
+    if (!tryAcquire(arg) &&		// 尝试抢占，抢占成功返回true不进入队列
+        // acquireQueued 尝试获取锁，若不成功则用LockSupport.park阻塞，直到被唤醒
+        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))	
+        selfInterrupt();
+}
+```
+
+```java
+private Node addWaiter(Node mode) {
+    Node node = new Node(Thread.currentThread(), mode);
+    // Try the fast path of enq; backup to full enq on failure
+    Node pred = tail;
+    // 第二次以后进入只需将Node加入队列末尾即可
+    if (pred != null) {
+        node.prev = pred;
+        if (compareAndSetTail(pred, node)) {
+            pred.next = node;
+            return node;
+        }
+    }
+    // 第一次进入队列会先初始化，即生成一个空的头节点
+    enq(node);
+    return node;
+}
+```
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201218211732334.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+#### 3.5 JMM (Java Memory Model)
+
+**定义**：是一组规范，<font color=red>可见性、原子性、有序性</font>，定义了程序中各个变量的访问方式。
+
+**解释**：线程创建时JVM会为其创建工作内存（线程私有），JMM规定所有变量存储在主内存（共享），但线程必须在工作内存中操作变量。具体流程：<font color=red>拷贝->操作->写回</font>。各个工作内存存储主内存变量的复印件，不同线程无法互相访问，线程间通信必须通过主内存。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201217232911616.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+**JMM关于同步的规定**：
+
+1. 线程解锁前，必须把共享变量的值刷新回主内存。
+2. 线程加锁前，必须读取主内存的最新值到工作内存。
+3. 加锁解锁是同一把锁。
+
+##### volatile
+
+**作用**：保证可见性、禁止指令重排、但不保证原子性。
+
+**原理**：volatile修饰的变量在进行写操作的时候会多出一个lock前缀的汇编指令，作用是：
+
+- 将当前处理器缓存行的数据会写回到系统内存。
+- 这个写回内存的操作会引起在其他CPU里缓存了该内存地址的数据无效。
+
+##### CAS (Compare And Set)
+
+**作用**：线程的期望值和物理内存真实值一样则修改，否则需要重新获得主物理内存的真实值，这个过程是<font color=red>原子</font>的。
+
+**原理**：Unsafe、自旋锁、乐观锁
+
+- Unsafe：基于Unsafe内部native方法可以直接操作内存。
+
+- 自旋锁：循环判断工作内存与主内存的值是否相等，如相等则返回。
+
+**缺点**：循环时间长开销大、只能保证一个共享变量的原子操作、ABA问题。
+
+**为什么CAS要比synchronized快**
+
+synchronized需要进行上下文切换，每一次线程进出Cpu就是一次上下文切换，而这一次切换大概需要3-5微秒，而Cpu执行一条执行大概只需要0.6纳秒，而CAS没有上下文切换的过程，那么效率就高。
 

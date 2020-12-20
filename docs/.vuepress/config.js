@@ -11,46 +11,49 @@ module.exports = {
         logo: '/favicon.ico',
         nav: [
             { text: 'Home', link: '/' },
-            { text: 'Linux', link: '/linux/' },
-            { text: 'Java', link: '/java/' }
+            { text: 'Java', link: '/java/' },
+            { text: 'Database', link: '/database/' },
+            { text: 'Linux', link: '/linux/' }
         ],
         sidebar: {
-            '/linux/': [
-                {
-                    title: 'Docker',
-                    path: '/linux/docker/',
-                    collapsable: false,
-                    sidebarDepth: 1,
-                    children: [
-                        '/linux/docker/Docker基本操作',
-                        '/linux/docker/Docker安装Redis',
-                        '/linux/docker/Docker安装Nginx',
-                        '/linux/docker/Docker安装Mysql',
-                        '/linux/docker/Docker安装Jenkins',
-                    ]
-                },
-                {
-                    title: 'Test',
-                    path: '/linux/test/',
-                    collapsable: false,
-                    sidebarDepth: 1,
-                    children: [
-                        '/linux/test/test1',
-                        '/linux/test/test2',
-                    ]
-                }
-            ],
             '/java/': [
                 {
                     title: 'Java',
                     path: '/java/',
                     collapsable: false,
-                    sidebarDepth: 3,
+                    sidebarDepth: 2,
                     children: [
                         '/java/Java基础',
                         '/java/数据结构',
                         '/java/设计模式',
                         '/java/Spring'
+                    ]
+                }
+            ],
+            '/database/': [
+                {
+                    title: 'Database',
+                    path: '/database/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/database/mysql',
+                        '/database/redis'
+                    ]
+                }
+            ],
+            '/linux/': [
+                {
+                    title: 'Linux',     
+                    path: '/linux/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/linux/Docker基本操作',
+                        '/linux/Docker安装Redis',
+                        '/linux/Docker安装Nginx',
+                        '/linux/Docker安装Mysql',
+                        '/linux/Docker安装Jenkins',
                     ]
                 }
             ]
