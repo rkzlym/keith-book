@@ -11,23 +11,83 @@ module.exports = {
         logo: '/favicon.ico',
         nav: [
             { text: 'Home', link: '/' },
-            { text: 'Java', link: '/java/' },
+            { text: 'Java', link: '/Java/' },
+            { text: 'Spring', link: '/Spring/' },
+            { text: '数据存储', link: '/数据存储/' },
             { text: '设计模式', link: '/设计模式/' },
-            { text: 'Database', link: '/database/' },
-            { text: 'Linux', link: '/linux/' }
+            { text: '数据结构', link: '/数据结构/' },
+            { text: 'Linux', link: '/Linux/' },
         ],
         sidebar: {
-            '/java/': [
+            '/Java/': [
                 {
                     title: 'Java',
-                    path: '/java/',
+                    path: '/Java/',
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
-                        '/java/Java基础',
-                        '/java/数据结构',
-                        '/java/Spring'
+                        '/Java/Java基础',
+                        '/Java/Java集合',
+                        '/Java/JavaIO',
+                        '/Java/JavaJVM',
+                        '/Java/Java多线程',
+                        '/Java/Java锁',
                     ]
+                }
+            ],
+            '/Spring/': [
+                {
+                    title: 'Spring',
+                    path: '/Spring/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/Spring/SpringIoc',
+                        '/Spring/SpringAop',
+                        '/Spring/SpringMvc',
+                        '/Spring/SpringBoot',
+                        '/Spring/SpringCloud',
+                        '/Spring/SpringWebFlux',
+                        '/Spring/Mybatis',
+                    ]
+                }
+            ],
+            '/数据存储/': [
+                {
+                    title: 'mysql',
+                    path: '/数据存储/mysql/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/数据存储/mysql/mysql建库建表',
+                        '/数据存储/mysql/mysql约束',
+                        '/数据存储/mysql/mysql流程控制语句',
+                        '/数据存储/mysql/mysql函数',
+                        '/数据存储/mysql/mysql变量',
+                        '/数据存储/mysql/mysql存储过程',
+                        '/数据存储/mysql/mysql事务',
+                        '/数据存储/mysql/mysql索引',
+                        '/数据存储/mysql/mysql锁',
+                        '/数据存储/mysql/mysql主从复制',
+                    ],
+                },
+                {
+                    title: 'redis',
+                    path: '/数据存储/redis/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/数据存储/redis/redis命令速查',
+                        '/数据存储/redis/redis常见缓存问题',
+                        '/数据存储/redis/redis配置',
+                        '/数据存储/redis/redis线程模型',
+                        '/数据存储/redis/redis事务',
+                        '/数据存储/redis/redis过期策略',
+                        '/数据存储/redis/redis分布式锁',
+                        '/数据存储/redis/redis集群',
+                        '/数据存储/redis/redis哨兵模式',
+                        '/数据存储/redis/redis主从复制',
+                    ],
                 }
             ],
             '/设计模式/': [
@@ -78,30 +138,29 @@ module.exports = {
                     ]
                 },
             ],
-            '/database/': [
+            '/数据结构/': [
                 {
-                    title: 'Database',
-                    path: '/database/',
+                    title: '数据结构',     
+                    path: '/数据结构/',
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
-                        '/database/mysql',
-                        '/database/redis'
+
                     ]
                 }
             ],
-            '/linux/': [
+            '/Linux/': [
                 {
-                    title: 'Linux',     
-                    path: '/linux/',
+                    title: 'Docker',     
+                    path: '/Linux/',
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
-                        '/linux/Docker基本操作',
-                        '/linux/Docker安装Redis',
-                        '/linux/Docker安装Nginx',
-                        '/linux/Docker安装Mysql',
-                        '/linux/Docker安装Jenkins',
+                        '/Linux/Docker基本操作',
+                        '/Linux/Docker安装Redis',
+                        '/Linux/Docker安装Nginx',
+                        '/Linux/Docker安装Mysql',
+                        '/Linux/Docker安装Jenkins',
                     ]
                 }
             ]
