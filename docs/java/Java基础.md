@@ -1,6 +1,6 @@
 # Java 基础
 
-### String
+#### String
 
 String中的intern()方法
 
@@ -17,10 +17,16 @@ System.out.println(str2 == str2.intern());      // false
 
 解释：有一个JDK自带的初始化的字符串"java"在加载sun.misc.Version这个类的时候进入了常量池
 
-### 对象的深浅拷贝
+#### 参数传递
 
-浅拷贝：只复制一个对象，对象内部存在的指向其他对象数组或者引用则不复制
+- 基本数据类型：传递值
+- 引用数据类型：传地址
 
-深拷贝：对象，对象内部的引用均复制
+String、包装类等属于引用数据类型，同时是**不可变对象**
 
-> clone方法执行的是浅拷贝，如要实现深拷贝，对象内部的引用对象需重写clone方法
+> ```
+> 《Effective Java》
+> 不可变对象(Immutable Object)：对象一旦被创建后，对象所有的状态及属性在其生命周期内不会发生任何变化。
+> 由于ImmutableObject不提供任何setter方法，并且成员变量value是基本数据类型，getter方法返回的是value的拷贝，所以一旦ImmutableObject实例被创建后，该实例的状态无法再进行更改，因此该类具备不可变性。
+> ```
+
