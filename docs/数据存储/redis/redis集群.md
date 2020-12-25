@@ -1,11 +1,11 @@
 # reids集群
 
-### 1. 集群之间的通信
+## 1. 集群之间的通信
 各个数据库相互通信，保存各个库中槽的编号数据
 一次命中，直接返回
 一次未命中，告知具体位置
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200203150519604.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-### 2. 集群配置
+## 2. 集群配置
 1. 修改redis.conf
 ```java
 # 开启集群

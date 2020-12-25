@@ -1,6 +1,6 @@
 # redis分布式锁
 
-### 1. 实现方式
+## 1. 实现方式
 
 redis与zookeeper的区别：redis是ap不保证一致性，zk是cp不保证高可用
 
@@ -45,7 +45,7 @@ public String buyGoods() throws Exception {
 }
 ```
 
-### 2. redisson
+## 2. redisson
 
 ```xml
 <dependency>

@@ -1,13 +1,13 @@
 # mysql主从复制
 
-### 1. 复制原理
+## 1. 复制原理
 1. master将改变记录到二进制日志(binary log)，这个记录过程叫二进制日志事件(binary log events)。
 2. slave将master的binary log events拷贝到它的中继日志(relay log)。
 3. slave重做中继日志中的事件，将改变应用到自己的数据库中，Mysql复制是异步且串行化的。
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200203173115696.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-### 2. 配置(基于mysql 8.x)
-#### 2.1 master配置文件修改
+## 2. 配置(基于mysql 8.x)
+### 2.1 master配置文件修改
 ```
 [mysqld]
 # 设置主机Id
@@ -15,7 +15,7 @@ server-id=1
 # 启用二进制日志
 log-bin=E:\\Software\\mysql-8.0.19\\data\\logbin
 ```
-#### 2.2 slave配置文件修改
+### 2.2 slave配置文件修改
 ```
 [mysqld]
 # 设置从机Id
@@ -23,7 +23,7 @@ server-id=2
 # 启用二进制日志
 log-bin=/var/run/mysqld/logbin
 ```
-#### 2.3 具体操作
+### 2.3 具体操作
 >主机IP：192.168.1.104
 >从机IP：192.168.25.103
 
@@ -74,7 +74,7 @@ insert into dog (dog_name) values ('大白');
 insert into dog (dog_name) values ('汪汪');
 ```
 主机从机同步，测试成功。
-### 3. 番外之常用命令
+## 3. 番外之常用命令
 ```sql
 # 获取binlog文件列表
 show binary logs;

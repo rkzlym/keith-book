@@ -1,11 +1,11 @@
 # mysql建库建表
 
-### DDL（数据定义语言）
+## DDL（数据定义语言）
 库和表的管理
 创建：create
 修改：alter
 删除：drop
-### 库的管理
+## 库的管理
 ```sql
 # 若库不存在创建一个名为demo的库
 CREATE DATABASE IF NOT EXISTS demo
@@ -16,7 +16,7 @@ ALTER DATABASE demo CHARACTER SET utf-8
 # 库的删除
 DROP DATABASE IF EXISTS demo
 ```
-### 表的管理
+## 表的管理
 
 ```sql
 # 案例：创建表book

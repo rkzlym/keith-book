@@ -1,9 +1,9 @@
 # mysql流程控制语句
 
-### IF函数
+## IF函数
 语法：IF(表达式1，表达式2，表达式3)
 解释：如果表达式1成立，则返回表达式2，否则返回表达式3
-### CASE 结构
+## CASE 结构
 特点：可以作为表达式，嵌套在其它语句中使用，也可以作为独立的语句使用
 1. 类似switch case语句，一般用于实现等值判断
 ```sql
@@ -24,7 +24,7 @@ WHEN 要判断的条件2 THEN 返回值2或语句2
 ELSE 返回值n或语句n
 END
 ```
-### IF结构
+## IF结构
 应用在BEGIN END中
 ```sql
 IF 条件1 THEN 语句1;
@@ -33,7 +33,7 @@ ELSEIF 条件2 THEN 语句2;
 ELSE 语句n;
 END IF
 ```
-### 循环结构
+## 循环结构
 分类：while、loop、repeat
 循环控制：
 - iterate 类似于 continue，结束本次循环，继续下一次

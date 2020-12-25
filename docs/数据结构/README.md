@@ -314,5 +314,60 @@ public static void main(String[] args) {
 }
 ```
 
+## 栈
 
+栈的应用场景：
+
+子程序调用：在跳往子程序前，会先将下个指令的地址存到堆栈中，直到子程序执行完后再将地址取出，以回到原来的程序中。
+
+处理递归调用：和子程序调用类似，只是除了存储下一个指令的地址外，也将参数、区域变量等存入堆栈中。
+
+表达式转换：中缀表达式转后缀表达式
+
+二叉树遍历
+
+图形的深度优先搜索法（depth-first）
+
+```java
+class Stack{
+    int maxSize;
+    int top = -1;
+    int[] arr;
+
+    public Stack(int maxSize){
+        this.maxSize = maxSize;
+        arr = new int[maxSize];
+    }
+
+    public boolean isFull(){
+        return top == maxSize - 1;
+    }
+
+    public boolean isEmpty(){
+        return top == -1;
+    }
+
+    public void push(int val){
+        if (isFull())
+            throw new UnsupportedOperationException("Stack is full");
+        top++;
+        arr[top] = val;
+    }
+
+    public int pop(){
+        if (isEmpty())
+            throw new UnsupportedOperationException("Stack is Empty");
+        int val = arr[top];
+        top--;
+        return val;
+    }
+
+    // Begin with top when traversing
+    public void showAll(){
+        for (int i = top; i >= 0; i--){
+            System.out.printf("stack[%d]=%d\n", i, arr[i]);
+        }
+    }
+}
+```
 

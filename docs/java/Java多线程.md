@@ -146,3 +146,108 @@ try {
 - IO密集型(需要不断取数据)：
   - IO密集型并不是一直在执行任务，配置尽可能多的线程，如Cpu核数 * 2
   - Cpu核数 / 1 - 阻塞系数(0.8~0.9)	例如8核Cpu：8 / (1 - 0.9) = 80个线程数
+
+## 3. JMM (Java Memory Model)
+
+### 3.1 定义
+
+是一组规范，<font color=red>可见性、原子性、有序性</font>，定义了程序中各个变量的访问方式。
+
+**解释**：线程创建时JVM会为其创建工作内存（线程私有），JMM规定所有变量存储在主内存（共享），但线程必须在工作内存中操作变量。具体流程：<font color=red>拷贝->操作->写回</font>。各个工作内存存储主内存变量的复印件，不同线程无法互相访问，线程间通信必须通过主内存。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201217232911616.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+**JMM关于同步的规定**：
+
+1. 线程解锁前，必须把共享变量的值刷新回主内存。
+2. 线程加锁前，必须读取主内存的最新值到工作内存。
+3. 加锁解锁是同一把锁。
+
+### 3.2 volatile
+
+**作用**：保证可见性、禁止指令重排、但不保证原子性。
+
+**原理**：volatile修饰的变量在进行写操作的时候会多出一个lock前缀的汇编指令，作用是：
+
+- 将当前处理器缓存行的数据会写回到系统内存。
+- 这个写回内存的操作会引起在其他CPU里缓存了该内存地址的数据无效。
+
+**验证volatile保证可见性**
+
+```java
+public class VolatileVisibleDemo {
+    private static class MyData{
+        // 若是不加 volatile，那么main线程就接收不到通知
+        volatile int num = 0;
+
+        public void change(){
+            this.num = 60;
+        }
+    }
+
+    public static void main(String[] args) {
+        MyData myData = new MyData();
+        new Thread(() -> {
+            System.out.println(Thread.currentThread().getName() + "\t come in");
+            try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+            myData.change();
+            System.out.println(Thread.currentThread().getName() + "\t updated number value:" + myData.num);
+        }, "A").start();
+
+        while(myData.num == 0){
+            // 需要有一种通知机制告诉main线程 num 已经修改，跳出while
+        }
+        System.out.println(Thread.currentThread().getName() + "\t main get number value:" + myData.num);
+    }
+}
+```
+
+### 3.3 CAS (Compare And Set)
+
+**作用**：线程的期望值和物理内存真实值一样则修改，否则需要重新获得主物理内存的真实值，这个过程是<font color=red>原子</font>的。
+
+**原理**：Unsafe、自旋锁、乐观锁
+
+- Unsafe：基于Unsafe内部native方法可以直接操作内存。
+
+- 自旋锁：循环判断工作内存与主内存的值是否相等，如相等则返回。
+
+**缺点**：循环时间长开销大、只能保证一个共享变量的原子操作、ABA问题。
+
+**为什么CAS要比synchronized快**
+
+synchronized需要进行上下文切换，每一次线程进出Cpu就是一次上下文切换，而这一次切换大概需要3-5微秒，而Cpu执行一条执行大概只需要0.6纳秒，而CAS没有上下文切换的过程，那么效率就高。
+
+**AtomicInteger**
+
+```java
+AtomicInteger atomicInteger = new AtomicInteger(5);
+System.out.println(atomicInteger.compareAndSet(5, 2019) + "\t current data:" + atomicInteger.get());
+System.out.println(atomicInteger.compareAndSet(5, 1024) + "\t current data:" + atomicInteger.get());
+atomicInteger.getAndIncrement();
+```
+
+**AtomicReference**
+
+```java
+public class AtomicReferenceDemo {
+    public static void main(String[] args) {
+        User z3 = new User("z3", 22);
+        User l4 = new User("l4", 25);
+
+        AtomicReference<User> atomicReference = new AtomicReference<>();
+        atomicReference.set(z3);
+        System.out.println(atomicReference.compareAndSet(z3, l4) + "\t" + atomicReference.get().toString());
+        System.out.println(atomicReference.compareAndSet(z3, l4) + "\t" + atomicReference.get().toString());
+    }
+
+    @Getter
+    @ToString
+    @AllArgsConstructor
+    private static class User{
+        String username;
+        int age;
+    }
+}
+```
+

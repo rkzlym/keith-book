@@ -1,6 +1,166 @@
 # Spring IOC
 
-### 小知识点
+## IOC
+
+IoC也称为依赖注入（DI）。 在此过程中，对象仅通过构造函数参数，工厂方法的参数或在构造或从工厂方法返回后在对象实例上设置的属性来定义其依赖项 。 然后，容器在创建bean时注入那些依赖项。 此过程从根本上讲是通过使用类的直接构造或诸如服务定位器模式之类的控件来控制其依赖项的实例化或位置的bean本身的逆过程（因此称为Control的倒置）。
+
+核心依赖包：`org.springframework.beans` `org.springframework.context`
+
+BeanFacotory接口提供了能管理任何类型对象的配置机制，ApplicationContext是它的一个子接口，增加了如下机制：
+
+- Spring AOP 特性的简单集成
+- 消息资源处理
+- 事件发布
+- 应用层面类似 `WebApplicationContext` 的上下文用于Web应用
+
+## Spring 容器
+
+### 概述
+
+ApplicationContext接口代表Spring IoC容器，并负责实例化，配置和组装Bean
+
+容器通过读取配置元数据获取有关要实例化，配置和组装哪些对象的指令。
+
+配置元数据：XML，Java注解，Java代码
+
+ApplicationContext 常用的两种实现：ClassPathXmlApplicationContext, FileSystemXmlApplicationContext
+
+### 实例化容器
+
+下面代码可以实例化一个Spring容器
+
+```java
+// create and configure beans
+ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+// retrieve configured instance
+PetStoreService service = context.getBean("petStore", PetStoreService.class);
+
+// use configured instance
+List<String> userList = service.getUsernameList();
+```
+
+更灵活的变体是使用 GenericApplicationContext 结合读取委托器使用
+
+```java
+GenericApplicationContext context = new GenericApplicationContext();
+new XmlBeanDefinitionReader(context).loadBeanDefinitions("applicationContext.xml");
+context.refresh();
+```
+
+applicationContext.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- services -->
+    <bean id="petStore" class="org.springframework.samples.jpetstore.services.PetStoreServiceImpl">
+        <property name="accountDao" ref="accountDao"/>
+        <property name="itemDao" ref="itemDao"/>
+        <!-- additional collaborators and configuration for this bean go here -->
+    </bean>
+
+    <!-- more bean definitions for services go here -->
+</beans>
+```
+
+## Spring Bean
+
+Spring IoC容器管理一个或多个Bean。这些Bean是使用您提供给容器的配置元数据创建的（例如，以XML`<bean/>`定义的形式 ）。
+
+在容器本身内，这些bean定义表示为`BeanDefinition` 对象，其中包含以下元数据：
+
+- 包限定的类名：通常，定义了Bean的实际实现类。
+- Bean行为配置元素，用于声明Bean在容器中的行为（作用域，生命周期回调等）。
+- 引用该bean完成其工作所需的其他bean。这些引用也称为协作者或依赖项。
+- 要在新创建的对象中设置的其他配置设置。例如，池的大小限制。
+
+依赖注入的三种方式：构造函数注入、setter注入、接口注入
+
+### Spring Bean Scope
+
+1. singleton：每个IOC容器仅有一个单实例
+2. prototype：每次请求产生一个新实例
+3. request：每次Http请求产生一个新实例
+4. session：每次Http请求产生一个新的Bean，仅在当前Http Session内有效
+5. application：类似标准HttpSession作用域
+6. websocket：
+
+### Spring Bean 生命周期
+
+#### Bean的生命周期
+
+1. Spring容器根据配置中的bean定义实例化Bean
+2. Spring使用依赖注入填充所有属性
+3. 如果Bean实现BeanNameAware接口，工厂通过传递Bean ID来调用setBeanName()
+4. 如果Bean实现BeanFactoryAware接口，工厂通过传递自身实例调用setBeanFactory()
+5. 如果存在与Bean关联的任何BeanPostProcessers，则调用preProcessBeforeInitialization()
+6. 如果Bean指定了init方法，那么将调用它
+7. 如果存在与Bean关联的任何BeanPostProcessers，则调用postProcessAfterInitialization()
+8. 如果Bean实现了DisposableBean接口，当Spring容器关闭时，会调用destory()
+9. 如果Bean指定了destory方法，那么将调用它
+
+#### 生命周期回调
+
+控制 Bean 生命周期行为的三个选项：
+
+- 实现InitializingBean和DisposableBean接口
+
+```java
+@Component
+public class DemoBean implements InitializingBean, DisposableBean {
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // init method
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        // destroy method
+    }
+}
+```
+
+- 自定义 init() 和 destroy() 方法
+
+```xml
+<bean id="exampleInitBean" class="examples.ExampleBean" init-method="init"/>
+<bean id="exampleInitBean" class="examples.ExampleBean" destroy-method="destory"/>
+```
+
+- @PostConstruct 和@PreDestroy 注解（推荐）
+
+```java
+public class CachingMovieLister {
+
+    @PostConstruct
+    public void populateMovieCache() {
+        // populates the movie cache upon initialization...
+    }
+
+    @PreDestroy
+    public void clearMovieCache() {
+        // clears the movie cache upon destruction...
+    }
+}
+```
+
+#### 使用 FactoryBean 自定义实例化逻辑
+
+FactoryBean界面提供了三种方法：
+
+- Object getObject()：返回此工厂创建的对象的实例。实例可以共享，具体取决于该工厂是否返回单例或原型。
+- boolean isSingleton()：如果此FactoryBean返回单例，则返回true，否则返回false。
+- Class getObjectType()：返回由getObject()方法或null返回的对象类型(如果事先未知)。
+
+
+
+## 小知识点
 
 **@Resource @Autowired @Qualifier 的区别**
 
@@ -121,10 +281,6 @@ ApplicationContext：BeanFactory的子接口，基于BeanFactory创建的对象�
 
 Spring 通过一个配置文件描述 Bean 及 Bean 之间的依赖关系，利用 Java 语言的反射功能实例化Bean 并建立 Bean 之间的依赖关系。 Spring 的 IoC 容器在完成这些底层工作的基础上，还提供了 Bean 实例缓存、生命周期管理、 Bean 实例代理、事件发布、资源装载等高级服务。
 
-### 1.2 依赖注入
-
-1. 依赖注入的三种方式：构造函数注入、setter注入、接口注入
-
 ### 1.3 Spring有多少种IOC容器
 
 1. BeanFactory: 一个包含bean集合的工厂类，在客户端要求时实例化Bean
@@ -133,25 +289,7 @@ Spring 通过一个配置文件描述 Bean 及 Bean 之间的依赖关系，利�
    2. ClassPathXmlApplicationContext：从Xml文件中加载beans定义，这个容器将在classpath中找bean配置
    3. WebXmlApplicationContext：加载一个Xml文件，此文件定义了一个Web应用的所有Bean
 
-### 1.4 Spring Bean Scope
-
-1. Singleton：每个IOC容器仅有一个单实例
-2. Prototype：每次请求产生一个新实例
-3. Request：每次Http请求产生一个新实例
-4. Session：每次Http请求产生一个新的Bean，仅在当前Http Session内有效
-5. Global Session：类似标准HttpSession作用域
-
 ### 1.5 Spring Bean 生命周期
-
-1. Spring容器根据配置中的bean定义实例化Bean
-2. Spring使用依赖注入填充所有属性
-3. 如果Bean实现BeanNameAware接口，工厂通过传递Bean ID来调用setBeanName()
-4. 如果Bean实现BeanFactoryAware接口，工厂通过传递自身实例调用setBeanFactory()
-5. 如果存在与Bean关联的任何BeanPostProcessers，则调用preProcessBeforeInitialization()
-6. 如果Bean指定了init方法，那么将调用它
-7. 如果存在与Bean关联的任何BeanPostProcessers，则调用postProcessAfterInitialization()
-8. 如果Bean实现了DisposableBean接口，当Spring容器关闭时，会调用destory()
-9. 如果Bean指定了destory方法，那么将调用它
 
 ### 1.6 Spring Bean 生命周期方法
 
