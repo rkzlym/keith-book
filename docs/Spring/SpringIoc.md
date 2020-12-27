@@ -1,6 +1,8 @@
 # Spring IOC
 
-## IOC
+## Spring 容器
+
+### Spring 容器 概述
 
 IoC也称为依赖注入（DI）。 在此过程中，对象仅通过构造函数参数，工厂方法的参数或在构造或从工厂方法返回后在对象实例上设置的属性来定义其依赖项 。 然后，容器在创建bean时注入那些依赖项。 此过程从根本上讲是通过使用类的直接构造或诸如服务定位器模式之类的控件来控制其依赖项的实例化或位置的bean本身的逆过程（因此称为Control的倒置）。
 
@@ -13,10 +15,6 @@ BeanFacotory接口提供了能管理任何类型对象的配置机制，Applicat
 - 事件发布
 - 应用层面类似 `WebApplicationContext` 的上下文用于Web应用
 
-## Spring 容器
-
-### 概述
-
 ApplicationContext接口代表Spring IoC容器，并负责实例化，配置和组装Bean
 
 容器通过读取配置元数据获取有关要实例化，配置和组装哪些对象的指令。
@@ -25,7 +23,7 @@ ApplicationContext接口代表Spring IoC容器，并负责实例化，配置和�
 
 ApplicationContext 常用的两种实现：ClassPathXmlApplicationContext, FileSystemXmlApplicationContext
 
-### 实例化容器
+### Spring 容器 实例化
 
 下面代码可以实例化一个Spring容器
 
@@ -48,6 +46,20 @@ new XmlBeanDefinitionReader(context).loadBeanDefinitions("applicationContext.xml
 context.refresh();
 ```
 
+实现ApplicationContextAware接口得到ApplicationContext
+
+```java
+public class MyApplicationContext implements ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
+    
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;    
+    }
+}
+```
+
 applicationContext.xml
 
 ```xml
@@ -68,6 +80,15 @@ applicationContext.xml
 </beans>
 ```
 
+### Spring 容器 核心流程
+
+```
+1. Spring容器在启动的时候，会先保存所有注册进来的Bean定义信息
+2. Spring容器会在合适的时机创建这些Bean
+3. 后置处理器：每个Bean创建完成，都会使用各种后置处理器(BeanPostProcessor)做处理(例:AutowiredAnnotationBeanPostProcessor 处理自动注入)
+4. 事件驱动模型:ApplicationListener事件监听
+```
+
 ## Spring Bean
 
 Spring IoC容器管理一个或多个Bean。这些Bean是使用您提供给容器的配置元数据创建的（例如，以XML`<bean/>`定义的形式 ）。
@@ -81,18 +102,168 @@ Spring IoC容器管理一个或多个Bean。这些Bean是使用您提供给容�
 
 依赖注入的三种方式：构造函数注入、setter注入、接口注入
 
+### Spring Bean 创建
+
+#### 1. 包扫描注解  +  组件注解
+
+@ComponentScan + @Controller @Service @Component ...
+
+```java
+package com.demo.controller;
+@Controller
+public class TestController {
+
+}
+```
+
+```java
+@Configuration
+@ComponentScan(value = "com.demo")
+public class SpringConfig {
+
+}
+```
+
+ComponentScan 使用 Filter 排除某一种类型的 Bean
+
+```java
+// 例: 排除了Contrller注解的Bean
+@ComponentScan(value = "com.demo",
+        excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class)})
+```
+
+FilterType种类
+
+```
+ANNOTATION: 注解
+ASSIGNABLE_TYPE: 类型
+ASPECTJ: 使用ASPECTJ表达式
+REGEX: 使用正则表达式
+CUSTOM: 自定义规则(TypeFilter的实现类)
+```
+
+#### 2. @Bean
+
+通常用于导入第三方包里面的组件
+
+```java
+@Configuration
+public class SpringConfig {
+    @Bean
+    public User user(){
+        return new User();
+    }
+}
+```
+
+#### 3. @Import
+
+​	@Import直接注入
+
+```
+@Configuration
+@Import(User.class)
+public class SpringConfig {
+
+}
+```
+
+​	ImportSelector：使用Import给容器中导入多个组件
+
+```java
+@Configuration
+@Import(MyImportSelector.class)
+public class SpringConfig {
+
+}
+```
+
+```java
+public class MyImportSelector implements ImportSelector {
+    @Override
+    public String[] selectImports(AnnotationMetadata annotationMetadata) {
+        return new String[]{User.class.getName()};
+    }
+}
+```
+
+​	ImportBeanDefinitionRegistrar：手动注册Bean到容器中
+
+```java
+@Configuration
+@Import(MyImportBeanDefinitionRegistrar.class)
+public class SpringConfig {
+
+}
+```
+
+```java
+public class MyImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+        BeanDefinition beanDefinition = new RootBeanDefinition(User.class);
+        registry.registerBeanDefinition("user", beanDefinition);
+    }
+}
+```
+
+#### 4. FactoryBean
+
+可用于自定义实例化逻辑
+
+```java
+public class UserFactoryBean implements FactoryBean<User> {
+
+    @Override
+    public User getObject() throws Exception {
+        return new User();
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return User.class;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+}
+```
+
+```java
+@Configuration
+public class SpringConfig {
+    @Bean
+    public UserFactoryBean userFactoryBean(){
+        return new UserFactoryBean();
+    }
+}
+```
+
+```java
+// 返回的是User对象
+User user = (User) applicationContext.getBean("userFactoryBean");
+```
+
 ### Spring Bean Scope
 
-1. singleton：每个IOC容器仅有一个单实例
-2. prototype：每次请求产生一个新实例
+1. singleton：每个IOC容器仅有一个单实例，容器创建时创建Bean
+
+   使用 `@Lazy` 注解懒加载Bean，即获取时加载
+
+2. prototype：每次请求产生一个新实例，请求时创建Bean
+
 3. request：每次Http请求产生一个新实例
+
 4. session：每次Http请求产生一个新的Bean，仅在当前Http Session内有效
+
 5. application：类似标准HttpSession作用域
-6. websocket：
 
 ### Spring Bean 生命周期
 
-#### Bean的生命周期
+#### Spring Bean 生命周期流程
 
 1. Spring容器根据配置中的bean定义实例化Bean
 2. Spring使用依赖注入填充所有属性
@@ -104,117 +275,7 @@ Spring IoC容器管理一个或多个Bean。这些Bean是使用您提供给容�
 8. 如果Bean实现了DisposableBean接口，当Spring容器关闭时，会调用destory()
 9. 如果Bean指定了destory方法，那么将调用它
 
-#### 生命周期回调
-
-控制 Bean 生命周期行为的三个选项：
-
-- 实现InitializingBean和DisposableBean接口
-
-```java
-@Component
-public class DemoBean implements InitializingBean, DisposableBean {
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // init method
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        // destroy method
-    }
-}
-```
-
-- 自定义 init() 和 destroy() 方法
-
-```xml
-<bean id="exampleInitBean" class="examples.ExampleBean" init-method="init"/>
-<bean id="exampleInitBean" class="examples.ExampleBean" destroy-method="destory"/>
-```
-
-- @PostConstruct 和@PreDestroy 注解（推荐）
-
-```java
-public class CachingMovieLister {
-
-    @PostConstruct
-    public void populateMovieCache() {
-        // populates the movie cache upon initialization...
-    }
-
-    @PreDestroy
-    public void clearMovieCache() {
-        // clears the movie cache upon destruction...
-    }
-}
-```
-
-#### 使用 FactoryBean 自定义实例化逻辑
-
-FactoryBean界面提供了三种方法：
-
-- Object getObject()：返回此工厂创建的对象的实例。实例可以共享，具体取决于该工厂是否返回单例或原型。
-- boolean isSingleton()：如果此FactoryBean返回单例，则返回true，否则返回false。
-- Class getObjectType()：返回由getObject()方法或null返回的对象类型(如果事先未知)。
-
-
-
-## 小知识点
-
-**@Resource @Autowired @Qualifier 的区别**
-
-@Autowired 根据类型注入
-
-@Qualifier 根据名称注入
-
-@Resource 根据名称注入，找不到再根据类型注入
-
-**Filter和Interceptor的区别**
-
-- Filter是基于函数回调的，而Interceptor则是基于Java反射的。
-- Filter依赖于Servlet容器，而Interceptor不依赖于Servlet容器。
-- Filter对几乎所有的请求起作用，而Interceptor只能对action请求起作用。
-- Interceptor可以访问Action的上下文，值栈里的对象，而Filter不能。
-- 在action的生命周期里，Interceptor可以被多次调用，而Filter只能在容器初始化时调用一次，
-
-**Filter生命周期方法**
-
-1. init : 服务器启动后创建Filter对象，然后调用init方法，只执行一次
-2. doFilter : 每一次请求被拦截资源时，会执行，执行多次
-3. destroy : 在服务器关闭后，Filter对象被销毁，若服务器正常关闭会执行destroy方法用于释放资源
-
-配置拦截路径 `@WebFilter("/*")`
-
-**声明式事务和编程式事务**
-
-编程式事务：通过硬编码的形式手动控制事务的提交和回滚。
-
-声明式事务：只需告诉Spring哪个方法是事务方法即可。
-
-**Spring事务异常**
-
-运行时异常：可以不用处理，默认都回滚。
-
-编译时异常：要么try-catch，要么thows，默认不回滚。
-
-**事务传播行为**
-
-REQUIRED: 如当前事务存在，方法将在该事务中运行，否则开一个新事务。
-
-REQUIRED_NEW: 开一个新事务。
-
-SUPPORTS: 如当前事务存在，方法将在该事务中运行，否则不开事务。
-
-NOT_SUPPORTED: 运行在事务中将被挂起。
-
-MANDATORY: 不在事务中运行则抛异常。
-
-NEVER: 在事务中运行则抛异常。
-
-NESTED: 嵌套在事务中运行
-
-### Spring IOC 容器 Bean的创建流程
+#### Spring Bean 创建流程
 
 ```
 refresh();
@@ -273,53 +334,297 @@ BeanFactory：负责创建bean实例，容器里保存的所有单例Bean其实�
 
 ApplicationContext：BeanFactory的子接口，基于BeanFactory创建的对象之上完成容器的功能实现
 
-### Spring 一个Bean的装配过程
+**图解**
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201227151217953.png)
+
+#### Spring Bean 装配过程
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2020121916571615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-### 1.1 概念
+#### Spring Bean 生命周期回调
 
-Spring 通过一个配置文件描述 Bean 及 Bean 之间的依赖关系，利用 Java 语言的反射功能实例化Bean 并建立 Bean 之间的依赖关系。 Spring 的 IoC 容器在完成这些底层工作的基础上，还提供了 Bean 实例缓存、生命周期管理、 Bean 实例代理、事件发布、资源装载等高级服务。
+> 只有单实例Bean才会被容器管理，多实例Bean不会被容器管理
 
-### 1.3 Spring有多少种IOC容器
+调用顺序
 
-1. BeanFactory: 一个包含bean集合的工厂类，在客户端要求时实例化Bean
-2. ApplicationContext：拓展了BeanFactory提供了一些额外的功能
-   1. FileSystemXmlApplicationContext：从Xml文件中加载beans定义，Xml Bean配置文件的全路径名必须提供它的构造函数
-   2. ClassPathXmlApplicationContext：从Xml文件中加载beans定义，这个容器将在classpath中找bean配置
-   3. WebXmlApplicationContext：加载一个Xml文件，此文件定义了一个Web应用的所有Bean
+- 初始化：对象创建完成，并赋值好，调用初始化方法
+- 销毁：容器关闭时
 
-### 1.5 Spring Bean 生命周期
+控制 Bean 生命周期行为的三个选项：
 
-### 1.6 Spring Bean 生命周期方法
+- @PostConstruct 和@PreDestroy 注解（推荐）
 
-1. setup() 容器加载bean的时候调用，重载方法 init-method，注解 @PostConstruct
-2. teardown() 在容器卸载bean的时候调用，重载方法 destroy-method，注解 @PreDestroy
+```java
+public class DemoBean {
 
-### 1.7 Spring 事务
+    @PostConstruct
+    public void init() {
+        // init method
+    }
 
-Spring事务类型
+    @PreDestroy
+    public void destory() {
+        // destory method
+    }
+}
+```
 
-1. 编程式事务管理
-2. 声明式事务
+- 自定义 init() 和 destroy() 方法
 
-### 1.8 Spring容器高层视图
+```java
+@Bean(initMethod = "init", destroyMethod = "destroy")
+public User user(){
+	return new User();
+}
+```
 
-Spring 启动时读取应用程序提供的 Bean 配置信息，并在 Spring 容器中生成一份相应的 Bean 配置注册表，然后根据这张注册表实例化 Bean，装配好 Bean 之间的依赖关系，为上层应用提供准备就绪的运行环境。其中 Bean 缓存池为 HashMap 实现。
+- 实现InitializingBean和DisposableBean接口
 
-![image-20201214191154399](/assets/img/Spring容器高层视图.png)
+```java
+public class DemoBean implements InitializingBean, DisposableBean {
 
-### 1.9 Spring 循环依赖
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // init method
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        // destroy method
+    }
+}
+```
+
+**BeanPostProcessor：Bean的后置处理器**
+
+Spring底层对BeanPostProcessor的使用：Bean赋值，组件的注入，生命周期注解
+
+- postProcessBeforeInitialization：在初始化（例如 @PostConstruct）之前工作
+- postProcessAfterInitialization：在初始化之后工作
+
+```java
+public class MyBeanPostProcessor implements BeanPostProcessor {
+
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("postProcessBeforeInitialization");
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("postProcessAfterInitialization");
+        return bean;
+    }
+}
+```
+
+### Spring Bean 属性赋值
+
+@Value
+
+1. 基本数值
+2. SPEL表达式：#{}
+3. 取出配置文件的值：${} 
+
+配合 `@PropertySource` 使用
+
+```java
+@Data
+public class User {
+    @Value("${user.nick.name}")
+    private String nickname;
+    private Integer age;
+}
+```
+
+```java
+@Configuration
+@PropertySource(value = "classpath:user.properties")
+public class SpringConfig {
+    @Bean
+    public User user(){
+        return new User();
+    }
+}
+```
+
+user.properties
+
+```properties
+user.nick.name=keith
+```
+
+### Spring Bean 自动装配
+
+1. @Autowired 根据类型注入，找不到再根据名称注入
+
+2. @Qualifier 根据名称注入，@Primary 根据类型优先注入当前Bean
+
+3. @Resource 根据名称注入，找不到再根据类型注入
+
+4. 构造方法注入：默认加载IOC容器中的组件，容器启动会调用无参构造器创建对象，再进行初始化赋值等操作
+
+后置处理器 `AutowiredAnnotationBeanPostProcessor` 用于解析自动装配
+
+### Spring Bean Post Processor
+
+1. BeanPostPorcessor：Bean后置处理器，Bean创建对象初始化前后进行拦截工作
+
+2. BeanFactoryPostProcessor：BeanFactory后置处理器，
+
+   BeanFactory标准初始化所有Bean定义已经保存到加载到BeanFactory，但是Bean实例还未创建
+
+   原理：IOC容器加载时调用 refresh() -> invokeBeanFactoryPostProcessors()调用所有的Processor
+
+   实现 `BeanFactoryPostProcessor` 接口即可拿到容器的BeanFactory
+
+```java
+@Component
+public class MyBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        System.out.println("My Bean Factory");
+    }
+}
+```
+
+3. BeanDefinitionRegistry：在所有Bean将要被加载，而Bean实例还未创建
+
+```java
+@Component
+public class MyBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
+
+    @Override
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+        // 该方法后执行
+        System.out.println("My Registry");
+    }
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        // 该方法先执行
+        System.out.println("My Factory");
+    }
+}
+```
+
+## Spring Profile
+
+指定组件在哪个环境的情况下才能注册到容器中，不指定任何环境都能注册
+
+```java
+@Configuration
+@PropertySource(value = "classpath:user.properties")
+public class SpringConfig {
+
+    @Bean
+    @Profile("test")
+    public User userTest(){
+        System.out.println("This is test environment");
+        return new User();
+    }
+
+    @Bean
+    @Profile("prod")
+    public User userProd(){
+        System.out.println("This is prod environment");
+        return new User();
+    }
+}
+```
+
+在 VM option 中加入以下参数表示目前的环境为test
+
+```properties
+-Dspring.profiles.active=test
+```
+
+## Spring 事件监听器
+
+ApplicationListener：监听容器中的事件，事件驱动模型开发。
+
+1. 写一个监听器（实现 `ApplicationListener`）来监听某个事件（ `ApplicationEvent` 及其子类）
+
+2. 将监听器加入容器中
+
+3. 只要容器中有相关事件发布，我们就能监听到这个事件
+
+   例：ContextRefreshedEvent：容器刷新完成（所有Bean都完全创建）会发布这个事件
+
+4. 发布一个事件 applicationContext.publishEvent()
+
+**实现 `ApplicationListener` 接口实现**
+
+```java
+/* 事件对象 */
+public class MyApplicationEvent extends ApplicationEvent {
+
+    public MyApplicationEvent(Object source) {
+        super(source);
+        System.out.println("发送事件:" + super.getTimestamp());
+    }
+}
+
+/* 事件监听器 */
+@Component
+public class MyApplicationListener implements ApplicationListener<MyApplicationEvent> {
+
+    /**
+     * 当容器中发布事件 MyApplicationEvent 以后，方法触发
+     */
+    @Override
+    public void onApplicationEvent(MyApplicationEvent event) {
+        System.out.println("接收事件:" + event.getTimestamp());
+    }
+}
+
+/* 发布事件 */
+@SpringBootTest
+public class SpringDemoApplicationTests implements ApplicationContextAware {
+
+    private static ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Test
+    public void contextLoads() {
+        applicationContext.publishEvent(new MyApplicationEvent(this));
+    }
+}
+```
+
+**使用注解 `@EventListener` 实现**
+
+可以使用该注解实现与上面 `MyApplicationListener` 一样的效果
+
+```java
+@Service
+public class MyService {
+
+    @EventListener
+    public void listen(MyApplicationEvent event){
+        System.out.println("接收事件:" + event.getTimestamp());
+    }
+}
+```
+
+## Spring 循环依赖
 
 循环依赖异常：BeanCurrentlyInCreationException
 
 循环依赖指的是 默认的单例Bean中，属性互相引用的场景。在Spring中如果使用构造方法注入，或是实例化Bean的时候指定Scope为prototype等情况，就会可能出现循环依赖的问题。
 
-Spring容器内部是通过3级缓存来解决循环依赖 -- DefaultSingletonBeanRegistry
+Spring容器内部是通过3级缓存来解决循环依赖 -- `DefaultSingletonBeanRegistry`
 
 一级缓存（singletonObjects）：存放已经经历了完整生命周期的Bean对象
 
-二级缓存（earlySingtonObjects）：存放早期暴露出来的Bean对象（Bean的生命周期未结束）
+二级缓存（earlySingtonObjects）：存放早期暴露出来的Bean对象（Bean的属性还未赋值）
 
 三级缓存（singletonFacoties）：存放可以生成Bean的工厂
 
@@ -333,11 +638,58 @@ Spring容器内部是通过3级缓存来解决循环依赖 -- DefaultSingletonBe
 
 总结：Spring解决循环依赖依靠的是Bean的"中间态"的概念，"中间态"指的是已经实例化但还没初始化的状态。
 
-### 使用函数式风格创建Bean
+**源码说明**
 
 ```java
-GenericApplicationContext context = new GenericApplicationContext();
-context.refresh();
-context.registerBean("user", User.class, User::new);
-User user = (User) context.getBean("user");
+protected void addSingleton(String beanName, Object singletonObject) {
+    synchronized (this.singletonObjects) {
+        // 加入到单例缓存池中
+        this.singletonObjects.put(beanName, singletonObject);
+        // 从三级缓存中移除（针对不处理循环依赖的Bean）
+        this.singletonFactories.remove(beanName);
+        // 从二级缓存中移除（针对循环依赖的Bean）
+        this.earlySingletonObjects.remove(beanName);
+        // 用来记录已经处理的Bean
+        this.registeredSingletons.add(beanName);
+    }
+}
 ```
+
+## Spring IOC 附录
+
+**@Conditional：根据条件加载Bean**
+
+```java
+@Bean
+@Conditional(MyCondition.class)
+public User user(){
+    return new User();
+}
+```
+
+```java
+public class MyCondition implements Condition {
+    @Override
+    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        // 做一些判断逻辑，true表示加载bean，false表示不加载bean
+        return true;
+    }
+}
+```
+
+**Filter和Interceptor的区别**
+
+- Filter是基于函数回调的，而Interceptor则是基于Java反射的。
+- Filter依赖于Servlet容器，而Interceptor不依赖于Servlet容器。
+- Filter对几乎所有的请求起作用，而Interceptor只能对action请求起作用。
+- Interceptor可以访问Action的上下文，值栈里的对象，而Filter不能。
+- 在action的生命周期里，Interceptor可以被多次调用，而Filter只能在容器初始化时调用一次，
+
+**Filter生命周期方法**
+
+1. init : 服务器启动后创建Filter对象，然后调用init方法，只执行一次
+2. doFilter : 每一次请求被拦截资源时，会执行，执行多次
+3. destroy : 在服务器关闭后，Filter对象被销毁，若服务器正常关闭会执行destroy方法用于释放资源
+
+配置拦截路径 `@WebFilter("/*")`
+

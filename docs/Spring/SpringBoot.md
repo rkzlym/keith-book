@@ -1,9 +1,67 @@
 # Spring Boot
 
-JavaConfig：提供了配置Spring IOC的纯Java方法，有利于避免使用Xml配置。
+```java
+@Configuration(proxyBeanMethods = false)
+proxyBeanMethods: true表示该配置类被代理，false表示该配置类不被代理
+代理类中返回Bean是单例的，普通类中返回的Bean不是单例的
+```
 
-Spring Boot Actuator：公开了一组可直接作为Http Url访问的REST端点来检查状态。
+```java
+@ImportResource("classpath:beans.xml")	// 导入资源文件
+```
 
-Spring Profiles：允许用户根据配置文件（dev, test, prod等）来注册Bean，因此在应用程序在不同环境运行的时候可以加载不同的bean
+## 配置绑定
 
-Spring Boot Batch：提供可重用函数，包括日志跟踪，事务管理，作业处理统计信息。
+> 只有在容器中的组件，才能使用 @ConfigurationProperties
+
+使用配置绑定读取配置文件 `application.properties` 中的属性有以下2种方式
+
+```properties
+user.nickname=张三
+user.age=18
+```
+
+**@ConfigurationProperties + @Component**
+
+```java
+@Data
+@Component
+@ConfigurationProperties(prefix = "user")
+public class User {
+    private String nickname;
+
+    private Integer age;
+}
+```
+
+**@ConfigurationProperties + @EnableConfigurationProperties(User.class)**
+
+```java
+@Data
+@ConfigurationProperties(prefix = "user")
+public class User {
+    private String nickname;
+
+    private Integer age;
+}
+```
+
+```java
+@Configuration
+@EnableConfigurationProperties(User.class)
+public class SpringConfig {
+
+}
+```
+
+## 自动配置原理
+
+自动包规则原理：
+
+```java
+// 导入Registrar类
+@Import(AutoConfigurationPackages.Registrar.class)
+// 获取到标注类上的包名，将包名下的所有组件注册进容器
+register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
+```
+
