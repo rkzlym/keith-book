@@ -101,6 +101,22 @@ Html
 </html>
 ```
 
+## Spring MVC 支持参数
+
+1. 注解
+
+```
+@PathVariable		路径变量
+@RequestHeader		获取请求头
+@RequestParam		获取请求参数
+@CookieValue		获取Cookie值
+@RequestAttribute	获取request域属性
+@RequestBody		获取请求体
+@MatrixVariable		矩阵变量
+```
+
+
+
 ## Spring MVC 九大组件
 
 ```java
