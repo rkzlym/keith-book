@@ -140,7 +140,7 @@ public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException 
 
 3. 开启事务 `@EnableTransactionManagement`
 
-```
+```java
 @Configuration
 @EnableTransactionManagement
 public class JdbcConfig {

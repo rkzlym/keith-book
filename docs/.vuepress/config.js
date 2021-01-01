@@ -16,7 +16,8 @@ module.exports = {
             { text: '数据存储', link: '/数据存储/' },
             { text: '设计模式', link: '/设计模式/' },
             { text: '数据结构', link: '/数据结构/' },
-            { text: 'Linux', link: '/Linux/' },
+            { text: '运维', link: '/运维/' },
+            { text: '前端', link: '/前端/' },
         ],
         sidebar: {
             '/Java/': [
@@ -149,18 +150,31 @@ module.exports = {
                     ]
                 }
             ],
-            '/Linux/': [
+            '/运维/': [
                 {
                     title: 'Docker',     
-                    path: '/Linux/',
+                    path: '/运维/',
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
-                        '/Linux/Docker基本操作',
-                        '/Linux/Docker安装Redis',
-                        '/Linux/Docker安装Nginx',
-                        '/Linux/Docker安装Mysql',
-                        '/Linux/Docker安装Jenkins',
+                        '/运维/Docker基本操作',
+                        '/运维/Docker安装Redis',
+                        '/运维/Docker安装Nginx',
+                        '/运维/Docker安装Mysql',
+                        '/运维/Docker安装Jenkins',
+                        '/运维/Docker安装RabbitMq',
+                    ]
+                }
+            ],
+            '/前端/': [
+                {
+                    title: '前端',     
+                    path: '/前端/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/前端/WebPack',
+                        '/前端/Vue脚手架',
                     ]
                 }
             ]

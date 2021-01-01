@@ -44,3 +44,5 @@ Spring Cloud Ribbon是基于Netflix Ribbon实现的一套<font color=red>客户�
 **服务降级**
 
 当某个服务熔断后，服务器将不再被调用。此时客户端可以自己准备一个本地的fallback回调，返回一个缺省值。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201228100709357.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
