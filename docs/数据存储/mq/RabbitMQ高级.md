@@ -42,7 +42,7 @@
 amqpTemplate.convertAndSend("my.dir.exchange", "my.ttl.dlx", "Hello World");
 ```
 
-![image-20210102191807771](../../.vuepress/public/assets/img/RabbitMQ高级/image-20210102191807771.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210103224630359.png)
 
 ### 单个消息配置过期时间
 
@@ -117,7 +117,7 @@ DLX也是一个正常的交换机，和一般的交换机没什么区别，它�
 amqpTemplate.convertAndSend("my.dir.exchange", "my.ttl.dlx", "Hello World");
 ```
 
-![image-20210102205119453](../../.vuepress/public/assets/img/RabbitMQ高级/image-20210102205119453.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210103224657166.png)
 
 ## 延迟队列
 

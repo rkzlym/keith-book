@@ -12,7 +12,7 @@
 
 ## RabbitMQ工作模型
 
-![image-20210102133341855](..\..\.vuepress\public\assets\img\rabbitMq\image-20210102133341855.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210103225243278.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 工作流程：
 
@@ -32,13 +32,13 @@ Queue：队列，用于存储消息。
 
 点对点消息模型，消息中的路由键（routing key）如果和Binding中的绑定键（binding key）一致，交换机就将消息发送到对应的队列中。它是完全匹配、单播的模式。
 
-![image-20210102134838030](..\..\.vuepress\public\assets\img\rabbitMq\image-20210102134838030.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2021010322530492.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### 2. Fanout
 
 每个发到fanout类型交换机的消息都会分到所有绑定的队列上去，fanout不处理路由键，它转发消息是最快的，广播模式。
 
-![image-20210102134923655](..\..\.vuepress\public\assets\img\rabbitMq\image-20210102134923655.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210103225322591.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### 3.  Topic
 
@@ -46,7 +46,7 @@ Queue：队列，用于存储消息。
 - \# 匹配0个或多个单词
 - \* 匹配一个单词
 
-![image-20210102135153446](../../.vuepress/public/assets/img/rabbitMq/image-20210102135153446.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210103225338676.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ## SpringBoot 使用RabbitMQ
 
