@@ -416,3 +416,17 @@ class Stack{
 
 8. 依次弹出s2中的元素并输出，结果的逆序即为中缀表达式对应的后缀表达式
 
+## 递归
+
+通过递归解决阶乘问题
+
+```java
+public static int factorial(int n){
+    if (n == 1){
+        return 1;
+    } else {
+        return factorial(n - 1) * n;
+    }
+}
+```
+
