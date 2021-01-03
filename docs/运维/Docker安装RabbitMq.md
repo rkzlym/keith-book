@@ -3,7 +3,7 @@
 ## 1. 拉取镜像
 
 ```powershell
-docker pull rabbitmq
+docker pull rabbitmq:3.8.2-management
 ```
 
 ## 2. 创建RabbitMq镜像实例
@@ -12,19 +12,13 @@ docker pull rabbitmq
 docker run -d --name rabbitmq \
 --hostname myRabbit \
 -p 5672:5672 -p 15672:15672 \
--v /docker/rabbitmq/data:/var/lib/rabbitmq \
--e RABBITMQ_DEFAULT_VHOST=my_vhost  \
--e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin \
-rabbitmq
+-v /docker/rabbitmq/data:/usr/local/rabbitmq-docker \
+-e RABBITMQ_DEFAULT_USER=admin \
+-e RABBITMQ_DEFAULT_PASS=admin \
+rabbitmq:3.8.2-management
 ```
 
-## 3. 启动RabbitMq管理控制台
-
-```powershell
-docker exec -it rabbitmq rabbitmq-plugins enable rabbitmq_management
-```
-
-## 4. 测试
+## 3. 测试
 
 输入 ip:15672 访问
 

@@ -89,6 +89,17 @@ module.exports = {
                         '/数据存储/redis/redis哨兵模式',
                         '/数据存储/redis/redis主从复制',
                     ],
+                },
+                {
+                    title: 'mq',
+                    path: '/数据存储/mq/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/数据存储/mq/RabbitMQ基础',
+                        '/数据存储/mq/RabbitMQ高级',
+                        '/数据存储/mq/RabbitMQ应用',
+                    ],
                 }
             ],
             '/设计模式/': [
