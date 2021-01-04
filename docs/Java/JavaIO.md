@@ -228,7 +228,11 @@ public void copyTxtFile(){
     }
 }
 ```
-#### IO / NIO / AIO / Netty
+## BIO
+
+同步阻塞，等待读写命令时，线程一直处于等待状态，即每次连接占用一个线程。
+
+## IO / NIO / AIO / Netty
 
 BIO：同步阻塞，等待读写命令时，线程一直处于等待状态
 
