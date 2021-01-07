@@ -18,6 +18,7 @@ module.exports = {
             { text: '数据结构', link: '/数据结构/' },
             { text: '运维', link: '/运维/' },
             { text: '前端', link: '/前端/' },
+            { text: '其它', link: '/其它/' },
         ],
         sidebar: {
             '/Java/': [
@@ -99,6 +100,15 @@ module.exports = {
                         '/数据存储/mq/RabbitMQ基础',
                         '/数据存储/mq/RabbitMQ高级',
                         '/数据存储/mq/RabbitMQ应用',
+                    ],
+                },
+                {
+                    title: 'elasticsearch',
+                    path: '/数据存储/elasticsearch/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+
                     ],
                 }
             ],
@@ -186,6 +196,19 @@ module.exports = {
                     children: [
                         '/前端/WebPack',
                         '/前端/Vue脚手架',
+                    ]
+                }
+            ],
+            '/其它/': [
+                {
+                    title: '其它',     
+                    path: '/其它/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/其它/计算机网络',
+                        '/其它/分布式',
+                        '/其它/线上问题排查技术',
                     ]
                 }
             ]

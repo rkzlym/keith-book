@@ -18,7 +18,7 @@ IO流体系
 3. 读写的操作
 4. 资源的关闭
 
-#### 字符流操作文件(文本文件)
+### 字符流操作文件(文本文件)
 
 1. 读文件
 
@@ -111,7 +111,7 @@ public void copyFile() {
 }
 ```
 
-##### 字节流操作文件(图片、视频等)
+### 字节流操作文件(图片、视频等)
 
 复制图片
 
@@ -148,7 +148,7 @@ public void copyFile(){
 }
 ```
 
-#### 缓冲流的使用
+### 缓冲流的使用
 
 作用：提升流的读取、写入速度。
 复制图片文件
@@ -228,9 +228,29 @@ public void copyTxtFile(){
     }
 }
 ```
-## BIO
+## BIO（同步IO）
 
 同步阻塞，等待读写命令时，线程一直处于等待状态，即每次连接占用一个线程。
+
+原理：客户端进来时accept阻塞，当有新的客户端进来时需要开新的线程来处理。
+
+BIO的弊端：由于是阻塞的，所以需要抛出许多线程来处理新进来的请求，比较浪费CPU资源，因为线程太多了。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210106185754270.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+## NIO（同步IO）
+
+同步非阻塞，等待读写命令时，线程可以去做别的事，使用selector轮询，遇到感兴趣的就处理(ACCEPT)
+
+一个线程就可以完成一个服务端对应多个客户端。
+
+原理：客户端进来时accpect不阻塞，返回-1或者客户端文件描述符，把每个进来的客户端放入List中，对List中的客户端进行遍历，即问每一个客户端是否有数据，返回0，-1或者是具体的数据，不会阻塞。
+
+相对于BIO优势：CPU不用频繁的切换线程，节省了CPU性能
+
+NIO的弊端：假设有1万个Clinet连接，只有一个Clinet返回了数据，但是需要遍历1万个客户端，即有大量CPU资源被浪费。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210106192926582.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ## IO / NIO / AIO / Netty
 

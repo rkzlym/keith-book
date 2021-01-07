@@ -1,5 +1,31 @@
 # Java 多线程
 
+## 线程的概念
+
+一个程序的不同分支
+
+```java
+// 顺序执行
+new T1().run();
+// 并行执行
+new T1().start();
+// 睡眠500毫秒
+Thead.sleep(500);
+// 让出线程,使线程进入等待队列，但也有可能再次被Cpu拿出来执行
+Thread.yield();
+// t2运行中调用t1.join()即执行t1线程，保证t1结束以后t2才能继续运行
+Thread t1 = new Thread(() -> {
+    System.out.println("t1");
+}, "t1");
+new Thread(() -> {
+    try { t1.join(); } catch (InterruptedException e) { e.printStackTrace(); }
+}, "t2");
+```
+
+线程状态迁移图
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210107211056470.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
 ## 1. 线程的创建方式
 
 1. 继承Thead类
@@ -251,3 +277,19 @@ public class AtomicReferenceDemo {
 }
 ```
 
+## 锁
+
+程序中如果出现异常，默认情况下锁会被释放
+
+锁升级：
+
+```
+sync(obj)
+markword 记录线程ID
+如果线程争用，升级为自旋锁
+自旋10次以后，升为重量级锁 - 去OS申请锁资源
+```
+
+什么时候用自旋什么时候用重量级锁？
+
+执行时间长，线程多用重量级锁，否则用自旋。
