@@ -1,26 +1,130 @@
 # Java 锁
 
-## 各类锁
+## JMM (Java Memory Model)
 
-**公平锁**：每个线程获取锁时先查看此锁维护的等待队列，为空就占有锁，否则就加入等待队列。
+是一组规范，<font color=red>可见性、原子性、有序性</font>，定义了程序中各个变量的访问方式。
 
-**非公平锁**：直接尝试占有锁，若失败，再采用类似公平锁的方式。
+**解释**：线程创建时JVM会为其创建工作内存（线程私有），JMM规定所有变量存储在主内存（共享），但线程必须在工作内存中操作变量。具体流程：<font color=red>拷贝->操作->写回</font>。各个工作内存存储主内存变量的复印件，不同线程无法互相访问，线程间通信必须通过主内存。
 
-**可重入锁（递归锁）**：在同一个线程的外层方法获取锁的时候，进入内层方法会自动获取锁。避免死锁。
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201217232911616.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+**JMM关于同步的规定**：
+
+1. 线程解锁前，必须把共享变量的值刷新回主内存。
+2. 线程加锁前，必须读取主内存的最新值到工作内存。
+3. 加锁解锁是同一把锁。
+
+### volatile
+
+**作用**：保证可见性，禁止指令重排
+
+**原理**：缓存一致性协议。JMM模型里有8个指令完成数据的读写，通过其中load和store指令相互组成的4个内存屏障实现禁止指令重排序。
+
+volatile修饰的变量在进行写操作的时候会多出一个lock前缀的汇编指令，作用是：
+
+- 将当前处理器缓存行的数据会写回到系统内存。
+- 这个写回内存的操作会引起在其他CPU里缓存了该内存地址的数据无效。
+
+**单例模式中的DCL为什么要加volatile？**
+
+由于指令重排，对象在半初始化状态的时候就赋值给这个变量了，即instance已经不再是null，第二个线程就直接拿来使用这个半初始化状态的对象。
+
+**volatile引用对象**
+
+如果volatile修饰的是一个引用对象，那么引用对象内部的属性发生改变volatile是无法观察到的。
+
+### CAS (Compare And Set)
+
+**作用**：线程的期望值和物理内存真实值一样则修改，否则需要重新获得主物理内存的真实值，这个过程是<font color=red>原子</font>的。
+
+**原理**：Unsafe、自旋锁、乐观锁
+
+- Unsafe：基于Unsafe内部native方法可以直接操作内存。
+
+- 自旋锁：循环判断工作内存与主内存的值是否相等，如相等则返回。
+
+**缺点**：循环时间长开销大、只能保证一个共享变量的原子操作、ABA问题。
+
+**为什么CAS要比synchronized快**
+
+synchronized需要进行上下文切换，每一次线程进出Cpu就是一次上下文切换，而这一次切换大概需要3-5微秒，而Cpu执行一条执行大概只需要0.6纳秒，而CAS没有上下文切换的过程，那么效率就高。
+
+**ABA问题**
+
+CAS只会判断最终的对象是否与期望的一致，但不会判断在这期间对象是否有改变，当这期间对象发生了改变，就会产生ABA问题，即虽然判断对象是同一个，但是其中的属性发生了改变。
+
+解决方案：加版本号。
+
+**并发累加Long的三种方式**
+
+1. 加锁
+2. AtomicLong：CAS
+3. LongAdder：分段锁，线程数量特别多的时候比Atomic更有优势
+
+**AtomicInteger**
+
+```java
+AtomicInteger atomicInteger = new AtomicInteger(5);
+System.out.println(atomicInteger.compareAndSet(5, 2019) + "\t current data:" + atomicInteger.get());
+System.out.println(atomicInteger.compareAndSet(5, 1024) + "\t current data:" + atomicInteger.get());
+atomicInteger.getAndIncrement();
+```
+
+**AtomicReference**
+
+```java
+public class AtomicReferenceDemo {
+    public static void main(String[] args) {
+        User z3 = new User("z3", 22);
+        User l4 = new User("l4", 25);
+
+        AtomicReference<User> atomicReference = new AtomicReference<>();
+        atomicReference.set(z3);
+        System.out.println(atomicReference.compareAndSet(z3, l4) + "\t" + atomicReference.get().toString());
+        System.out.println(atomicReference.compareAndSet(z3, l4) + "\t" + atomicReference.get().toString());
+    }
+
+    @Getter
+    @ToString
+    @AllArgsConstructor
+    private static class User{
+        String username;
+        int age;
+    }
+}
+```
+
+## 锁的分类
+
+### 按性质分类
+
+**公平锁**：多个线程按照申请锁的顺序来获取锁。
+
+**非公平锁**：多个线程获取锁的顺序并不是按照申请锁的顺序。
+
+**乐观锁**：采用尝试更新，不断重新的方式更新数据。
+
+**悲观锁**：对于同一个数据的并发操作，悲观锁采取加锁的形式。
+
+**独享锁**：该锁一次只能被一个线程所持有。
+
+**共享锁**：该锁可被多个线程所持有。
+
+**互斥锁**：写锁。
+
+**读写锁**：可以多人读，但只允许一人写。
+
+**可重入锁**：在同一个线程的外层方法获取锁的时候，进入内层方法会自动获取锁。避免死锁。
 
 **对象锁**：将sychronized放在普通同步方法中，sychronized同步监视器为普通对象
 
 **全局锁**：将sychronized放在静态同步方法中，sychronized同步监视器为类对象
 
-**自旋锁**：尝试获取锁的线程不会立即阻塞，而是采用循环的方式去尝试获取锁。
+### 按照设计分类
+
+**自旋锁**：采用循环的方式去尝试获取锁。
 
 **自适应自旋锁**：循环多次发现等待时间过长，切换为阻塞状态。
-
-**独占锁**：该锁一次只能被一个线程所占有。
-
-**共享锁**：该锁可以被多个线程锁持有。
-
-**读写锁**：可以多人读，但只允许一人写。
 
 **锁粗化**：如一个方法内加了多个锁，JVM认为没必要，于是将其合并为一个锁。
 
@@ -34,15 +138,37 @@
 
 **分段锁**：将数据分为多段，每次只给一段加锁。
 
-**CountDownLatch**：被减少到零之后才放行，否则阻塞等待。
+## 锁概念
 
-**CyclicBarrier**：先到的被阻塞，直到达到指定值时释放
+### JDK8锁升级
 
-**Semaphore**：多共享资源的互斥使用，并发线程数的控制。
+```
+sync(obj)
+1.无锁
+2.偏向锁 markword 记录线程ID
+3.如果线程争用，升级为自旋锁
+4.自旋10次以后，升为重量级锁 - 去OS申请锁资源
+```
 
-**AQS (AbstractQueuedSynchronizer)**：基于先进先出的等待队列为实现锁和同步提供一个框架
+什么时候用自旋什么时候用重量级锁？
 
-## Sychronized 和 Lock
+执行时间长，线程多用重量级锁，否则用自旋。
+
+### 锁发生改变
+
+1. 程序中如果出现异常，默认情况下锁会被释放
+
+2. 如果锁对象发生改变，锁就会失效。
+
+   解决方案： 锁对象加 `final`
+
+```java
+final Object obj = new Object()
+```
+
+## JUC和同步锁锁
+
+### Sychronized and Lock
 
 1. Sychronized：非公平，悲观，独享，互斥，可重入的重量级
 2. Lock
@@ -76,50 +202,115 @@ if (lock.tryLock(3L, TimeUnit.SECONDS)){	// 3秒超时
 }
 ```
 
-## 锁分类
+### ReadWriteLock - StampedLock
 
-### 按性质分类
+ReadLock：读锁，读的时候其它读线程依然可以进入
 
-公平锁：多个线程按照申请锁的顺序来获取锁。
-非公平锁：多个线程获取锁的顺序并不是按照申请锁的顺序。
+WriteLock，写锁，写的时候不允许其它线程进入
 
-乐观锁：采用尝试更新，不断重新的方式更新数据。
-悲观锁：对于同一个数据的并发操作，悲观锁采取加锁的形式。
+```java
+static final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+static final Lock readLock = readWriteLock.readLock();
+static final Lock writeLock = readWriteLock.writeLock();
+```
 
-独享锁：该锁一次只能被一个线程所持有。
-共享锁：该锁可被多个线程所持有。
+### CountDownLatch 
 
-互斥锁：写锁。
-读写锁：读锁。
+被减少到零之后才放行，否则阻塞等待。
 
-可重入锁：同一个线程在外层方法获取锁的时候，在进入内层加锁方法会自动获取锁。
+定义一个CountDownLatch，有初始值，使用await阻塞线程，当减少到0时消除阻塞，类似于join但是更灵活
 
-### 按照设计分类
+```java
+CountDownLatch countDownLatch = new CountDownLatch(6);
+for(int i = 1; i <= 6; i++){
+    new Thread(() -> {
+        countDownLatch.countDown();
+    }, String.valueOf(i)).start();
+}
+countDownLatch.await();
+System.out.println("解除门栓");
+```
 
-自旋锁：采用循环的方式去尝试获取锁。
-自适应自旋锁：循环多次发现等待时间过长，切换为阻塞状态。
+### CyclicBarrier
 
-锁粗化：如一个方法内加了多个锁，JVM认为没必要，于是将其合并为一个锁。
-锁消除：JVM认为有些代码块无需加锁，于是删除了那个锁。
+先到的被阻塞，直到达到指定值时释放
 
-偏向锁：一段同步代码一直被一个线程访问，该线程会自动获得锁。
-轻量级锁：当锁是偏向锁的时候，被另外线程访问，其它线程会通过自旋的形式尝试获取锁。
-重量级锁：当锁是轻量级锁的时候，另一个线程自旋到一定次数未得到锁则进入阻塞。
+await到指定个线程之后，放行
 
-分段锁：将数据分为多段，每次只给一段加锁。
+场景：某线程需等待其它线程执行完后才能执行
+
+```java
+CyclicBarrier cyclicBarrier = new CyclicBarrier(7, () -> System.out.println("释放通行"));
+for(int i = 1; i <= 7; i++){
+    final int tempInt = i;
+    new Thread(() -> {
+        System.out.println(Thread.currentThread().getName() + "\t 线程已到");
+        try {
+            cyclicBarrier.await();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }, String.valueOf(i)).start();
+}
+```
+
+### Phaser
+
+CyclicBarrier升级版，使用arriveAndAwaitAdvance到达一个阶段的时候等待其它线程完成再向后执行
+
+### Semaphore
+
+多共享资源的互斥使用，并发线程数的控制。
+
+```java
+// 在多个线程并发访问时，最多只有3个线程可以同时运行
+// acquire:总量-1
+// release:总量+1
+Semaphore semaphore = new Semaphore(3);
+new Thread(() -> {
+    try {
+        semaphore.acquire();
+    } finally {
+        semaphore.release();
+    }
+}).start();
+```
+
+### Exchanger
+
+两个线程间交换数据
+
+```java
+// 执行exchange()时阻塞线程
+Exchanger<String> exchanger = new Exchanger<>();
+new Thread(() -> {
+    exchanger.exchange("1");
+});
+new Thread(() -> {
+    exchanger.exchange("2");
+});
+```
 
 ## 线程等待和唤醒
 
 #### Object: wait, notify
 
 1. 都需要在同步代码块中执行(synchronized)
-
 2. 先wait再notify，等待中的线程才会被唤醒，否则无法唤醒
+3. notify是随机唤醒一个线程
+4. notify不释放锁，需要等待线程执行完或者线程中wait()才释放
+5. notifyAll将所有线程唤醒，去争抢锁，但抢到锁的依旧只有一个线程
 
 #### Condition: await, signal
 
 1. 都需要在同步代码块中执行
 2. 先await再signal，等待中的线程才会被唤醒，否则无法唤醒
+3. 可以精确的指定哪些线程被唤醒，即使用不同的condition加锁即可，condition的本质就是不同的等待队列
+
+```java
+Condition condition1 = lock.newCondition();
+Condition condition2 = lock.newCondition();
+```
 
 #### LockSupport: pack, unpack
 
@@ -138,13 +329,21 @@ if (lock.tryLock(3L, TimeUnit.SECONDS)){	// 3秒超时
 
 ## AQS (AbstractQueuedSynchronizer)
 
-概念：是用来构建锁或者其它同步组件的重量级基础框架及整个JUC体系的基石，通过内置的FIFO队列来完成资源获取线程的排队工作，并通过一个int类型变量表示持有锁的状态
+概念：是用来构建锁或者其它同步组件的抽象父类
 
 同步器：ReentrantLock, CountDownLatch, Semaphore等
 
 如果共享资源被占用，就需要一定的阻塞等待唤醒机制来保证锁的分配。这个机制主要用的是CLH队列的变体实现的，将暂时获取不到锁的线程加入到队列中，这个队列就是AQS的抽象表现。它将请求共享资源的线程封装成队列的节点（Node），通过CAS、自旋以及LockSupport.park()的方式，维护state变量的状态，使并发达到同步的控制效果。
 
-AQS总结：state变量 + CLH变种的双端队列，Node中存放的是线程
+**AQS总结：CAS + volatile state + 双端队列**
+
+CAS：在往队列末端加线程的时候使用的是CAS
+
+volatile：state变量用volatile修饰保证线程之间可见
+
+state：根据子类的具体实现来分配，如ReentrantLock加锁,是1，不加锁是0；CountDownLatch设置为5，state就是5
+
+双端队列：CLH变种的双端队列，Node中存放的是线程，
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201218203120948.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 

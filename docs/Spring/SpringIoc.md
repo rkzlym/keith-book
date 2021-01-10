@@ -1,3 +1,5 @@
+
+
 # Spring IOC
 
 ## Spring 容器
@@ -674,6 +676,17 @@ public class MyCondition implements Condition {
         // 做一些判断逻辑，true表示加载bean，false表示不加载bean
         return true;
     }
+}
+```
+
+**@DependsOn**
+
+```java
+// 创建B时会先去创建A
+@Bean
+@DependsOn("a")
+public B b(){
+    return new B();
 }
 ```
 
