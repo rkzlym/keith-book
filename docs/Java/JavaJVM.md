@@ -1,22 +1,45 @@
 # Java JVM
 
-### 1. 类加载器(ClassLoader)
+## JDK JRE JVM
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111205501151.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+## Java从编码到执行
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111203500781.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+## Class类文件解释
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220329956.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+## Class生命周期
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220751109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+### 1. 类加载器（ClassLoader）
 
 **类加载流程图：**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131191909464.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 **类加载器示意图：**
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131191931880.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220915818.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
 **ClassLoader**：负责加载class文件（class文件在文件开头有特定文件标识）
 
 **各个类加载器的作用**
 
 引导类加载器：加载JVM自身需要的类，使用C++实现，负责加载`%JAVA_HOME%/jre/lib.jar`核心类库。
+
 扩展类加载器：负责加载%JAVA_HOME%/lib/ext目录下的类。
+
 系统类加载器：负责加载系统类路径`java -classpath`或`-D java.class.path` 指定路径下的类库。
+
 自定义类加载器：Java.lang.ClassLoader的子类
 
-**双亲委派**：当一个类收到了类加载请求，他首先不会自己去加载这个类，而是把这个请求委派给父类去完成，每一层请求类都是如此。只有当父类加载器反馈自己无法完成这个请求的时候，子类加载器才会尝试自己去加载。
+**双亲委派**：JVM收到类加载请求，他会自底向上地去缓存中找这个类，找到了返回，没找到就把这个请求委派给父加载器（不是继承）去寻找，直到BootstrapClassLoader也没找到时，会自顶向下加载这个class，如果到最后还没加载成功，则会抛出异常 `ClassNotFoundException`
+
 作用：沙箱安全，不让自己定义的类去勿扰JDK出厂自带的类
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111223139570.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### 2. JVM内存模型
 
@@ -175,3 +198,4 @@ JVM一个线程的成本：1MB
 
 线程多了调度成本就高了，造成了CPU的浪费
 
+class被load到内存之后，class的二进制文件加载到内存里，与此同时生成了class类的对象，该对象指向了二进制文件。class对象存在metaspace
