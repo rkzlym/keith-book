@@ -1,30 +1,45 @@
 # mysql锁
 
 > Mysql有三种锁：表锁(偏读)、行锁(偏写)、页锁
-## 1. 查看锁命令
-### 1.1 查看锁
+## 锁概述
+
+不同的存储引擎支持 不同的锁机制
+
+MyISAM 和 MEMORY 存储引擎采用的是表级锁（table-level locking）
+
+InnoDB 存储引擎既支持行级锁（ row-level locking），也支持表级锁，默认情况下是采用行级锁
+
+- 表级锁： 开销小，加锁快；不会出现死锁(因为 MyISAM 会一次性获得 SQL 所需的全部锁)。锁定粒度大，发生锁冲突的概率最高，并发度最低。 
+
+- 行级锁： 开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高。 
+
+- 页锁：开销和加锁速度介于表锁和行锁之间；会出现死锁；锁定粒度介于表锁和行锁之间， 并发度一般。
+
+## 查看锁命令
+
+### 1. 查看锁
 
 ```sql
 show open tables;
 ```
 In_use为0表示没有被锁
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200201080542825.png)
-### 1.2 分析表锁定
+### 2. 分析表锁定
 ```sql
 show status like '%table%'
 ```
 - Table_locks_immediate：产生表级锁定的次数（锁的查询次数）。
 - Table_locks_waited：出现表级锁定争用而发生等待的次数，此值高说明存在严重表级锁争用情况。
-## 2. 表锁
-### 2.1 读锁（共享锁）
+## 表锁
+### 1. 读锁（共享锁）
 Session 1 为Table增加<font color=red>读锁</font>之后：
 - Session 1 只能读锁定表，不能读其他表，写锁定表<font color=red>报错</font>。
 - Session 2 可以读任何表，写锁定表<font color=red>阻塞</font>。
-### 2.2 写锁（独占锁）
+### 2. 写锁（独占锁）
 Session 1 为Table增加<font color=red>写锁</font>之后：
 - Session 1 可以做锁定表进行任何操作
 - Session 2 无法对锁定表进行任何操作
-### 2.3 相关命令
+### 3. 相关命令
 **加读锁**
 ```sql
 lock table 表名1 read, 表名2 read;
@@ -37,15 +52,15 @@ lock table 表名1 read, 表名2 read;
 ```sql
 unlock tables;
 ```
-## 3. 行锁
-### 3.1 开启事务即开启了行锁
+## 行锁
+### 1. 开启事务即开启了行锁
 提交事务之前，其它会话查询到的都是未提交的数据，如果更新了同一行，会被阻塞，直到这个事务被提交。
 ```sql
 set autocommit = 0;
 update dept set dname = '开发部2' where deptno = 1; 
 commit;
 ```
-### 3.2 手动上锁
+### 2. 手动上锁
 当查询deptno=1的数据的时候，加`for update`语句，此时其它会话修改这条记录就会被阻塞。
 ```sql
 select * from dept where deptno = 1 for update;

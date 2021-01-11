@@ -1,5 +1,9 @@
 # Java 集合
 
+## 集合继承关系
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2021010816224823.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
 ## List
 
 | 名称       | 特点                 | get(index) | add(E) | add(index, E) | remove(E) |
@@ -16,34 +20,39 @@
 4. 每次扩容是<font color=red>原长度的一半（取整）</font>：第一次扩到15，第二次22
 5. 扩容方式：Arrays.copyOf，默认把原数组复制到新数组
 6. 不是线程安全的
-7. 手写一个Demo证明ArrayList是线程不安全的
 
-```java
-public static void main(String[] args) {
-    List<String> list = new ArrayList<>();
-    for(int i = 0; i < 30; i++){
-        new Thread(() -> {
-            list.add(UUID.randomUUID().toString().substring(0, 8));
-            System.out.println(list);
-        }, String.valueOf(i)).start();
-    }
-}
-```
+### LinkedList
+
+1. 底层是双向链表
+2. 链表删除和增加快，查询和修改慢
+3. 实现了Queue接口，所以还提供了offer(), peek(), poll()等方法
+
+### CopyOnWriteArrayList
+
+写时加锁，复制一个新的数组，把新数组指向原来的数组
 
 ## Set
 
-| 名称          | 特点                         | add(E)   | remove(E) | contains(E) |
-| ------------- | ---------------------------- | -------- | --------- | ----------- |
-| HashSet       | 线程不安全，可存储null值     | O(1)     | O(1)      | O(1)        |
-| LinkedHashSet | 查询时有序 (存储还是无序)    | O(log n) | O(log n)  | O(log n)    |
-| TreeSet       | 可根据指定值排序(基于红黑树) | O(1)     | O(1)      | O(1)        |
+| 名称          | 特点                         | add(E)  | remove(E) | contains(E) |
+| ------------- | ---------------------------- | ------- | --------- | ----------- |
+| HashSet       | 线程不安全，可存储null值     | O(1)    | O(1)      | O(1)        |
+| LinkedHashSet | 查询时有序 (存储还是无序)    | O(logn) | O(logn)   | O(logn)     |
+| TreeSet       | 可根据指定值排序(基于红黑树) | O(1)    | O(1)      | O(1)        |
 
 ### HashSet
 
-1. 底层是Map，初始大小为16
+1. 底层是HashMap
 2. 添加过程
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209154216578.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+### LinkedHashSet
+
+底层是LinkedHashMap
+
+### TreeSet
+
+底层是TreeMap
 
 ## Map
 
@@ -63,7 +72,7 @@ public static void main(String[] args) {
 4. 添加过程
    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209154206861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## 集合类线程不安全
+## 线程安全集合
 
 > 异常：ConcurrentModificationException
 >
@@ -76,8 +85,6 @@ public static void main(String[] args) {
 ConcurrentSkipListMap、ConcurrentSkipListSet、ConcurrentLinkedQueue、LinkedBlockingQueue、
 
 ArrayBlockingQueue、PriorityBlockingQueue
-
-**CopyOnWriteArrayList 源码解析**：写时加锁，复制一个新的数组，把新数组指向原来的数组
 
 ## 阻塞队列
 
