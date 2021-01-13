@@ -8,6 +8,30 @@
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111203500781.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
+## 混合模式
+
+解释器：bytecode intepreter
+
+JIT：Just In-Time compiler
+
+
+
+混合使用解释器 + 热点代码编译
+
+起始阶段采用解释执行
+
+热点代码检测
+
+- 多次被调用的方法（方法计数器：监测方法执行频率）
+- 多次被调用的循环（循环计数器：监测循环执行频率）
+- 进行编译
+
+
+
+- -Xmixed 默认为混合模式 开始解释执行，启动速度较快，对热点代码实行检测和编译
+- -Xint 使用编译模式，启动很快，执行稍慢
+- -Xcomp 使用纯编译模式，执行很快，启动很慢
+
 ## Class类文件解释
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220329956.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
@@ -40,6 +64,8 @@
 作用：沙箱安全，不让自己定义的类去勿扰JDK出厂自带的类
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111223139570.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+自定义类加载器：继承ClassLoader重写findClass方法
 
 ### 2. JVM内存模型
 
