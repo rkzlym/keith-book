@@ -343,7 +343,7 @@ volatile：state变量用volatile修饰保证线程之间可见
 
 state：根据子类的具体实现来分配，如ReentrantLock加锁,是1，不加锁是0；CountDownLatch设置为5，state就是5
 
-双端队列：CLH变种的双端队列，Node中存放的是线程，
+双端队列：CLH变种的双端队列，Node中存放的是线程
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201218203120948.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
@@ -388,4 +388,26 @@ private Node addWaiter(Node mode) {
 }
 ```
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20201218211732334.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+```java
+// 如果前置节点是头节点，那么第二个节点会尝试获得锁
+if (p == head && tryAcquire(arg)){}
+```
+
+JDK9使用VarHandle：普通的原子操作，比反射快，直接操作二进制码
+
+## ThreadLocal
+
+> 线程独享的只有一个键值对的Map
+
+**ThreadLocal中的Entry是弱引用**
+
+1.  若是强引用，即使tl == null，但key的引用依然指向ThreadLocal对象，所以有内存泄露，而使用弱引用则不会。
+
+2. 但还是有内存泄露的存在，ThreadLocalMap是永远存在的，当ThreadLocal被回收，key的值变成null，则导致整个value再也无法被访问到，因此依然存在内存泄露。所以ThreadLocal不用了需要调用 `remove()`回收
+
+```java
+ThreadLocal<M> tl = new ThreadLocal<>();
+tl.set(new M());
+```
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210114221056228.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)

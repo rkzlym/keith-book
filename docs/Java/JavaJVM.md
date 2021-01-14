@@ -40,7 +40,7 @@ JIT：Just In-Time compiler
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220751109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-### 1. 类加载器（ClassLoader）
+## 类加载器（ClassLoader）
 
 **类加载流程图：**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131191909464.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
@@ -67,7 +67,7 @@ JIT：Just In-Time compiler
 
 自定义类加载器：继承ClassLoader重写findClass方法
 
-### 2. JVM内存模型
+## JVM内存模型
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131192106991.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
@@ -85,7 +85,7 @@ JIT：Just In-Time compiler
 
 5. **本地方法栈**：存放native方法的地方。
 
-### 3. 栈（Stack）
+## 栈（Stack）
 
 1. 栈的概述 
    栈内存主管Java程序的运行，是在线程创建的时候创建，它的生命期是跟随线程的生命期，线程结束栈内存释放，生命周期和线程一致，是线程私有的。对于栈来说不存在垃圾回收问题。
@@ -95,7 +95,7 @@ JIT：Just In-Time compiler
    2. 栈操作（Operand Stack）：记录出栈、入栈的操作
    3. 栈帧数据（Frame Data）：包括类文件、方法等等
 
-### 4. 堆（Heap）
+## 堆（Heap）
 
 一个JVM实例只存在一个堆内存，堆内存大小是可以调节的。
 类加载器读取了类文件后，需要把类、方法、常变量放到堆内存中，保证所有引用类型的真实信息，以方便执行器执行。
@@ -127,7 +127,7 @@ YGC的过程：复制 -> 清空 -> 互换
 
 Java8以后元空间并不在虚拟机中，而是使用本机物理内存。
 
-### 5. 栈、堆、方法区的关系
+## 栈、堆、方法区的关系
 
 栈管运行，堆管存储
 HotSpot是使用指针的方式来访问对象
@@ -140,9 +140,9 @@ reference存储的就直接是对象的地址
 Person person = new Person("张三", 22);
 ```
 
-### 6. GC
+## GC
 
-#### 6.1 GC概述
+### GC概述
 
 GC是什么（分代收集算法）
 
@@ -153,7 +153,7 @@ GC是什么（分代收集算法）
 普通GC(Minor GC):只针对新生代区域的GC，指发生在新生代的垃圾收集动作，因为大部分Java对象存活率不高，所以Minor GC非常频繁，一般回收速度也比较快。
 全局GC(Major GC / Full GC)：指发生在老年代的垃圾收集动作，出现了Major GC，经常会伴随至少一次的Minor GC，**Major GC的速度一般要比Minor GC慢10倍以上**。
 
-#### 6.2 GC四大算法
+### GC四大算法
 
 1. 引用计数法（JVM一般不采用这种方式）
    没有被引用的内存空间就是垃圾，需要被收集
@@ -177,13 +177,13 @@ GC是什么（分代收集算法）
    优势：没有碎片
    劣势：需要移动对象的成本
 
-#### 6.3 GC Root
+### GC Root
 
 可达性分析算法：通过一系列的名为“GC Root”的对象作为起点，从这些节点向下搜索，搜索所走过的路径称为引用链(Reference Chain)，当一个对象到GC Root没有任何引用链相连时，则该对象不可达，该对象是不可使用的，垃圾收集器将回收其所占的内存。
 
 **Java 可以做GC Root的对象**：局部变量表、类静态属性引用的对象、常量引用的对象、Native方法引用的对象。
 
-#### 6.4 垃圾收集器
+### 垃圾收集器
 
 - Serial(串行回收) : 单线程，会暂停所有的用户线程
 - Parallel(并行回收) : 多线程，会暂停所有的用户线程
@@ -211,14 +211,14 @@ jinfo -flags 5988							# 查询5988进程的所有配置
 java -XX:+PrintFlagsFinal -Xss128k T		# 运行Java命令的同时打印出参数,T:运行java类的名字
 ```
 
-#### 6.5 引用
+### 引用
 
 - 强引用：OOM也不回收
 - 软引用：内存不足时回收
 - 弱引用：只要执行GC就被回收
-- 虚引用：跟没引用一样，作用是在对象回收前做操作
+- 虚引用：跟没引用一样，可以用来管理堆外内存（直接内存），当对象被回收时，通过Queue可以检测到，然后清理堆外内存。堆外内存如何回收 -- Unsafe.freeMemory(address)
 
-## 7. 附录
+## 附录
 
 JVM一个线程的成本：1MB
 
