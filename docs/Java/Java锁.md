@@ -20,16 +20,43 @@
 
 **原理**：缓存一致性协议。JMM模型里有8个指令完成数据的读写，通过其中load和store指令相互组成的4个内存屏障实现禁止指令重排序。
 
-volatile修饰的变量在进行写操作的时候会多出一个lock前缀的汇编指令，作用是：
+#### volatile实现细节
 
-- 将当前处理器缓存行的数据会写回到系统内存。
-- 这个写回内存的操作会引起在其他CPU里缓存了该内存地址的数据无效。
+##### 字节码层面
 
-**单例模式中的DCL为什么要加volatile？**
+ACC_VOLATILE
+
+##### JVM层面
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210117102410887.png)
+
+**JVM内存屏障**
+
+LoadLoad：在Load2及后续读取操作的数据被访问前，保证Load1要读取的数据读取完毕。
+
+StoreStore：在Store2及后续写入操作执行前，保证Store1的写入操作对其它处理器可见。
+
+LoadStore：在Store2及后续写入操作刷出前，保证Load1要读取的数据被读取完毕。
+
+StoreLoad：在Load2及后续所有读取操作执行前，保证Store1的写入对所有处理器可见。
+
+##### OS层面
+
+**硬件内存屏障、原子指令**
+
+sfence：save | 在sfence指令前的写操作必须在sfence指令后的写操作前完成
+
+lfence：load | 在lfence指令前的读操作必须在lfence指令后的读操作前完成
+
+mfence：modify/mix | 在mfence指令前的读写操作必须在mfence指令后的读写操作前完成
+
+原子指令：如x86上的lock前缀指令是一个Full Barrier，执行时会锁住内存子系统来确保执行顺序
+
+#### 单例模式中的DCL为什么要加volatile
 
 由于指令重排，对象在半初始化状态的时候就赋值给这个变量了，即instance已经不再是null，第二个线程就直接拿来使用这个半初始化状态的对象。
 
-**volatile引用对象**
+#### volatile引用对象
 
 如果volatile修饰的是一个引用对象，那么引用对象内部的属性发生改变volatile是无法观察到的。
 
@@ -167,6 +194,14 @@ final Object obj = new Object()
 ```
 
 ## JUC和同步锁锁
+
+### Syncronized 实现细节
+
+字节码层面：monitorenter monitorexit
+
+JVM层面：C  C++ 调用了操作系统提供的同步机制
+
+OS和硬件层面：x86是 `lock comxchg xxx`，lock是用来锁其它指令的
 
 ### Sychronized and Lock
 

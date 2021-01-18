@@ -1,14 +1,12 @@
 # Java JVM
 
-## JDK JRE JVM
+## Class
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111205501151.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-## Java从编码到执行
+### Java从编码到执行
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111203500781.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## 混合模式
+### 混合模式
 
 解释器：bytecode intepreter
 
@@ -32,15 +30,15 @@ JIT：Just In-Time compiler
 - -Xint 使用编译模式，启动很快，执行稍慢
 - -Xcomp 使用纯编译模式，执行很快，启动很慢
 
-## Class类文件解释
+### Class类文件解释
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220329956.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## Class生命周期
+### Class生命周期
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220751109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## 类加载器（ClassLoader）
+### 类加载器（ClassLoader）
 
 **类加载流程图：**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131191909464.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
@@ -119,13 +117,11 @@ YGC的过程：复制 -> 清空 -> 互换
 永久区用于存放JDK自身所携带的Class，Interface的元数据，也就是说它存储的是运行环境必须的类信息，被装载进此区域的数据是不会被垃圾回收器回收掉的，关闭JVM才会释放此区域所用的内存。
 内存调优参数
 
-| 参数                | 说明                                  |
-| ------------------- | ------------------------------------- |
-| -Xms                | 设置初始值大小，默认为物理内存的 1/64 |
-| -Xmx                | 最大分配内存，默认为物理内存的 1/4    |
-| -XX:+PrintGCDetails | 输出详细的GC处理日志                  |
-
 Java8以后元空间并不在虚拟机中，而是使用本机物理内存。
+
+**分配担保**
+
+YGC期间 survivor 区空间不够了，直接进入老年代
 
 ## 栈、堆、方法区的关系
 
@@ -139,6 +135,18 @@ reference存储的就直接是对象的地址
 ```java
 Person person = new Person("张三", 22);
 ```
+
+## 实例化对象分配
+
+1. 栈上分配
+
+   线程私有小对象、无逃逸、支持标量替换
+
+2. 线程本地分配 TLAB （Thread Local Alllocation Buffer）
+
+   默认占用Eden的1%、多线程的时候不用竞争Eden就可以申请空间，提升效率、小对象
+
+3. 老年代：大对象
 
 ## GC
 
@@ -185,31 +193,25 @@ GC是什么（分代收集算法）
 
 ### 垃圾收集器
 
-- Serial(串行回收) : 单线程，会暂停所有的用户线程
-- Parallel(并行回收) : 多线程，会暂停所有的用户线程
-- CMS(并发标记清除) : 用户线程和垃圾收集线程同时执行(并行或交替)，会产生碎片
-- G1: 将堆内存分割成不同的区域并发的对其进行垃圾回收
+- 串行回收：单线程，会暂停所有的用户线程，Serial + Serial Old
 
-**查看当前使用的垃圾回收器**
+- 并行回收：多线程，会暂停所有的用户线程，Parallel Scavenge + Parallel Old
 
-```powershell
-java -XX:+PrintCommandLineFlags -version
-```
+- 并发标记清除：用户线程和垃圾收集线程同时执行（并行或交替），ParNew + CMS
 
-**查看JMM系统默认值**
+  - CMS四个阶段：初始标记，并发标记，重新标记，并发清除
 
-> -XX: +|- Attribute
+  - CSM的问题：会产生碎片，有浮动垃圾，当老年代碎片过多，换Serial Old上场
 
-```powershell
-java -XX:+PrintCommandLineFlags -verison	# 查看初始参数
-java -XX:+PrintFlagsInitial					# 查看初始默认值
-java -XX: MetaspaceSize=128m				# 修改元空间大小
-java -XX: MaxTenuringThreshold=15			# 修改养老区的大小
-java -XX:+PrintFlagsFinal -version			# 主要查看修改更新, 有 := 表示修改之后的参数值
+  - CMS问题解决方案之一：降低触发CMS的阈值
 
-jinfo -flags 5988							# 查询5988进程的所有配置
-java -XX:+PrintFlagsFinal -Xss128k T		# 运行Java命令的同时打印出参数,T:运行java类的名字
-```
+    ```shell
+    -XX:CMSInitiatingOccupancyFraction 70% # 内存空间降低到70%再进行回收
+    ```
+
+- G1：将堆内存分割成不同的区域并发的对其进行垃圾回收，只在逻辑上分年轻代老年代
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2021011714275194.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### 引用
 
@@ -218,6 +220,26 @@ java -XX:+PrintFlagsFinal -Xss128k T		# 运行Java命令的同时打印出参数
 - 弱引用：只要执行GC就被回收
 - 虚引用：跟没引用一样，可以用来管理堆外内存（直接内存），当对象被回收时，通过Queue可以检测到，然后清理堆外内存。堆外内存如何回收 -- Unsafe.freeMemory(address)
 
+## JVM调优指令
+
+```shell
+# 查看所有指令
+java -X
+java -XX:+PrintFlagsFinal -version
+# 模糊查询指令
+java -XX:+PrintFlagsFinal -version | grep Command 
+```
+
+常用指令
+
+```shell
+-Xms<size>        					# 设置初始 Java 堆大小
+-Xmx<size>        					# 设置最大 Java 堆大小
+-Xss<size>        					# 设置 Java 线程堆栈大小
+-XX:+PrintCommandLineFlags -version	# 查看当前使用的垃圾回收器
+-XX: MetaspaceSize=128m				# 修改元空间大小
+-XX: MaxTenuringThreshold=15		# 修改老年代的大小
+```
 ## 附录
 
 JVM一个线程的成本：1MB

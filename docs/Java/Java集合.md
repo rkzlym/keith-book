@@ -1,10 +1,8 @@
 # Java 集合
 
-## 集合继承关系
+## Collection
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2021010816224823.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-## List
+### List
 
 | 名称       | 特点                 | get(index) | add(E) | add(index, E) | remove(E) |
 | ---------- | -------------------- | ---------- | ------ | ------------- | --------- |
@@ -12,7 +10,7 @@
 | LinkedList | 删除更高效，查询低效 | O(n)       | O(1)   | O(n)          | O(1)      |
 | Vector     | 低效，线程安全       | O(1)       | O(1)   | O(n)          | O(n)      |
 
-### ArrayList
+#### ArrayList
 
 1. 底层是<font color=red>数组</font>
 2. 默认装<font color=red>Object</font>
@@ -21,17 +19,23 @@
 5. 扩容方式：Arrays.copyOf，默认把原数组复制到新数组
 6. 不是线程安全的
 
-### LinkedList
+#### LinkedList
 
 1. 底层是双向链表
 2. 链表删除和增加快，查询和修改慢
 3. 实现了Queue接口，所以还提供了offer(), peek(), poll()等方法
 
-### CopyOnWriteArrayList
+#### Vector
 
-写时加锁，复制一个新的数组，把新数组指向原来的数组
+#### Stack
 
-## Set
+#### CopyOnWriteArrayList
+
+写时加锁，读时不加锁，复制一个新的数组，把新数组指向原来的数组
+
+适用于读多写少的场景
+
+### Set
 
 | 名称          | 特点                         | add(E)  | remove(E) | contains(E) |
 | ------------- | ---------------------------- | ------- | --------- | ----------- |
@@ -39,20 +43,133 @@
 | LinkedHashSet | 查询时有序 (存储还是无序)    | O(logn) | O(logn)   | O(logn)     |
 | TreeSet       | 可根据指定值排序(基于红黑树) | O(1)    | O(1)      | O(1)        |
 
-### HashSet
+#### HashSet
 
 1. 底层是HashMap
 2. 添加过程
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209154216578.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-### LinkedHashSet
+#### LinkedHashSet
 
-底层是LinkedHashMap
-
-### TreeSet
+#### SortedSet TreeSet
 
 底层是TreeMap
+
+#### EnumSet
+
+#### CopyOnWriteArraySet
+
+#### ConcurrentSkipListSet
+
+### Queue
+
+在多线程的情况下，多考虑使用Queue
+
+#### Deque
+
+双端队列
+
+##### ArrayDeque
+
+##### BlockingDeque
+
+##### LinkedBlockingDeque
+
+#### BlokingQueue
+
+获取数据时队列中无数据，阻塞。添加数据时队列已满，阻塞。
+
+**添加元素**
+
+add：添加元素的时候，若超出了度列的长度会直接抛出异常
+
+offer：添加元素的时候，若超出了度列的长度会直接返回false
+
+put：添加元素的时候，若超出了度列的长度会阻塞一直等待空间，以加入元素
+
+**获取元素**
+
+remove：获取元素，若队列为空，会抛出异常
+
+poll：获取元素，队列为空时，返回null
+
+take：获取元素，队列为空时，队列阻塞
+
+element：查看队首元素，队列元素为空抛异常
+
+peek：查看队首元素，队列元素为空返回 null
+
+##### ArrayBlockingQueue
+
+##### ProrityBlockingQueue
+
+##### LinkedBlockingQueue
+
+##### SynchronousQueue
+
+容量为0的队列，使用put添加元素时阻塞，直到另一个线程取到数据
+
+场景：两个线程交换数据
+
+```java
+static BlockingQueue<String> blockingQueue = new SynchronousQueue<>();
+public static void main(String[] args) throws InterruptedException {
+    new Thread(() -> {
+        try {
+            String value = blockingQueue.take();
+            System.out.println("子线程取到主线程数据:" + value);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }).start();
+    Thread.sleep(1000);
+    blockingQueue.put("1");
+}
+```
+
+##### TransferQueue LinkedTransferQueue
+
+与 SynchronousQueue 的区别在于，使用 `transfer` 方法来添加数据，并且当这个数据不被取走，线程会一直守在原地，类似MQ的消息确认机制。
+
+```java
+ transferQueue.transfer("data");
+```
+
+#### ConcurrentLinkedQueue
+
+> 底层使用CAS实现原子性操作
+
+使用 ConcurrentLinkedQueue 实现卖票程序
+
+```java
+static Queue<String> tickets = new ConcurrentLinkedQueue<>();
+static {
+    for (int i = 0; i < 1000; i++)
+        tickets.add("票 编号:" + i);
+}
+public static void main(String[] args) {
+    for (int i = 0; i < 10; i++) {
+        new Thread(() -> {
+            while (true){
+                String s = tickets.poll();
+                if (s == null) break;
+                System.out.println("销售了 - " + s);
+            }
+        }).start();
+    }
+}
+```
+
+#### PriorityQueue
+
+有序的队列，内部使用二叉树实现
+
+#### DelayQueue
+
+按照内部到期的时间进行排序，等待时间短的会排到队列的前面。
+
+使用场景：按时间进行任务调度
 
 ## Map
 
@@ -72,36 +189,20 @@
 4. 添加过程
    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209154206861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## 线程安全集合
+### LinkedHashMap
 
-> 异常：ConcurrentModificationException
->
-> 原因：一个线程正在修改，另一个线程来争夺，导致数据不一致异常。
+### TreeMap
 
-**同步容器**：Vector、HashTable、Collections.sychronized()生成
+> 底层使用红黑树
 
-**并发容器**：ConcurrentHashMap**、**CopyOnWriteArrayList、CopyOnWriteArraySet
+### ConcurrentSkitListMap
 
-ConcurrentSkipListMap、ConcurrentSkipListSet、ConcurrentLinkedQueue、LinkedBlockingQueue、
+> 同步容器，有序
 
-ArrayBlockingQueue、PriorityBlockingQueue
+**跳表**
 
-## 阻塞队列
+算法在最稀疏的层次进行搜索，直至需要查找的元素在该层两个相邻的元素中间。这时，算法将跳转到下一个层次，重复刚才的搜索，直到找到需要查找的元素为止。
 
-当阻塞队列为空时，从队列里获取元素的操作将会被阻塞
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210115222639601.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-当阻塞对位为满时，从队列里添加元素的操作将会被阻塞
-
-消息中间件MQ的核心底层原理：阻塞队列
-
-**阻塞队列Api**
-
-![image-20200128185633832](E:\Workspace\VsCode\keith-book\docs\java\Java基础.assets\阻塞队列Api.png)
-
-**常用的阻塞队列**
-
-ArrayBlockingQueue：由数组结构组成的有界阻塞队列。
-
-LinkedBlockingQueue：由链表组成的有界（大小默认值为Integer.MAX_VALUE）阻塞队列。
-
-SynchroousQueue：不存储元素的阻塞队列，即单个元素阻塞队列。
+### WeakHashMap

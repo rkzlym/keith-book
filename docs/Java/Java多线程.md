@@ -68,26 +68,22 @@ new Thread(() -> {
 
 3. 实现Callable接口：可以抛出异常，支持泛型的返回值
 
+在执行submit方法时，是异步的，但是当执行future.get方法时，是阻塞的
+
 ```java
-class MyThread implements Callable<Integer>{
-    @Override
-    public Integer call() throws Exception {
-        System.out.println(Thread.currentThread().getName() + "\t 运行了...");
-        Integer sum = 0;
-        for (int i = 0; i < 100; i++) {
-            if(i % 2 == 0){
-                sum += i;
-            }
-        }
-        return sum;
-    }
-}
-// main
-MyThread t = new MyThread();
-FutureTask<Integer> futureTask = new FutureTask<>(t);
+FutureTask<Integer> futureTask = new FutureTask<>(() -> 1);
 new Thread(futureTask).start();
-Integer sum = futureTask.get();
-System.out.println("总和为:" + sum);
+Integer result = futureTask.get();
+System.out.println("结果:" + result);
+```
+
+CompletableFuture 可以将多个线程的结果合并返回
+
+```java
+CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> 1)
+    .thenApply(i -> i + 1)
+    .thenApply(i -> i * 2);
+System.out.println(future.get());
 ```
 
 4. 使用线程池
@@ -115,8 +111,8 @@ pool.shutdown();
 
 ### 2.2 线程池的七大参数
 
-1. corePoolSize: 线程池中的常驻核心线程数。
-2. maximumPoolSize: 线程池能够容纳同时执行的最大线程数，此值必须大于等于1。
+1. corePoolSize: 线程池中的常驻核心线程数，即使空闲也不归还。
+2. maximumPoolSize: 线程池能够容纳同时执行的最大线程数，空闲了会归还给操作系统。
 3. keepAliveTime: 多余的空闲线程存活时间。
 4. unit: keepAliveTime的单位。
 5. workQueue: 任务队列，被提交但尚未被执行的任务，一般使用阻塞队列。
@@ -145,6 +141,7 @@ pool.shutdown();
 - CallerRunsPolicy：既不会抛弃任务，也不会抛出异常，而是把某些任务回退给调用者
 - DiscardOldestPolicy：抛弃队列中等待最久的任务，然后把当前任务加入队列中尝试再次提交当前任务
 - DiscardPolicy：直接丢弃任务，不予任何处理也不抛出异常
+- 自定义Policy：实现 `RejectedExecutionHandler` 接口
 
 ### 2.5 手写一个线程池
 
@@ -167,6 +164,8 @@ try {
 ```
 
 ### 2.6 如何合理配置线程池
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210116163921272.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 - Cpu密集型(Cpu一直运行)：Cpu核数+1个线程的线程池
 - IO密集型(需要不断取数据)：

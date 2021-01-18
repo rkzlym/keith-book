@@ -25,6 +25,14 @@ ApplicationContext接口代表Spring IoC容器，并负责实例化，配置和�
 
 ApplicationContext 常用的两种实现：ClassPathXmlApplicationContext, FileSystemXmlApplicationContext
 
+### Spring 容器整体视图
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210116230540355.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+### Spring 接口
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210116235007738.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
 ### Spring 容器 实例化
 
 下面代码可以实例化一个Spring容器
@@ -91,6 +99,14 @@ applicationContext.xml
 4. 事件驱动模型:ApplicationListener事件监听
 ```
 
+### Spring 父子容器
+
+寻找Bean的时候，先从子容器里拿，拿不到再从父容器中拿
+
+父容器不能访问子容器，子容器可以访问父容器
+
+如果在父容器中对Bean进行了增强，而这个Bean定义在了子容器中，那就不会把子容器中的Bean进行增强
+
 ## Spring Bean
 
 Spring IoC容器管理一个或多个Bean。这些Bean是使用您提供给容器的配置元数据创建的（例如，以XML`<bean/>`定义的形式 ）。
@@ -105,6 +121,10 @@ Spring IoC容器管理一个或多个Bean。这些Bean是使用您提供给容�
 依赖注入的三种方式：构造函数注入、setter注入、接口注入
 
 ### Spring Bean 创建
+
+**Bean创建流程**
+
+BeanDefinitionReader 通过 xml/annotation 获得 Bean 的源信息，Bean 被实例化之后通过一系列的 Processor 最终完成Bean的创建
 
 #### 1. 包扫描注解  +  组件注解
 
@@ -267,15 +287,12 @@ User user = (User) applicationContext.getBean("userFactoryBean");
 
 #### Spring Bean 生命周期流程
 
-1. Spring容器根据配置中的bean定义实例化Bean
-2. Spring使用依赖注入填充所有属性
-3. 如果Bean实现BeanNameAware接口，工厂通过传递Bean ID来调用setBeanName()
-4. 如果Bean实现BeanFactoryAware接口，工厂通过传递自身实例调用setBeanFactory()
-5. 如果存在与Bean关联的任何BeanPostProcessers，则调用preProcessBeforeInitialization()
-6. 如果Bean指定了init方法，那么将调用它
-7. 如果存在与Bean关联的任何BeanPostProcessers，则调用postProcessAfterInitialization()
-8. 如果Bean实现了DisposableBean接口，当Spring容器关闭时，会调用destory()
-9. 如果Bean指定了destory方法，那么将调用它
+1. BeanPostProcessor Before Initialization
+2. InitializingBean
+3. init-method
+4. BeanPostProcessor After Initialization
+5. Disposable Bean
+6. destory-method
 
 #### Spring Bean 创建流程
 
@@ -634,7 +651,7 @@ Spring容器内部是通过3级缓存来解决循环依赖 -- `DefaultSingletonB
 
 过程：
 
-1. A创建的过程中需要B，于是A将自己放到三级缓存里面，去实例化B
+1. A创建的过程中需要B，于是A将自己放到三级缓存里面，去实例化B	
 2. B实例化的时候发现需要A，于是B先查一级缓存，没有再查二级缓存，还是没有再查三级缓存，找到A然后把三级缓存里面的A放到二级缓存里面，并删除三级缓存里的A
 3. B顺利初始化完毕，将自己放到一级缓存里面（此时B里面的A依然是创建中状态），然后回来接着创建A，此时B已经创建结束，直接从一级缓存里面拿到B，然后完成创建，并将A自己放到一级缓存里面。
 

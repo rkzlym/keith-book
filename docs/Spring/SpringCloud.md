@@ -1,5 +1,15 @@
 ## Spring Cloud
 
+## Spring Cloud 的三套组件
+
+Spring Cloud Netflix
+
+Spring Cloud Alibaba
+
+Spring Cloud Apache
+
+## 草稿
+
 **Zuul网关作用**：Nginx的网址重定向、服务的跨域配置、JWT鉴权
 
 **Eureka**： Eureka各个节点是平等的，节点挂掉不会影响剩余节点的正常工作，只要有一台Eureka还在，就能保证注册服务可用，只不过查询到的数据可能不会最新的。Eureka还有自我保护机制，如果在15分钟内超过85%的节点都没有正常心跳，那么Eureka就认为客户端与注册中心出现了故障，此时会出现以下几种情况：
