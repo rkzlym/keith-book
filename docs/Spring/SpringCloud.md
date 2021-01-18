@@ -18,6 +18,16 @@ Eureka注册中心各个节点是平等的，节点挂掉不会影响剩余节�
 2. Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上（保证当前节点依然可用）
 3. 当网络稳定时，当前实例新的注册信息会被同步到其它节点中
 
+### Eureka自我保护机制
+
+某时刻某一个微服务不可用了，eureka不会立即清理，依旧会对该微服务的信息进行保存
+
+默认EurekaServer在一定时间内没有接收到某个微服务实例的心跳，EurekaServer将会注销该实例（默认90秒）
+
+当网络分区故障发生时，微服务与EurekaServer之间无法正常通信，但微服务本身其实是健康的。当EurekaServer节点在短时间内丢失过多客户端时，那么这个节点就会进入自我保护模式，EurekaServer会保护服务注册表中的信息，不再注销任何微服务。当它收到的心跳数重新恢复到阈值以上时，该Eureka Server节点就会自动退出自我保护模式。
+
+在Spring Cloud中，可以使用eureka.server.enable-self-preservation = false 禁用自我保护模式。
+
 ### 在本地搭建Eureka集群
 
 引入依赖 eureka server
@@ -87,18 +97,6 @@ public class RegistryApplication {
 ## 草稿
 
 **Zuul网关作用**：Nginx的网址重定向、服务的跨域配置、JWT鉴权
-
-
-
-**Eureka自我保护机制**
-
-某时刻某一个微服务不可用了，eureka不会立即清理，依旧会对该微服务的信息进行保存
-
-默认EurekaServer在一定时间内没有接收到某个微服务实例的心跳，EurekaServer将会注销该实例（默认90秒）
-
-当网络分区故障发生时，微服务与EurekaServer之间无法正常通信，但微服务本身其实是健康的。当EurekaServer节点在短时间内丢失过多客户端时，那么这个节点就会进入自我保护模式，EurekaServer会保护服务注册表中的信息，不再注销任何微服务。当它收到的心跳数重新恢复到阈值以上时，该Eureka Server节点就会自动退出自我保护模式。
-
-在Spring Cloud中，可以使用eureka.server.enable-self-preservation = false 禁用自我保护模式。
 
 **Ribbon**
 
