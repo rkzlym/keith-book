@@ -8,15 +8,87 @@ Spring Cloud Alibaba
 
 Spring Cloud Apache
 
-## 草稿
+## Eureka
 
-**Zuul网关作用**：Nginx的网址重定向、服务的跨域配置、JWT鉴权
+### Eureka概念
 
-**Eureka**： Eureka各个节点是平等的，节点挂掉不会影响剩余节点的正常工作，只要有一台Eureka还在，就能保证注册服务可用，只不过查询到的数据可能不会最新的。Eureka还有自我保护机制，如果在15分钟内超过85%的节点都没有正常心跳，那么Eureka就认为客户端与注册中心出现了故障，此时会出现以下几种情况：
+Eureka注册中心各个节点是平等的，节点挂掉不会影响剩余节点的正常工作，只要有一台Eureka还在，就能保证注册服务可用，只不过查询到的数据可能不会最新的。Eureka还有自我保护机制，如果在15分钟内超过85%的节点都没有正常心跳，那么Eureka就认为客户端与注册中心出现了故障，此时会出现以下几种情况：
 
 1. Eureka不再从注册列表移除因为长时间没收到心跳而应该过期的服务
 2. Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上（保证当前节点依然可用）
 3. 当网络稳定时，当前实例新的注册信息会被同步到其它节点中
+
+### 在本地搭建Eureka集群
+
+引入依赖 eureka server
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+    </dependency>
+</dependencies>
+```
+
+修改本地hosts文件
+
+```
+127.0.0.1 eureka1.com
+127.0.0.1 eureka2.com
+```
+
+application.yml
+
+```yaml
+spring:
+  profiles:
+    active: 01
+---
+server:
+  port: 5001
+spring:
+  application:
+    name: eureka-demo
+  profiles: 01
+eureka:
+  instance:
+    hostname: eureka1.com
+  client:
+    service-url:
+      defaultZone: http://eureka2.com:5002/eureka
+---
+server:
+  port: 5002
+spring:
+  application:
+    name: eureka-demo
+  profiles: 02
+eureka:
+  instance:
+    hostname: eureka2.com
+  client:
+    service-url:
+      defaultZone: http://eureka1.com:5001/eureka
+```
+
+启动类
+
+```java
+@SpringBootApplication
+@EnableEurekaServer
+public class RegistryApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(RegistryApplication.class, args);
+    }
+}
+```
+
+## 草稿
+
+**Zuul网关作用**：Nginx的网址重定向、服务的跨域配置、JWT鉴权
+
+
 
 **Eureka自我保护机制**
 
