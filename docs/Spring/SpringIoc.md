@@ -103,7 +103,9 @@ applicationContext.xml
 
 寻找Bean的时候，先从子容器里拿，拿不到再从父容器中拿
 
-父容器不能访问子容器，子容器可以访问父容器
+父容器不能访问子容器，子容器可以访问父容器，原因是父容器没有子容器的引用。
+
+HierarchicalBeanFactory 中只有得到父容器的方法 getParentBeanFactory
 
 如果在父容器中对Bean进行了增强，而这个Bean定义在了子容器中，那就不会把子容器中的Bean进行增强
 
