@@ -38,7 +38,7 @@ JIT：Just In-Time compiler
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220751109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-### 类加载器（ClassLoader）
+### ClassLoader
 
 **类加载流程图：**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131191909464.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
@@ -65,76 +65,89 @@ JIT：Just In-Time compiler
 
 自定义类加载器：继承ClassLoader重写findClass方法
 
-## JVM内存模型
+## JVM 内存模型
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131192106991.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-1. **Java虚拟机栈**：存放 局部变量表、操作数栈、动态链接、方法出口
+1. **程序计数器**：存放指令位置，虚拟机的运行就是循环取PC中的指令
+2. **栈**：每个JVM都有自己私有的JVM栈，JVM栈用来存储栈帧
+3. **本地方法栈**：存放native方法的地方。
+4. **堆**：所有线程共享，存放对象实例，几乎所有的对象实例以及数组都在这里分配内存。
+5. **方法区**：存储class二进制文件、类信息、常量、静态变量、运行时常量池
+6. **直接内存**：JVM可以直接访问的内核空间的内存。
 
-   局部变量表：boolean、byte、char、short、int、float、long、double、reference
+**图示：线程的共享区和私有区**
 
-2. **堆**：存放对象实例，几乎所有的对象实例以及数组都在这里分配内存。
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210119205519997.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-3. **方法区**：存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据
 
-   运行时常量池：方法区的一部分，存放常量信息。
 
-4. **程序计数器**：存放程序下一跳指令所在单元地址的地方。
+## Stack
 
-5. **本地方法栈**：存放native方法的地方。
+栈：每个JVM都有自己私有的JVM栈，JVM栈用来存储Frame
 
-## 栈（Stack）
+Frame：每个方法对应一个 Frame
 
-1. 栈的概述 
-   栈内存主管Java程序的运行，是在线程创建的时候创建，它的生命期是跟随线程的生命期，线程结束栈内存释放，生命周期和线程一致，是线程私有的。对于栈来说不存在垃圾回收问题。
-   8种基本类型变量 、对象引用变量 、实例方法 都是在函数的栈内存中分配
-2. Java方法 = 栈帧，主要保存3类数据
-   1. 局部变量（Local Variables）：输入参数和输出参数及方法内的变量
-   2. 栈操作（Operand Stack）：记录出栈、入栈的操作
-   3. 栈帧数据（Frame Data）：包括类文件、方法等等
+Frame 存放：Local Variable Table, Operated Stack, Dynamic Linking, Return Address
 
-## 堆（Heap）
+Local Variable Table：boolean、byte、char、short、int、float、long、double、reference
 
-一个JVM实例只存在一个堆内存，堆内存大小是可以调节的。
-类加载器读取了类文件后，需要把类、方法、常变量放到堆内存中，保证所有引用类型的真实信息，以方便执行器执行。
-堆内存逻辑上分为三部分：新生、养老、永久
-伊甸区满了，开启YGC（Young GC），Eden基本全部清空
-养老区满了，开启FGC（Full GC），若是FGC多次，发现养老区空间没法腾出来，就会报OOM（OutOfMemeryError）
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131193503949.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-YGC的过程：复制 -> 清空 -> 互换
+Dynamic Linking：A方法调用B方法，这个过程就叫动态链接
 
-1. eden、SurvivorFrom复制到SurvivorTo，年龄+1
-   首先，当Eden区满的时候会触发第一次GC，把还活着的拷贝到SurvivorFrom区，当Eden区再次触发GC的时候会扫描Eden区和From区，对这两个区域进行垃圾回收，经过这次回收后还存活着的对象直接复制到To区域（如果有对象的年龄已经达到了老年标准，则复制到老年代区），同时把这些对象年龄+1 
-2. 清空eden、SurvivorFrom
-   然后清空Eden和SurvivorFrom中的对象，也即复制后有交换，谁空谁是To
-3. SurvivorFrom和SurvivorTo互换
-   最后SurvivorFrom和SurvivorTo互换，原SurvivorTo成为下一次GC时SurvivorFrom区，部分对象会在From和To区域中复制来复制去，如此交换15次（由JVM参数的MaxTenuringThreshold决定，这个参数默认是15），最终如果还存活，就存入老年代。
+Return Address：A方法调用B方法，B方法返回值的存放地址
 
-经研究，不同对象的生命周期不同，98%的对象是临时对象。
-
-实际而言，方法区和堆一样，是各个线程共享的内存区域，它用于存储虚拟机加载的类信息、普通常量、静态常量、编辑器编译后的代码等等。虽然JVM规范将方法区描述为堆的一个逻辑部分，但它却还有一个别名Non-Heap(非堆)，目的就是要和堆分开。永久代是方法区的一个实现。
-
-永久区用于存放JDK自身所携带的Class，Interface的元数据，也就是说它存储的是运行环境必须的类信息，被装载进此区域的数据是不会被垃圾回收器回收掉的，关闭JVM才会释放此区域所用的内存。
-内存调优参数
-
-Java8以后元空间并不在虚拟机中，而是使用本机物理内存。
-
-**分配担保**
-
-YGC期间 survivor 区空间不够了，直接进入老年代
-
-## 栈、堆、方法区的关系
-
-栈管运行，堆管存储
-HotSpot是使用指针的方式来访问对象
-Java堆中会存放访问类元数据的地址
-reference存储的就直接是对象的地址
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200114211523636.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-代码解释：左边存在栈中。右边存在堆中
+案例：输出结果为8
 
 ```java
+// 将8压入操作数栈，再将8拿出来赋值给i
+int i = 8;
+// 将8压入操作数栈，i加1，从操作数栈中弹出8赋值给i
+i = i++;
+// 输出最终结果 8
+System.out.println(i);
+```
+
+## Heap 
+
+### 堆的基本概念
+
+主要存放Java在运行过程中new出来的对象，凡是通过new生成的对象都存放在堆中，对于堆中的对象生命周期的管理由Java虚拟机的垃圾回收机制GC进行回收和统一管理，类的非静态成员变量存放在堆区，其中基本数据类型是直接保存值，而复杂类型是保存指向对象的引用一个JVM实例只存在一个堆内存，堆是所有线程共享的，而且堆内存大小是可以调节的。
+
+```java
+// 左边存放在栈中，右边存放在堆中
 Person person = new Person("张三", 22);
 ```
+
+### JVM 内存分代模型
+
+> 除了 Epsilon ZGC Shenandoah 之外的GC都是使用逻辑分代模型
+>
+> G1是逻辑分代，物理不分代
+>
+> 除上述 GC 模型之外不仅是逻辑分代，而且是物理分代
+
+新生代 = Eden区 + 2 个 Suvivor区
+
+1. YGC 回收之后，大多数对象被回收，活着的进入S0
+2. 再次 YGC ，活着的对象 Eden + S0 -> S1
+3. 再次 YGC， Eden + S1 -> S0
+4. 年龄足够进入老年代
+5. 分配担保：Suvivor区装不下直接进入老年代 
+
+老年代：
+
+1. 老年代满了就Full GC
+
+永久代（1.7）/ 元空间（1.8）
+
+1. 永久代 元空间 - Class
+2. 永久代必须指定大小限制，元空间可以设置，也可以不设置，上限取决于物理内存
+3. 字符串常量 1.7 - 永久代，1.8 - 堆
+4. 永久代和元空间都是方法区的实现
+
+图示
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131193503949.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ## 实例化对象分配
 
@@ -159,23 +172,38 @@ GC是什么（分代收集算法）
 - 基本不动元空间
 
 普通GC(Minor GC):只针对新生代区域的GC，指发生在新生代的垃圾收集动作，因为大部分Java对象存活率不高，所以Minor GC非常频繁，一般回收速度也比较快。
-全局GC(Major GC / Full GC)：指发生在老年代的垃圾收集动作，出现了Major GC，经常会伴随至少一次的Minor GC，**Major GC的速度一般要比Minor GC慢10倍以上**。
+全局GC(Major GC / Full GC)：指发生在老年代的垃圾收集动作，出现了Major GC，经常会伴随至少一次的Minor GC，Major GC的速度一般要比Minor GC慢10倍以上。
 
-### GC四大算法
+### 如何定位垃圾
 
-1. 引用计数法（JVM一般不采用这种方式）
-   没有被引用的内存空间就是垃圾，需要被收集
-   缺点：计数器本身有消耗，较难处理循环引用
-2. 复制算法（Copying）
+**引用计数法**
+
+没有被引用的内存空间就是垃圾，需要被收集
+缺点：计数器本身有消耗，较难处理循环引用
+
+**根可达性分析算法**
+
+通过一系列的名为“GC Root”的对象作为起点，从这些节点向下搜索，搜索所走过的路径称为引用链(Reference Chain)，当一个对象到GC Root没有任何引用链相连时，则该对象不可达，该对象是不可使用的，垃圾收集器将回收其所占的内存。
+
+Java 可以做GC Root的对象：局部变量表、类静态属性引用的对象、常量引用的对象、Native方法引用的对象。
+
+### 常用的垃圾回收算法
+
+2. 复制算法（Copying）：没有碎片，浪费空间
+   
    YGC用的是复制算法，复制算法的基本思想是将内存分为两块，每次只用其中一块，当一块内存用完，就将还活着的对象复制到另一块上面，复制算法不会产生内存碎片。
    原理：从根集合（GC Root）开始，通过Tracing从From中找到存活对象，拷贝到To中。From和To交换身份，下次内存分配从To开始
    缺点：浪费了一半内存
-3. 标记清除（Mark-Sweep）
+   
+2. 标记清除（Mark-Sweep）：位置不连续，产生碎片，效率偏低（两遍扫描）
+
    老年代一般由标记清除和标记整理混合实现
    原理：算法分成标记和清除两个阶段。先标记出要回收的对象，然后统一回收这些对象。
    解释：程序运行期间，可用内存将被耗尽的时候,GC线程就会被触发并将程序暂停，随后将要回收的对象标记一遍，最终统一回收这些对象。
    缺点：两次扫描，耗时严重，会产生内存碎片（清理出来的内存是不连续的）
-4. 标记压缩（Mark-Compact）
+
+3. 标记压缩（Mark-Compact）：没有碎片，效率偏低（两遍扫描，指针需要调整）
+
    即标记清除整理
    第一步：标记清除
    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200117210457686.png)
@@ -185,17 +213,11 @@ GC是什么（分代收集算法）
    优势：没有碎片
    劣势：需要移动对象的成本
 
-### GC Root
-
-可达性分析算法：通过一系列的名为“GC Root”的对象作为起点，从这些节点向下搜索，搜索所走过的路径称为引用链(Reference Chain)，当一个对象到GC Root没有任何引用链相连时，则该对象不可达，该对象是不可使用的，垃圾收集器将回收其所占的内存。
-
-**Java 可以做GC Root的对象**：局部变量表、类静态属性引用的对象、常量引用的对象、Native方法引用的对象。
-
 ### 垃圾收集器
 
 - 串行回收：单线程，会暂停所有的用户线程，Serial + Serial Old
 
-- 并行回收：多线程，会暂停所有的用户线程，Parallel Scavenge + Parallel Old
+- 并行回收：多线程，会暂停所有的用户线程，Parallel Scavenge + Parallel Old（JDK8默认）
 
 - 并发标记清除：用户线程和垃圾收集线程同时执行（并行或交替），ParNew + CMS
 
@@ -220,7 +242,15 @@ GC是什么（分代收集算法）
 - 弱引用：只要执行GC就被回收
 - 虚引用：跟没引用一样，可以用来管理堆外内存（直接内存），当对象被回收时，通过Queue可以检测到，然后清理堆外内存。堆外内存如何回收 -- Unsafe.freeMemory(address)
 
-## JVM调优指令
+## JVM调优
+
+### 基本概念
+
+吞吐量：用户代码时间 / ( 用户代码执行时间 + 垃圾回收时间 )
+
+响应时间：STW越短，响应时间越好
+
+### JVM调优指令
 
 ```shell
 # 查看所有指令
@@ -240,6 +270,46 @@ java -XX:+PrintFlagsFinal -version | grep Command
 -XX: MetaspaceSize=128m				# 修改元空间大小
 -XX: MaxTenuringThreshold=15		# 修改老年代的大小
 ```
+```shell
+jinfo <pid>		# 打印虚拟机详细信息
+jstat -gc <pid> <time>	# 打印gc信息，每<time>毫秒打印一次
+jconsole	# java控制面板
+```
+
+
+
+### JVM调优场景
+
+**系统CPU经常100%，如何调优**
+
+CPU 100% 一定有线程在占用系统资源
+
+1. 找出哪个进程的 CPU 高（top）
+2. 该进程的哪个线程 CPU 高（top - Hp [pid]）
+3. 导出该线程的堆栈（jstack）
+4. 查找哪个方法（栈帧）消耗时间 （jstack）
+5. 工作线程占比高 | 垃圾回收线程占比高
+
+```shell
+# 查看Linux中哪个进程占资源
+top
+# 只列出java的进程
+jps
+# 查看这个<pid>的进程中哪个线程占资源
+top -Hp <pid>
+# 查看这个<pid>的线程堆栈
+jstack [pid]
+```
+
+**系统内存飙高，如何查找问题**
+
+1. 导出堆内存（jmap）
+2. 分析（jhat jvisualvm mat jprofiler ... ）
+
+**如何监控JVM**
+
+1. jstat jvisualvm jprofiler arthas top ...
+
 ## 附录
 
 JVM一个线程的成本：1MB
