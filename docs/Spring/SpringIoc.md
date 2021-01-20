@@ -557,11 +557,72 @@ public class SpringConfig {
 }
 ```
 
-在 VM option 中加入以下参数表示目前的环境为test
+在 properties 配置文件中可以根据文件名配置不同的环境
+
+```
+application.properties
+application-dev.properties
+application-test.properties
+```
+
+在 yml 配置文件中可以使用 `---` 分隔配置不同的环境
+
+```yaml
+spring:
+  profiles:
+    active: dev
+---
+server:
+  port: 8001
+spring:
+  profiles: dev
+---
+server:
+  port: 8002
+spring:
+  profiles: test
+```
+
+在 VM options 中加入以下参数表示目前的环境为 test
 
 ```properties
 -Dspring.profiles.active=test
+## 使用java -jar启动
+java -jar -Dspring.profiles.active=test app.jar 
 ```
+
+在 Environment variables 中加入以下参数表示目前环境为 test
+
+```properties
+--spring.profiles.active=test
+## 使用java -jar启动
+java -jar app.jar --spring.profiles.active=test
+```
+
+加载配置文件关键源码
+
+```java
+// Spring 启动时 run 方法中准备环境
+ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
+// 进入之后调用了ConfigFileApplicationListener.Loader#load
+protected void addPropertySources(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
+    RandomValuePropertySource.addToEnvironment(environment);
+    new Loader(environment, resourceLoader).load();
+}
+// 追溯到 ConfigFileApplicationListener#loadForFileExtension 根据文件后缀遍历加载
+for (PropertySourceLoader loader : this.propertySourceLoaders) {
+    for (String fileExtension : loader.getFileExtensions()) {
+        if (processed.add(fileExtension)) {
+            loadForFileExtension(loader, location + name, "." + fileExtension, profile, filterFactory,
+                                 consumer);
+        }
+    }
+}
+```
+
+对于 yml 和 properties 文件的解释
+
+https://blog.csdn.net/weixin_42103026/article/details/112846171
 
 ## Spring 事件监听器
 
