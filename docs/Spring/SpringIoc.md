@@ -92,11 +92,46 @@ applicationContext.xml
 
 ### Spring 容器 核心流程
 
-```
-1. Spring容器在启动的时候，会先保存所有注册进来的Bean定义信息
-2. Spring容器会在合适的时机创建这些Bean
-3. 后置处理器：每个Bean创建完成，都会使用各种后置处理器(BeanPostProcessor)做处理(例:AutowiredAnnotationBeanPostProcessor 处理自动注入)
-4. 事件驱动模型:ApplicationListener事件监听
+```java
+// Prepare this context for refreshing.
+prepareRefresh();
+
+// load BeanDefinition through BeanDefinition Reader (updated)
+ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+// Prepare the bean factory for use in this context.
+prepareBeanFactory(beanFactory);
+
+try {
+   // Allows post-processing of the bean factory in context subclasses.
+   postProcessBeanFactory(beanFactory);
+
+   StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
+   // Invoke factory processors registered as beans in the context.
+   invokeBeanFactoryPostProcessors(beanFactory);
+
+   // Register bean processors that intercept bean creation.
+   registerBeanPostProcessors(beanFactory);
+   beanPostProcess.end();
+
+   // Initialize message source for this context.
+   initMessageSource();
+
+   // Initialize event multicaster for this context.
+   initApplicationEventMulticaster();
+
+   // Initialize other special beans in specific context subclasses.
+   onRefresh();
+
+   // Check for listener beans and register them.
+   registerListeners();
+
+   // Instantiate all remaining (non-lazy-init) singletons.
+   finishBeanFactoryInitialization(beanFactory);
+
+   // Last step: publish corresponding event.
+   finishRefresh();
+}
 ```
 
 ### Spring 父子容器
