@@ -179,7 +179,6 @@ public static void main(String[] args) {
 | LinkedHashMap | 查询时有序 (存储还是无序)             | O(1)~O(log n) | O(1)     |
 | TreeMap       | 可根据指定值排序(取决于Compare返回值) | O(log n)      | O(1)     |
 | Hashtable     | 线程安全，低效                        | O(1)~O(log n) | O(1)     |
-| Properties    | 键值对都是String类型                  | O(1)~O(log n) | O(1)     |
 
 ### HashMap
 

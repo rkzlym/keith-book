@@ -147,7 +147,9 @@ system>const>eq_ref>ref>range>index>ALL
 
 ## 9. Join调优总结
 尽可能减少Join语句中NestedLoop的循环总次数，永远用小结果集驱动大结果集。
+
 优先优化NestedLoop的内层循环。
+
 保证Join语句中被驱动表上的Join条件字段已经被索引。
 
 ## 10. 慢查询日志

@@ -298,17 +298,40 @@ jps
 # 查看这个<pid>的进程中哪个线程占资源
 top -Hp <pid>
 # 查看这个<pid>的线程堆栈
-jstack [pid]
+jstack <pid>
+# 导出堆内存(不推荐，查询时间过长，会导致系统卡顿)
+jamp -heap <pid>
 ```
 
-**系统内存飙高，如何查找问题**
+排查死锁
 
-1. 导出堆内存（jmap）
-2. 分析（jhat jvisualvm mat jprofiler ... ）
+```shell
+# 查看这个<pid>的线程堆栈
+# 观察打印信息是否存在 Found one java-level deadlock
+jstack <pid>
+```
 
 **如何监控JVM**
 
-1. jstat jvisualvm jprofiler arthas top ...
+jstat
+
+```shell
+# 格式模板
+jstat -<option> [-t] [-h<lines>] <vmid> [<interval> [<count>]]
+# 常见用法
+# 类加载统计
+jstat -class 19570
+# 编译统计
+jstat -compiler 19570
+```
+
+jconsole jvisualvm
+
+**执行GC之后内存占用依然很高**
+
+使用jvisualvm打开GUI面板，监视 -> 堆 Dump，截取一个内存快照。
+
+检查 -> 查找前20个最大的对象，可以检查到哪几个对象占用了大量的内存。
 
 ## 附录
 

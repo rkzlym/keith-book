@@ -22,7 +22,7 @@ tar xf xxx.tar.gz
 **根据进程名查看运行进程**
 
 ```shell
-ps -fe | grep redis
+ps -ef | grep redis
 ```
 
 **nc命令**

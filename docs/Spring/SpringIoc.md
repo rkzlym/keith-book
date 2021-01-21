@@ -92,6 +92,7 @@ applicationContext.xml
 
 ### Spring 容器 核心流程
 
+<<<<<<< HEAD
 ```java
 // Prepare this context for refreshing.
 prepareRefresh();
@@ -132,6 +133,36 @@ try {
    // Last step: publish corresponding event.
    finishRefresh();
 }
+=======
+AbstractApplicationContext # refresh()
+
+```java
+// There has a method named "loadBeanDefinitions" attampt to resolve resources like xml, annotation, groovy.
+// These sources will be resolved to "BeanDefinition" through "BeanDefinitionReader". 
+ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+// Invoke factory processors registered as beans in the context.
+// First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.
+// Next, invoke the BeanFactoryPostProcessors that implement Ordered.
+// Finally, invoke all other BeanFactoryPostProcessors.
+invokeBeanFactoryPostProcessors(beanFactory);
+
+// Register bean processors that intercept bean creation.
+// add "BeanPostProcessor" to a CopyOnWriteArrayList named "beanPostProcessors"
+registerBeanPostProcessors(beanFactory);
+
+// Add beans that implement ApplicationListener as listeners.
+registerListeners();
+
+// Instantiate all remaining (non-lazy-init) singletons.
+// First, it will merge beans with same beanName, there has a "applyMergedBeanDefinitionPostProcessors" to handle these merged beans.
+// Next, it will find from cache whether bean exists, if the bean is not exists, it will create by "ObjectFactory".
+// Finally, put this bean into cache and return this bean.
+finishBeanFactoryInitialization(beanFactory);
+
+// Last step: publish corresponding event, Observer pattern.
+finishRefresh();
+>>>>>>> 22ae868feed73bfd415f8d88817c74f5df5ff345
 ```
 
 ### Spring 父子容器
@@ -390,12 +421,6 @@ BeanFactory：负责创建bean实例，容器里保存的所有单例Bean其实�
 
 ApplicationContext：BeanFactory的子接口，基于BeanFactory创建的对象之上完成容器的功能实现
 
-**图解**
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20201227151217953.png)
-
-#### Spring Bean 装配过程
-
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2020121916571615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 #### Spring Bean 生命周期回调
@@ -592,11 +617,72 @@ public class SpringConfig {
 }
 ```
 
-在 VM option 中加入以下参数表示目前的环境为test
+在 properties 配置文件中可以根据文件名配置不同的环境
+
+```
+application.properties
+application-dev.properties
+application-test.properties
+```
+
+在 yml 配置文件中可以使用 `---` 分隔配置不同的环境
+
+```yaml
+spring:
+  profiles:
+    active: dev
+---
+server:
+  port: 8001
+spring:
+  profiles: dev
+---
+server:
+  port: 8002
+spring:
+  profiles: test
+```
+
+在 VM options 中加入以下参数表示目前的环境为 test
 
 ```properties
 -Dspring.profiles.active=test
+## 使用java -jar启动
+java -jar -Dspring.profiles.active=test app.jar 
 ```
+
+在 Environment variables 中加入以下参数表示目前环境为 test
+
+```properties
+--spring.profiles.active=test
+## 使用java -jar启动
+java -jar app.jar --spring.profiles.active=test
+```
+
+加载配置文件关键源码
+
+```java
+// Spring 启动时 run 方法中准备环境
+ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
+// 进入之后调用了ConfigFileApplicationListener.Loader#load
+protected void addPropertySources(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
+    RandomValuePropertySource.addToEnvironment(environment);
+    new Loader(environment, resourceLoader).load();
+}
+// 追溯到 ConfigFileApplicationListener#loadForFileExtension 根据文件后缀遍历加载
+for (PropertySourceLoader loader : this.propertySourceLoaders) {
+    for (String fileExtension : loader.getFileExtensions()) {
+        if (processed.add(fileExtension)) {
+            loadForFileExtension(loader, location + name, "." + fileExtension, profile, filterFactory,
+                                 consumer);
+        }
+    }
+}
+```
+
+对于 yml 和 properties 文件的解释
+
+https://blog.csdn.net/weixin_42103026/article/details/112846171
 
 ## Spring 事件监听器
 
