@@ -92,11 +92,34 @@ applicationContext.xml
 
 ### Spring 容器 核心流程
 
-```
-1. Spring容器在启动的时候，会先保存所有注册进来的Bean定义信息
-2. Spring容器会在合适的时机创建这些Bean
-3. 后置处理器：每个Bean创建完成，都会使用各种后置处理器(BeanPostProcessor)做处理(例:AutowiredAnnotationBeanPostProcessor 处理自动注入)
-4. 事件驱动模型:ApplicationListener事件监听
+AbstractApplicationContext # refresh()
+
+```java
+// There has a method named "loadBeanDefinitions" attampt to resolve resources like xml, annotation, groovy.
+// These sources will be resolved to "BeanDefinition" through "BeanDefinitionReader". 
+ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+// Invoke factory processors registered as beans in the context.
+// First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.
+// Next, invoke the BeanFactoryPostProcessors that implement Ordered.
+// Finally, invoke all other BeanFactoryPostProcessors.
+invokeBeanFactoryPostProcessors(beanFactory);
+
+// Register bean processors that intercept bean creation.
+// add "BeanPostProcessor" to a CopyOnWriteArrayList named "beanPostProcessors"
+registerBeanPostProcessors(beanFactory);
+
+// Add beans that implement ApplicationListener as listeners.
+registerListeners();
+
+// Instantiate all remaining (non-lazy-init) singletons.
+// First, it will merge beans with same beanName, there has a "applyMergedBeanDefinitionPostProcessors" to handle these merged beans.
+// Next, it will find from cache whether bean exists, if the bean is not exists, it will create by "ObjectFactory".
+// Finally, put this bean into cache and return this bean.
+finishBeanFactoryInitialization(beanFactory);
+
+// Last step: publish corresponding event, Observer pattern.
+finishRefresh();
 ```
 
 ### Spring 父子容器
@@ -354,12 +377,6 @@ private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256
 BeanFactory：负责创建bean实例，容器里保存的所有单例Bean其实是一个map
 
 ApplicationContext：BeanFactory的子接口，基于BeanFactory创建的对象之上完成容器的功能实现
-
-**图解**
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20201227151217953.png)
-
-#### Spring Bean 装配过程
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2020121916571615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 

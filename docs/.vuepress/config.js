@@ -178,6 +178,11 @@ module.exports = {
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
+                        '/运维/操作系统',
+                        '/运维/Linux',
+                        '/运维/FastDFS',
+                        '/运维/Openresty',
+                        '/运维/Tomcat',
                         '/运维/Docker基本操作',
                         '/运维/Docker安装Redis',
                         '/运维/Docker安装Nginx',
@@ -208,7 +213,8 @@ module.exports = {
                     children: [
                         '/其它/计算机网络',
                         '/其它/分布式',
-                        '/其它/线上问题排查技术',
+                        '/其它/JMH',
+                        '/其它/Lua',
                     ]
                 }
             ]
