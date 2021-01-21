@@ -96,7 +96,102 @@ public class RegistryApplication {
 
 ## Spring Cloud Config Center
 
+### 1. 新建一个Git仓库用于存储配置文件
 
+配置文件命名规则
+
+```
+/{application}/{profile}[/{label}]
+/{application}-{profile}.yml
+/{label}/{application}-{profile}.yml
+/{application}-{profile}.properties
+/{label}/{application}-{profile}.properties
+```
+
+### 2. 新建一个项目 config-center
+
+引入依赖
+
+```xml
+<!-- Spring Cloud Eureka -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>
+
+<!-- Spring Cloud Config Server -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-config-server</artifactId>
+</dependency>
+
+<!-- Spring Boot Actuator -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-actuator</artifactId>
+</dependency>
+```
+
+配置文件 `application.properties`
+
+```properties
+server.port=5100
+spring.application.name=config-center
+spring.cloud.config.server.git.uri=https://<your-repository>.git
+spring.cloud.config.label=master
+eureka.client.service-url.defaultZone=http://eureka1.com:5000/eureka
+```
+
+### 3. 启动类增加注解 @EnableConfigServer
+
+```java
+@SpringBootApplication
+@EnableConfigServer
+public class ConfigCenterApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ConfigCenterApplication.class, args);
+    }
+}
+```
+
+### 4. 访问测试
+
+访问以下地址可以得到具体配置
+
+```
+{ 配置中心服务地址 }/master/file-dev.yml 
+```
+
+### 5. 客户端配置
+
+引入依赖
+
+```xml
+<!-- Spring Cloud Config Client -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-config-client</artifactId>
+</dependency>
+```
+
+配置文件
+
+读取配置中心的master分支的配置文件 `sardine-file-dev.yml`
+
+```properties
+spring.application.name=sardine-file
+spring.cloud.config.uri=http://127.0.0.1:5100/
+spring.cloud.config.profile=dev
+spring.cloud.config.label=master
+```
+
+### 6. 热更新
+
+#### 手动配置热更新
+
+1. 开启 actuator 中的 refresh 端点
+2. Controller 中添加 @RefreshScope 注解
+3. 向客户端 `http://localhost:5005/actuator/refresh` 发送 Post 请求
 
 ## 草稿
 
