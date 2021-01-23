@@ -174,7 +174,7 @@ public class ConfigCenterApplication {
 </dependency>
 ```
 
-配置文件
+配置文件 `bootstrap.properties`
 
 读取配置中心的master分支的配置文件 `sardine-file-dev.yml`
 
@@ -187,11 +187,36 @@ spring.cloud.config.label=master
 
 ### 6. 热更新
 
-#### 手动配置热更新
+#### 6.1 手动配置热更新
 
 1. 开启 actuator 中的 refresh 端点
 2. Controller 中添加 @RefreshScope 注解
 3. 向客户端 `http://localhost:5005/actuator/refresh` 发送 Post 请求
+
+#### 6.2 自动热更新
+
+在配置中心引入依赖
+
+```xml
+<!-- Spring Cloud Bus Amqp -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+</dependency>
+```
+
+配置文件加入rabbitmq
+
+```properties
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=admin
+spring.rabbitmq.password=admin
+```
+
+向配置中心发送 Post 请求
+
+`http://localhost:5100/actuator/bus-refresh` 
 
 ## 草稿
 

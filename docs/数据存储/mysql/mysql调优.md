@@ -1,5 +1,14 @@
 # mysql调优
 
+导入mysql官方案例数据库 https://dev.mysql.com/doc/index-other.html 
+
+```shell
+mysql -u root -p
+
+mysql>source /sakila-db/sakila-schema.sql
+mysql>source /sakila-db/sakila-data.sql
+```
+
 ## 常用指令
 
 ### slow query log
@@ -32,9 +41,7 @@ show profiles;
 show profile cpu, block io for query [Query_ID];
 ```
 
-### explain {sql}
-
-> SQL 分析
+### 执行计划 explain
 
 ```sql
 --- Explain查询结果字段说明 ---
@@ -50,22 +57,22 @@ ref: 显示索引的哪一列被使用了
 rows: 根据表统计信息索引选用的情况，大致估算出找出所需的记录需要读取的行数
 extra: 额外信息
 
---- type ---
+--- type (至少要达到range) ---
 system: 表中只有一行记录，可忽略不计
 const: 一次就检索到，主键或唯一索引比较常量
 eq_ref: 唯一性索引扫描，表中只有一条记录与之匹配，常见于主键或唯一索引扫描
-ref: 非唯一性索引扫描，返回匹配某个单独值 的所有行
+ref: 非唯一性索引扫描，返回匹配某个单独值的所有行
 range: 只检索给定范围的行，where子句中出现<、>、between、in等查询
 index: 全索引扫描
 all: 全表扫描
 
 --- extra ---
-Using filesort: Mysql中无法利用索引完成的排序成为"文件排序"
-Using temporary: Mysql在对查询结果排序时使用临时表，常见于order by和group by
-Using Index: 表示相应的select操作中使用了覆盖索引，避免访问表的数据行，效率不错
+Using filesort: 无法利用索引进行排序，只能利用排序算法，会消耗额外的位置
+Using temporary: 建立临时表来保存中间结果，查询完成后把临时表删除
+Using Index: 当前查询有覆盖索引的，直接从索引中取数据，不访问数据表
 Using where: 使用了where查询
 Using join buffer: 使用了连接缓存
-impossible where: where子句的值是false，不能用来获取任何元组
+impossible where: where子句的结果是false
 select tables optimized away: 在没有group by子句的情况下，基于索引优化MIN/MAX操作
 distinct: 优化distinct操作，在找到第一匹配元组后即停止找同样值的动作
 ```
@@ -149,31 +156,39 @@ select actor_id from actor where actor_id+1=5;
 
 2. 尽量使用主键查询，因为主键查询不会触发回表查询
 
-3. 使用前缀索引
+3. 使用前缀索引：取一个字符串的前几个字节作为索引，节约存储空间
 
-   对于索引很长的字符串，可以使用前缀索引，用于节约索引空间，提高索引效率，但是会降低索引的选择性
+   对于 BLOB, TEXT, VARCHAR 类型的列必须要使用前缀索引，因为 mysql 不允许索引这些列的完整长度
 
-   索引的选择性：不重复的索引值和数据表记录总数的比值，索引的选择性越高查询效率越高，因为选择性更高的索引可以过滤掉更多的行，对于 BLOB, TEXT, VARCHAR 类型的列必须要使用前缀索引，因为mysql不允许索引这些列的完整长度
+   mysql 无法使用前缀索引做 order by 和 group by
 
-4. 使用索引扫描来排序
+```sql
+-- 索引的选择性越高则查询效率越高
+-- 索引的选择性 = 不重复的索引值 / 数据表记录总数
+select count(distinct left(city,3))/count(*) as sel3,
+count(distinct left(city,4))/count(*) as sel4,
+count(distinct left(city,5))/count(*) as sel5,
+count(distinct left(city,6))/count(*) as sel6,
+count(distinct left(city,7))/count(*) as sel7,
+count(distinct left(city,8))/count(*) as sel8 
+from citydemo;
+-- 根据前面测试创建前缀索引
+alter table citydemo add key(city(7));
+```
 
-   mysql有两种方式可以生成有序的结果：通过排序操作或者按索引顺序扫描，如果explain出来的type列的值为index,则说明mysql使用了索引扫描来做排序
+2. 索引排序：explain 出来的 type 列的值为 index ，说明 mysql 使用了索引扫描做排序
 
-   扫描索引本身是很快的，因为只需要从一条索引记录移动到紧接着的下一条记录。但如果索引不能覆盖查询所需的全部列，那么就不得不每扫描一条索引记录就得回表查询一次对应的行，这基本都是随机IO，因此按索引顺序读取数据的速度通常要比顺序地全表扫描慢
+   在使用排序的时候，如果 where 和 order by 中的列能组成一个最左前缀匹配，就会使用索引排序
 
-   mysql可以使用同一个索引即满足排序，又用于查找行，如果可能的话，设计索引时应该尽可能地同时满足这两种任务。
+3. union all,in,or都能够使用索引，但是推荐使用in
 
-   只有当索引的列顺序和order by子句的顺序完全一致，并且所有列的排序方式都一样时，mysql才能够使用索引来对结果进行排序，如果查询需要关联多张表，则只有当orderby子句引用的字段全部为第一张表时，才能使用索引做排序。order by子句和查找型查询的限制是一样的，需要满足索引的最左前缀的要求，否则，mysql都需要执行顺序操作，而无法利用索引排序
+4. 范围列可以用到索引
 
-5. union all,in,or都能够使用索引，但是推荐使用in
+5. 范围条件是：<、>
 
-6. 范围列可以用到索引
+6. 范围列可以用到索引，但是范围列后面的列无法用到索引，索引最多用于一个范围列
 
-7. 范围条件是：<、>
-
-8. 范围列可以用到索引，但是范围列后面的列无法用到索引，索引最多用于一个范围列
-
-9. 强制类型转换会全表扫描
+7. 强制类型转换会全表扫描
 
 ```sql
 -- 不会触发索引
@@ -338,7 +353,7 @@ show status like 'last_query_cost';
 
 ### 优化特定类型的查询
 
-#### 优化count()查询
+#### 优化count查询
 
 总有人认为myisam的count函数比较快，这是有前提条件的，只有没有任何where条件的count()才是比较快的
 

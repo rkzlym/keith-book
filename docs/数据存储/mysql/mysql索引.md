@@ -27,17 +27,13 @@
 
 7. 在某些情况下，可以优化查询以检索值而无需查询数据行
 
-索引采用的数据结构：哈希表，B+树
-
 ## 2. 索引分类
 
 1. 普通索引：是最基本的索引，它没有任何限制
-2. 主键索引：是一种特殊的唯一索引，一个表只能有一个主键
-3. 唯一索引：索引列的值必须唯一，但允许有空值
+2. 主键索引：是一种特殊的唯一索引，一个表只能有一个主键，且不能为NULL
+3. 唯一索引：索引列的值必须唯一，但允许为NULL
 4. 组合索引：一个索引包含多个列
 5. 全文索引：主要用来查找文本中的关键字，而不是直接与索引中的值相比较，只有char，varchar，text 列上可以创建全文索引
-
-技术名词：回表，覆盖索引，最左匹配，索引下推
 
 | 类型        | 描述                                     |
 | ----------- | :--------------------------------------- |
@@ -46,7 +42,50 @@
 | INDEX       | 普通索引，索引值可能出现多次             |
 | FULLTEXT    | 全文索引                                 |
 
+**回表，覆盖索引，最左匹配，索引下推**
+
+回表：普通列创建索引，普通列索引的叶子节点存放的是主键，所以按普通列查找的时候先根据普通列的 B+ 树找到主键再根据主键的 B+ 树找到整行数据
+
+覆盖索引：查询的列是主键，不用回表查询
+
+```sql
+-- name建了索引，id是主键索引
+
+-- 产生回表
+select * from emp where name = ?;
+-- 覆盖索引
+select id from emp where name = ?;
+```
+
+最左匹配：会按照组合索引的顺序匹配索引
+
+```sql
+-- 有组合索引 name, age
+
+-- 用到了索引，因为 mysql 会对 where 条件后的顺序进行优化
+select * from emp where name = ? and age = ?;
+select * from emp where age = ? and name = ?;
+select * from emp where name = ?;
+-- 没用到索引
+select * from emp where age = ?;
+
+-- 解决方案：为age单独建立一个索引
+```
+
+索引下推：方式2的实现
+
+执行以下 SQL 会有两种实现方式
+
+1. 取出符合 name 条件数据集到内存，在内存中过滤掉不符合 age 条件的数据
+2. 在存储引擎中直接取出符合 name，age 的数据集
+
+```sql
+-- 有组合索引 name, age
+select * from emp where name = ? and age = ?;
+```
+
 ## 3. 索引语法和匹配方式
+
 ### 3.1 基本语法
 ```sql
 -- 创建索引
@@ -63,15 +102,15 @@ SHOW INDEX FROM tb_name;
 
 案例，建立组合索引a,b,c，不同SQL语句使用索引情况
 
-| 语句                                    | 索引是否发挥作用   |
-| --------------------------------------- | ------------------ |
-| where a = 3                             | 是，使用了 a       |
-| where a= 3 and b = 4                    | 是，使用了 a, b    |
-| where a = 3 and b = 4 and c =5          | 是，使用了 a, b, c |
-| where b = 3 or c = 4                    | 否                 |
-| where a = 3 and c = 4                   | 是，使用了 a       |
-| where a = 3 and b > 10 and c = 7        | 是，使用了 a, b    |
-| where a = 3 and b like '%xx%' and c = 7 | 是，使用了 a       |
+| 语句                                    | 索引是否发挥作用                 |
+| --------------------------------------- | -------------------------------- |
+| where a = 3                             | 是，使用了 a                     |
+| where a= 3 and b = 4                    | 是，使用了 a, b                  |
+| where a = 3 and b = 4 and c =5          | 是，使用了 a, b, c               |
+| where b = 3 or c = 4                    | 否，因为跳过了a                  |
+| where a = 3 and c = 4                   | 是，使用了 a                     |
+| where a = 3 and b > 10 and c = 7        | 是，使用了 a, b，因为b是范围查找 |
+| where a = 3 and b like '%xx%' and c = 7 | 是，使用了 a                     |
 
 ### 3.3 索引匹配方式 案例
 
@@ -99,7 +138,7 @@ explain select * from staffs where name = 'July' and age = '23';
 explain select * from staffs where name = 'July';
 ```
 
-匹配列前缀：可以匹配某一列的值的开头部分
+匹配列前缀：可以匹配某一列的值的开头部分，**不要让%放到前面，会让索引失效**
 
 ```mysql
 explain select * from staffs where name like 'J%';
@@ -149,24 +188,52 @@ explain select name,age,pos from staffs where name = 'July' and age = 25 and pos
 4. 创建索引的列，不允许为null，可能会得到不符合预期的结果
 
 ## 5. 索引的数据结构
-> 数据库索引所使用的数据结构是<font color=red>B+Tree</font>
+> 数据库索引所使用的数据结构是 B+Tree 和 Hash表
 
-1. 使用二叉树可能导致的场景：极端情况变成链表
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209094343621.png)
-2. 使用红黑树：可能会导致树的高度过高
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209094426919.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-3. B-Tree：横向存储更多数据
-- 叶节点具有相同的深度，叶节点的指针为空
-- 所有索引元素不重复
-- 节点中的数据索引从左到右递增排序
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209094450310.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-4. B+ Tree（B-Tree变种）
+1. 二叉树：极端情况变成链表
+  ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209094343621.png)
+2. AVL树：最长子树和最短子树的高度差不能超过1，插入数据会进行1-N次旋转，即插入效率低，查询效率高
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210123100737778.png)
+
+3. 红黑树：最长子树不超过最短子树的两倍，损失部分查询性能提升插入性能，可能导致树的高度过高
+
+   左旋：逆时针旋转，父节点被右孩子取代，而自己成功自己的左孩子
+
+   右旋：顺时针旋转，父节点被左孩子取代，而自己成为自己的右孩子
+
+   ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209094426919.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+4. B-Tree：横向存储更多数据
+
+- 所有键值分布在整棵树中
+- 搜索有可能在非叶子结点结束，在关键字全集内做一次查找,性能逼近二分查找
+- 每个节点最多拥有m个子树
+- 根节点最少有两个子树
+- 分支节点至少拥有m/2颗子树（除根节点和叶子节点外都是分支节点）
+- 所有叶子节点都在同一层、每个节点最多可以有m-1个key，并且以升序排列
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210123104042810.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+5. B+ Tree（B-Tree变种）
+
 - 非叶子节点不存储data，值存储索引（冗余），可以放更多的索引。
 - 叶子节点包含所有索引字段。
 - 叶子节点用指针连接，提高访问的性能。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209094508109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+![image-20210123104335824](C:\Users\a\AppData\Roaming\Typora\typora-user-images\image-20210123104335824.png)
+
+6. Hash表 （memory 存储引擎）
+
+- 利用 Hash 存储的话需要将所有文件添加到内存，比较消耗内存空间
+- Hash 表对于等值查询很快，对于范围查询很慢
+
 ## 6. mysql存储引擎
+
 ### 6.1 存储引擎
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210122232753310.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
 1. MyISAM：一张表有3个文件 -- frm, MYD, MYI
 
   执行一条查询SQL流程：首先判断条件是否带有索引，如果带有索引，那么先去MYI文件中找到这个索引所代表的数据的地址，再根据这个地址去MYD中查询相应的数据。
@@ -174,6 +241,8 @@ explain select name,age,pos from staffs where name = 'July' and age = 25 and pos
 2. InnoDB：一张表有2个文件 -- frm, ibd
 
   执行一条查询SQL流程：首先判断条件是否带有索引，如果带有索引，可以直接到ibd文件中查询到相应数据。
+
+3. memory：基于内存的存储引擎
 
 | 文件类型 | 描述           |
 | -------- | -------------- |
@@ -194,13 +263,11 @@ explain select name,age,pos from staffs where name = 'July' and age = 25 and pos
 缺点
 
 1. 聚簇数据最大限度地提高了IO密集型应用的性能，如果数据全部在内存，那么聚簇索引就没有什么优势
-
 2. 插入速度严重依赖于插入顺序，按照主键的顺序插入是最快的方式
-
 3. 更新聚簇索引列的代价很高，因为会强制将每个被更新的行移动到新的位置
-
 4. 基于聚簇索引的表在插入新行，或者主键被更新导致需要移动行的时候，可能面临页分裂的问题
-
+   1. 页分裂：新数据要插入索引块，如果索引块空间不足，就会把原来的块等分为两份。
+   2. 页合并：删除数据维护索引时，再把两个索引块合并成一个。
 5. 聚簇索引可能导致全表扫描变慢，尤其是行比较稀疏，或者由于页分裂导致数据存储不连续的时候
 
 **非聚集索引**：索引和数据存储在不同文件，如MyISAM的主键索引。
@@ -239,6 +306,8 @@ select id fom url where url="" and url_crc=CRC32("")
 
 ### 6.4 覆盖索引
 
+> explain 结果中 extra 为 Using Index 就是使用了覆盖索引
+
 基本介绍
 
 1. 如果一个索引包含所有需要查询的字段的值，我们称之为覆盖索引
@@ -257,50 +326,6 @@ select id fom url where url="" and url_crc=CRC32("")
 
 4. 由于innodb是聚簇索引，覆盖索引对innodb表特别有用
 
-案例演示
-
-1、当发起一个被索引覆盖的查询时，在explain的extra列可以看到using index的信息，此时就使用了覆盖索引
-
-```sql
-mysql> explain select store_id,film_id from inventory\G
-*************************** 1. row ***************************
-           id: 1
-  select_type: SIMPLE
-        table: inventory
-   partitions: NULL
-         type: index
-possible_keys: NULL
-          key: idx_store_id_film_id
-      key_len: 3
-          ref: NULL
-         rows: 4581
-     filtered: 100.00
-        Extra: Using index
-1 row in set, 1 warning (0.01 sec)
-```
-
-2、在大多数存储引擎中，覆盖索引只能覆盖那些只访问索引中部分列的查询。不过，可以进一步的进行优化，可以使用innodb的二级索引来覆盖查询。
-
-例如：actor使用innodb存储引擎，并在last_name字段又二级索引，虽然该索引的列不包括主键actor_id，但也能够用于对actor_id做覆盖查询
-
-```sql
-mysql> explain select actor_id,last_name from actor where last_name='HOPPER'\G
-*************************** 1. row ***************************
-           id: 1
-  select_type: SIMPLE
-        table: actor
-   partitions: NULL
-         type: ref
-possible_keys: idx_actor_last_name
-          key: idx_actor_last_name
-      key_len: 137
-          ref: const
-         rows: 2
-     filtered: 100.00
-        Extra: Using index
-1 row in set, 1 warning (0.00 sec)
-```
-
 ### 6.5 InnoDB表必须有主键
 
 > 推荐使用整型的自增主键
@@ -310,8 +335,6 @@ possible_keys: idx_actor_last_name
 **推荐整型原因**：因为B+树需要一直比较主键的大小，整型的比较速度比字符串快，因为比较字符串需要先转换为ASCII码。而且整型比字符串省空间。
 
 **推荐自增原因**：因为B+树的存储是从左到右递增的。如果使用随机数存储，那么有可能将索引插入到中间的一个已经满的子节点中，那么就会导致树需要分裂再平衡来维护索引。如果是自增的话，每一次插入的索引都是在最后的，所以性能比较高。
-### 6.6 范围查找
-如果想要找data>20的这个范围，只需要找到20这个元素，然后直接根据指针依次查询就可以了。
 
 ## 7. 索引监控
 
@@ -331,7 +354,7 @@ Handler_read_rnd：从固定位置读取数据的次数
 Handler_read_rnd_next：从数据节点读取下一条数据的次数
 ```
 
-## 8. 索引失效原因
+## 8. 索引失效
 
 1. 最佳左前缀法则：如果索引了多列，查询从索引的最左前列开始并<font color=red>不跳过索引中的列</font>。
 2. 不在索引上做任何操作（计算、函数、类型转换），会导致索引失效转向权标扫描
@@ -340,5 +363,6 @@ Handler_read_rnd_next：从数据节点读取下一条数据的次数
 5. 使用 != < > 的时候使用索引会导致全表扫描
 6. is null，is not null无法使用索引
 7. like以通配符开头会导致索引失效，所以%要写最右边
-8. 字符串不加单引号会导致索引失效
-9. 使用OR连接会导致索引失效  
+8. 强制类型转换会导致索引失效
+9. 使用OR连接不会导致索引失效（mysql 5.0以后新增 索引合并）
+
