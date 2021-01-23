@@ -182,10 +182,6 @@ alter table citydemo add key(city(7));
 
 3. union all,in,or都能够使用索引，但是推荐使用in
 
-4. 范围列可以用到索引
-
-5. 范围条件是：<、>
-
 6. 范围列可以用到索引，但是范围列后面的列无法用到索引，索引最多用于一个范围列
 
 7. 强制类型转换会全表扫描
@@ -197,13 +193,11 @@ explain select * from user where phone=13800001234;
 explain select * from user where phone='13800001234';
 ```
 
-10. 当需要进行表连接的时候，最好不要超过三张表，因为需要 join 的字段，数据类型必须一致
+6. 当需要进行表连接的时候，最好不要超过三张表，因为需要 join 的字段，数据类型必须一致
 
-11. 能使用limit的时候尽量使用limit
+7. 能使用limit的时候尽量使用limit
 
-12. 单表索引建议控制在5个以内
-
-13. 单索引字段数不允许超过5个（组合索引）
+8. 单表索引建议控制在5个以内，单索引字段数不允许超过5个（组合索引）
 
 ### 查询性能低下原因
 
@@ -310,27 +304,25 @@ join的实现方式原理
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210122101434106.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 1. Join Buffer会缓存所有参与查询的列而不是只有Join的列。
-
 2. 可以通过调整join_buffer_size缓存大小
-
 3. join_buffer_size的默认值是256K，join_buffer_size的最大值在MySQL 5.1.22版本前是4G-1，而之后的版本才能在64位操作系统下申请大于4G的Join Buffer空间。
-
 4. 使用Block Nested-Loop Join算法需要开启优化器管理配置的optimizer_switch的设置block_nested_loop为on，默认为开启。show variables like '%optimizer_switch%'
 
-案例演示
+**join on and 解释**
+
+两张表匹配的时候，如果使用 and ，那么最终结果集中未被 and 匹配上的记录会展示为 NULL
+
+举例1：假如是左连接，那么下面第一行返回的结果集的基础上，再将 e.age <= 20的 d 表的记录置为NULL
 
 ```sql
--- 查看不同的顺序执行方式对查询性能的影响：
-explain select film.film_id,film.title,film.release_year,actor.actor_id,actor.first_name,actor.last_name from film inner join film_actor using(film_id) inner join actor using(actor_id);
+select * from emp e left join dep d on e.id = d.id 
+and e.age > 20;
+```
 
--- 查看执行的成本：
-show status like 'last_query_cost'; 
+举例2：左表记录都存在，右表记录都是NULL
 
--- 按照自己预想的规定顺序执行：
-explain select straight_join film.film_id,film.title,film.release_year,actor.actor_id,actor.first_name,actor.last_name from film inner join film_actor using(film_id) inner join actor using(actor_id);
-
--- 查看执行的成本
-show status like 'last_query_cost'; 
+```sql
+select * from emp e left join dep d on 1 != 1;
 ```
 
 排序优化

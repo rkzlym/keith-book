@@ -71,6 +71,7 @@ module.exports = {
                         '/数据存储/mysql/mysql索引',
                         '/数据存储/mysql/mysql锁',
                         '/数据存储/mysql/mysql主从复制',
+                        '/数据存储/mysql/mysql调优',
                     ],
                 },
                 {
@@ -105,6 +106,15 @@ module.exports = {
                 {
                     title: 'elasticsearch',
                     path: '/数据存储/elasticsearch/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+
+                    ],
+                },
+                {
+                    title: 'mongodb',
+                    path: '/数据存储/mongodb/',
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
