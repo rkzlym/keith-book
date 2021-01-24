@@ -215,10 +215,6 @@ explain select * from user where phone='13800001234';
 
 ### 执行过程的优化
 
-#### 查询缓存
-
-在解析一个查询语句之前，如果查询缓存是打开的，那么mysql会优先检查这个查询是否命中查询缓存中的数据，如果查询恰好命中了查询缓存，那么会在返回结果之前会检查用户权限，如果权限没有问题，那么mysql会跳过所有的阶段，就直接从缓存中拿到结果并返回给客户端
-
 #### 查询优化处理
 
 1. 语法解析器和预处理
@@ -229,84 +225,99 @@ explain select * from user where phone='13800001234';
 
 ```sql
 select count(*) from film_actor;
--- 可以看到上面这条查询语句需要经过多少个数据页才能找到对应的数据
+-- 可以看到上面这条查询语句需要经过多少个数据页才能找到对应的数据（基于成本）
 show status like 'last_query_cost';
 ```
 
-#### mysql可能会选择错误的执行计划
+**mysql可能会选择错误的执行计划 原因如下**
 
-统计信息不准确：InnoDB因为其mvcc的架构，并不能维护一个数据表的行数的精确统计信息
+1. 统计信息不准确：InnoDB因为其mvcc的架构，并不能维护一个数据表的行数的精确统计信息
 
-执行计划的成本估算不等同于实际执行的成本：有时候某个执行计划虽然需要读取更多的页面，但是他的成本却更小，因为如果这些页面都是顺序读或者这些页面都已经在内存中的话，那么它的访问成本将很小，mysql层面并不知道哪些页面在内存中，哪些在磁盘，所以查询之际执行过程中到底需要多少次IO是无法得知的
+2. 执行计划的成本估算不等同于实际执行的成本：有时候某个执行计划虽然需要读取更多的页面，但是他的成本却更小，因为如果这些页面都是顺序读或者这些页面都已经在内存中的话，那么它的访问成本将很小，mysql层面并不知道哪些页面在内存中，哪些在磁盘，所以查询之际执行过程中到底需要多少次IO是无法得知的
 
-mysql的优化是基于成本模型的优化，但是有可能不是最快的优化
+3. mysql的优化是基于成本模型的优化，但是有可能不是最快的优化
 
-mysql不考虑其他并发执行的查询
+4. mysql不考虑其他并发执行的查询
 
-mysql不会考虑不受其控制的操作成本
+5. mysql不会考虑不受其控制的操作成本
 
-执行存储过程或者用户自定义函数的成本
+6. 执行存储过程或者用户自定义函数的成本
 
-##### 优化器的优化策略
+#### 优化器的优化策略
 
-1. 静态优化
+1. 静态优化：直接对解析树进行分析，并完成优化
 
-   直接对解析树进行分析，并完成优化
+2. 动态优化：动态优化与查询的上下文有关，也可能跟取值、索引对应的行数有关
 
-2. 动态优化
-
-   动态优化与查询的上下文有关，也可能跟取值、索引对应的行数有关
 
 mysql对查询的静态优化只需要一次，但对动态优化在每次执行时都需要重新评估
 
-##### 优化器的优化类型
+#### 优化器的优化类型
 
-重新定义关联表的顺序：数据表的关联并不总是按照在查询中指定的顺序进行，决定关联顺序时优化器很重要的功能
+1. 重新定义关联表的顺序：数据表的关联并不总是按照在查询中指定的顺序进行。将外连接转化成内连接，内连接的效率要高于外连接，使用等价变换规则，mysql可以使用一些等价变化来简化并规划表达式
 
-将外连接转化成内连接，内连接的效率要高于外连接
+2. min max：使用min max的时候，使用 group by 条件，这样可以使用索引
 
-使用等价变换规则，mysql可以使用一些等价变化来简化并规划表达式
+3. 索引覆盖扫描：当索引中的列包含所有查询中需要使用的列的时候，可以使用覆盖索引
 
-**优化count(),min(),max()**
-
-索引和列是否可以为空通常可以帮助mysql优化这类表达式：例如，要找到某一列的最小值，只需要查询索引的最左端的记录即可，不需要全文扫描比较
-
-预估并转化为常数表达式，当mysql检测到一个表达式可以转化为常数的时候，就会一直把该表达式作为常数进行处理
+4. 等值传播： 如果两个列的值通过等式关联，那么mysql能够把其中一个列的where条件传递到另一个上
 
 ```sql
-explain select film.film_id,film_actor.actor_id from film inner join film_actor using(film_id) where film.film_id = 1
+-- 这两个SQL执行效率是一样的
+explain select film.film_id from film inner join film_actor 
+using(film_id) where film.film_id > 500;
+
+explain select film.film_id from film inner join film_actor 
+using(film_id) where film.film_id > 500 and film_actor.film_id > 500;
 ```
 
-索引覆盖扫描，当索引中的列包含所有查询中需要使用的列的时候，可以使用覆盖索引
+#### 优化子查询
 
-**子查询优化**
+子查询尽可能使用关联查询代替，因为子查询产生的临时表数据集多，产生额外的IO 
 
-mysql在某些情况下可以将子查询转换一种效率更高的形式，从而减少多个查询多次对数据进行访问，例如将经常查询的数据放入到缓存中
+#### 优化排序
 
-**等值传播**
+排序的算法：
 
-```sql
--- 如果两个列的值通过等式关联，那么mysql能够把其中一个列的where条件传递到另一个上：
-explain select film.film_id from film inner join film_actor using(film_id) where film.film_id > 500;
+1. 两次传输排序：第一次数据读取是将需要排序的字段读取出来，然后进行排序，第二次是将排好序的结果按照需要去读取数据行
 
--- 这里使用film_id字段进行等值关联，film_id这个列不仅适用于film表而且适用于film_actor表
-explain select film.film_id from film inner join film_actor using(film_id) where film.film_id > 500 and film_actor.film_id > 500;
-```
+   缺点：需要进行两次IO，效率较低
 
-#### 关联查询
+2. 单次传输排序：先读取查询所需要的所有列，然后再根据给定列进行排序，最后直接返回排序结
+
+   缺点：在查询的列特别多的时候，会占用大量的存储空间，无法存储大量的数据
+
+**优化策略**
+
+当需要排序的列的总大小超过 max_length_for_sort_data 定义的字节，mysql 会选择双次排序，反之使用单次排序，当然，用户可以设置此参数的值来选择排序的方式
+
+#### 优化count查询
+
+总有人认为myisam的count函数比较快，这是有前提条件的，只有没有任何where条件的count才是比较快的
+
+**使用近似值**
+
+在某些应用场景中，不需要完全精确的值，可以参考使用近似值来代替，比如可以使用explain来获取近似的值
+
+其实在很多OLAP的应用中，需要计算某一个列值的基数，有一个计算近似值的算法叫hyperloglog。
+
+**更复杂的优化**
+
+一般情况下，count()需要扫描大量的行才能获取精确的数据，其实很难优化，在实际操作的时候可以考虑使用索引覆盖扫描，或者增加汇总表，或者增加外部缓存系统。
+
+#### 优化关联查询
 
 join的实现方式原理
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210122101354963.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2021012210141742.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210122101434106.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 1. Join Buffer会缓存所有参与查询的列而不是只有Join的列。
-2. 可以通过调整join_buffer_size缓存大小
-3. join_buffer_size的默认值是256K，join_buffer_size的最大值在MySQL 5.1.22版本前是4G-1，而之后的版本才能在64位操作系统下申请大于4G的Join Buffer空间。
-4. 使用Block Nested-Loop Join算法需要开启优化器管理配置的optimizer_switch的设置block_nested_loop为on，默认为开启。show variables like '%optimizer_switch%'
+2. 可以通过调整join_buffer_size缓存大小，默认值是256K
+3. 使用Block Nested-Loop Join算法需要开启优化器管理配置的optimizer_switch的设置block_nested_loop为on，默认为开启。
+
+```sql
+show variables like '%optimizer_switch%'
+```
 
 **join on and 解释**
 
@@ -325,61 +336,23 @@ and e.age > 20;
 select * from emp e left join dep d on 1 != 1;
 ```
 
-排序优化
+**优化策略**
 
-排序的算法：
+1. 确保 on 或者 using 子句中的列上有索引
 
-**两次传输排序**
+2. 一般情况下来说，只需要在关联顺序中的第二个表的相应列上创建索引
 
-第一次数据读取是将需要排序的字段读取出来，然后进行排序，第二次是将排好序的结果按照需要去读取数据行。
+3. 确保任何的 group by 和 order by 中的表达式只涉及到一个表中的列，这样mysql才有可能使用索引来优化这个过程
 
-这种方式效率比较低，原因是第二次读取数据的时候因为已经排好序，需要去读取所有记录而此时更多的是随机IO，读取数据成本会比较高
+4. 优化子查询：子查询的优化最重要的优化建议是尽可能使用关联查询代替
 
-两次传输的优势，在排序的时候存储尽可能少的数据，让排序缓冲区可以尽可能多的容纳行数来进行排序操作
+5. 尽可能减少Join语句中NestedLoop的循环总次数，用小结果集驱动大结果集。
 
-**单次传输排序**
-
-先读取查询所需要的所有列，然后再根据给定列进行排序，最后直接返回排序结果，此方式只需要一次顺序IO读取所有的数据，而无须任何的随机IO，问题在于查询的列特别多的时候，会占用大量的存储空间，无法存储大量的数据
-
-当需要排序的列的总大小超过max_length_for_sort_data定义的字节，mysql会选择双次排序，反之使用单次排序，当然，用户可以设置此参数的值来选择排序的方式
-
-### 优化特定类型的查询
-
-#### 优化count查询
-
-总有人认为myisam的count函数比较快，这是有前提条件的，只有没有任何where条件的count()才是比较快的
-
-**使用近似值**
-
-在某些应用场景中，不需要完全精确的值，可以参考使用近似值来代替，比如可以使用explain来获取近似的值
-
-其实在很多OLAP的应用中，需要计算某一个列值的基数，有一个计算近似值的算法叫hyperloglog。
-
-**更复杂的优化**
-
-一般情况下，count()需要扫描大量的行才能获取精确的数据，其实很难优化，在实际操作的时候可以考虑使用索引覆盖扫描，或者增加汇总表，或者增加外部缓存系统。
-
-#### 优化关联查询
-
-确保on或者using子句中的列上有索引，在创建索引的时候就要考虑到关联的顺序
-
-当表A和表B使用列C关联的时候，如果优化器的关联顺序是B、A，那么就不需要再B表的对应列上建上索引，没有用到的索引只会带来额外的负担，一般情况下来说，只需要在关联顺序中的第二个表的相应列上创建索引
-
-确保任何的groupby和order by中的表达式只涉及到一个表中的列，这样mysql才有可能使用索引来优化这个过程
-
-优化子查询：子查询的优化最重要的优化建议是尽可能使用关联查询代替
-
-总结：
-
-尽可能减少Join语句中NestedLoop的循环总次数，永远用小结果集驱动大结果集。
-
-优先优化NestedLoop的内层循环。
-
-保证Join语句中被驱动表上的Join条件字段已经被索引。
+6. 确保Join语句中被驱动表上的Join条件字段已经被索引。
 
 #### 优化limit分页
 
->在很多应用场景中我们需要将数据进行分页，一般会使用limit加上偏移量的方法实现，同时加上合适的orderby 的子句，如果这种方式有索引的帮助，效率通常不错，否则的化需要进行大量的文件排序操作，还有一种情况，当偏移量非常大的时候，前面的大部分数据都会被抛弃，这样的代价太高。
+>在很多应用场景中我们需要将数据进行分页，一般会使用limit加上偏移量的方法实现，同时加上合适的order by 的子句，如果这种方式有索引的帮助，效率通常不错，否则的化需要进行大量的文件排序操作，还有一种情况，当偏移量非常大的时候，前面的大部分数据都会被抛弃，这样的代价太高。
 
 要优化这种查询的话，要么是在页面中限制分页的数量，要么优化大偏移量的性能
 
@@ -387,8 +360,11 @@ select * from emp e left join dep d on 1 != 1;
 
 ```sql
 -- 查看执行计划查看扫描的行数
-select film_id,description from film order by title limit 50,5
-explain select film.film_id,film.description from film inner join (select film_id from film order by title limit 50,5) as lim using(film_id);
+-- 1000行
+explain select film_id,description from film order by title limit 50,5
+-- 55+1+55 行
+explain select film.film_id,film.description from film inner join 
+(select film_id from film order by title limit 50,5) as lim using(film_id);
 ```
 
 #### 优化union查询
