@@ -92,50 +92,6 @@ applicationContext.xml
 
 ### Spring 容器 核心流程
 
-<<<<<<< HEAD
-```java
-// Prepare this context for refreshing.
-prepareRefresh();
-
-// load BeanDefinition through BeanDefinition Reader (updated)
-ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
-
-// Prepare the bean factory for use in this context.
-prepareBeanFactory(beanFactory);
-
-try {
-   // Allows post-processing of the bean factory in context subclasses.
-   postProcessBeanFactory(beanFactory);
-
-   StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
-   // Invoke factory processors registered as beans in the context.
-   invokeBeanFactoryPostProcessors(beanFactory);
-
-   // Register bean processors that intercept bean creation.
-   registerBeanPostProcessors(beanFactory);
-   beanPostProcess.end();
-
-   // Initialize message source for this context.
-   initMessageSource();
-
-   // Initialize event multicaster for this context.
-   initApplicationEventMulticaster();
-
-   // Initialize other special beans in specific context subclasses.
-   onRefresh();
-
-   // Check for listener beans and register them.
-   registerListeners();
-
-   // Instantiate all remaining (non-lazy-init) singletons.
-   finishBeanFactoryInitialization(beanFactory);
-
-   // Last step: publish corresponding event.
-   finishRefresh();
-}
-=======
-AbstractApplicationContext # refresh()
-
 ```java
 // There has a method named "loadBeanDefinitions" attampt to resolve resources like xml, annotation, groovy.
 // These sources will be resolved to "BeanDefinition" through "BeanDefinitionReader". 
@@ -162,7 +118,6 @@ finishBeanFactoryInitialization(beanFactory);
 
 // Last step: publish corresponding event, Observer pattern.
 finishRefresh();
->>>>>>> 22ae868feed73bfd415f8d88817c74f5df5ff345
 ```
 
 ### Spring 父子容器
