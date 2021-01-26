@@ -299,16 +299,8 @@ jps
 top -Hp <pid>
 # 查看这个<pid>的线程堆栈
 jstack <pid>
-# 导出堆内存(不推荐，查询时间过长，会导致系统卡顿)
+# 导出堆内存
 jamp -heap <pid>
-```
-
-排查死锁
-
-```shell
-# 查看这个<pid>的线程堆栈
-# 观察打印信息是否存在 Found one java-level deadlock
-jstack <pid>
 ```
 
 **如何监控JVM**
@@ -318,11 +310,21 @@ jstat
 ```shell
 # 格式模板
 jstat -<option> [-t] [-h<lines>] <vmid> [<interval> [<count>]]
+
 # 常见用法
+jstack <pid>
 # 类加载统计
 jstat -class 19570
 # 编译统计
 jstat -compiler 19570
+
+### 观察信息
+# 死锁
+Found one java-level deadlock
+# 锁时间过长
+很多线程都在 waiting on <0x00000000eda673f0> 等待锁的释放
+要找到 <0x00000000eda673f0> 这把锁被哪个线程持有
+举例说明：一个程序有10个线程，第一个线程持有锁后死循环，其它线程全部WAITING，只有第一个线程是RUNNABLE
 ```
 
 jconsole jvisualvm
@@ -332,6 +334,26 @@ jconsole jvisualvm
 使用jvisualvm打开GUI面板，监视 -> 堆 Dump，截取一个内存快照。
 
 检查 -> 查找前20个最大的对象，可以检查到哪几个对象占用了大量的内存。
+
+**JMX不建议在生产环境使用**
+
+JMX一般是在测试环境使用，因为 JMX 会 patch 到 JVM 上而且占用了很大的性能。
+
+如何在线上系统观察 可以使用 jmap 命令找到占用内存较大的类
+
+```shell
+jmap -histo 21853 | head -20
+```
+
+但是对于内存特别大的系统，jmap执行期间会对进程产生很大影响，甚至卡顿
+
+解决方案1：设定以下参数，OOM的时候会自动生成堆转储文件
+
+```shell
+-XX:+HeapDumpOnOutOfMemoryError
+```
+
+解决方案2：有服务器备份（高可用），停掉这台服务器对其它服务器不影响
 
 ## 附录
 
