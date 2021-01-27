@@ -56,11 +56,11 @@ Reading messages... (press Ctrl-C to quit)
 
 布隆过滤器：解决缓存穿透
 
-1. 将可以查询到的数据向布隆过滤器里添加
-
-2. 如果一个请求查询一个不存在的数据，布隆过滤器大概率会打回
-
-3. 数据库增加了元素，也需要向布隆过滤器里增加
+1. 将可查询到的数据通过映射函数向布隆过滤器里标记
+2. 如果用户请求的数据你有，就会放行到DB，如果你没有，也有小概率被放行
+3. 可能会误标记：商品3 映射到了商品1和商品2标记的位置
+4. 但是一定概率会大量减少穿透，而且成本低
+5. 数据库增加了元素，也需要向布隆过滤器里增加
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210110163932551.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
@@ -71,3 +71,22 @@ Reading messages... (press Ctrl-C to quit)
 安装布隆过滤器
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210110164739616.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+## redis encoding
+
+**判断这个key中value的编码**
+
+```shell
+object encoding key
+```
+
+二进制安全：redis只取字节流
+
+如果进行了 incr 操作，那么 redis 会将 value 取出转换成数值类型再进行 incr
+
+**编码集格式化**
+
+```shell
+redis-cli --raw
+```
+
