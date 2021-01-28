@@ -213,3 +213,25 @@ view = mv.getView();
 view.render(mv.getModelInternal(), request, response);
 ```
 
+## Spring MVC 定时器
+
+```xml
+<!-- 配置任务扫描 -->
+<task:annotation-driven />
+
+<!-- 扫描任务 -->
+<context:component-scan base-package="com.demo.springTask" />
+```
+
+```java
+@Component
+public class MyTask{
+    @Scheduled(cron = "0/5 * * * * ? ") // 间隔5秒执行
+    public void taskCycle() {
+        LocalDateTime date = LocalDateTime.now();
+        String dateStr = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        System.out.println("定时任务 : " + dateStr);
+    }
+}
+```
+
