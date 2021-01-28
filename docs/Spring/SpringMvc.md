@@ -115,8 +115,6 @@ Html
 @MatrixVariable		矩阵变量
 ```
 
-
-
 ## Spring MVC 九大组件
 
 ```java
@@ -145,8 +143,8 @@ List<ViewResolver> viewResolvers;
 ### 流程说明
 
 1. 客户端请求提交到 DispatcherServlet
-2. DispatcherServlet 收到请求后，遍历HandlerMapping集合得到HandlerExecutionChain，HandlerExecutionChain中包含Handler和Intercepetor (处理器和拦截器)
-3. HandlerMapping 根据Url找到HandlerAdapter，由HandlerAdapter调用具体的Handler
+2. DispatcherServlet 收到请求后，遍历 HandlerMapping 集合得到 HandlerExecutionChain ，HandlerExecutionChain 中包含Handler 和 Intercepetor (处理器和拦截器)
+3. HandlerMapping 根据 Url 找到 HandlerAdapter，由 HandlerAdapter 调用具体的Handler
    1. 先执行前置拦截器applyPreHandle
    2. 再执行处理器中目标方法，返回ModelAndView
    3. 最后执行后置拦截器 applyPostHandle

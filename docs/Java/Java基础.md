@@ -83,15 +83,25 @@ public class Client {
 执行结果：
 
 父类静态实例变量
+
 父类静态代码块
+
 子类静态实例变量
+
 子类静态代码块
+
 子类实例变量
+
 父类实例变量2
+
 父类代码块
+
 父类构造方法
+
 子类实例变量
+
 子类代码块
+
 子类构造方法
 
 ## 静态变量
@@ -152,18 +162,37 @@ System.out.println(str2 == str2.intern());      // false
 
 String、包装类等属于引用数据类型，同时是**不可变对象**
 
-> ```
 > 《Effective Java》
 > 不可变对象(Immutable Object)：对象一旦被创建后，对象所有的状态及属性在其生命周期内不会发生任何变化。
 > 由于ImmutableObject不提供任何setter方法，并且成员变量value是基本数据类型，getter方法返回的是value的拷贝，所以一旦ImmutableObject实例被创建后，该实例的状态无法再进行更改，因此该类具备不可变性。
-> ```
 
 ## 反射
 
 > JAVA反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法。对于任意一个对象，都能够调用它的任意方法和属性。
 
+获取 Class 对象的方式
+
 ```java
-/* 根据属性名获取属性值 */
+// 获取 User 对象的Class
+Class<User> clazz = User.class;
+Class<User> clazz = user.getClass();
+Class<?> clazz = Class.forName("com.demo.entity.User");
+Class<?> clazz = classLoader.loadClass("com.demo.entity.User");
+```
+
+利用反射创建对象
+
+```java
+// User 需要有无参构造
+User user = clazz.newInstance();
+// 利用 User 的有参构造创建
+User user = clazz.getConstructor(String.class).newInstance("name");
+```
+
+利用反射操作属性
+
+```java
+// 根据属性名获取属性值
 public static Object getFieldValue(String fieldName, Object object) {
     try {
         Field field = object.getClass().getDeclaredField(fieldName);
@@ -175,7 +204,7 @@ public static Object getFieldValue(String fieldName, Object object) {
     return null;
 }
 
-/* 根据属性名设置属性值 */
+// 根据属性名设置属性值
 public static void setFieldValue(String fieldName, Object object, Object value) {
     try {
         Class<?> c = object.getClass();

@@ -37,21 +37,23 @@
 
    Spring整合后默认开启了交换机、队列、消息的持久化。
 
-## 有序消费消息
+## 有序消费
 
 **场景1**
 
 当RabbitMQ采用Work Queue模式，此时只会有一个Queue但是会有多个Consumer，同时多个Consumer直接是竞争关系，此时就会出现MQ消息乱序的问题。
 
-解决方案：
+解决方案：生产者根据 ID 计算出一个 Hash 值，然后对队列的个数取余，可以让相同 ID 的所有操作压到同一个队列，且每个队列都只有一个消费者，此时就不会出现乱序的情况。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210103190746673.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210126162412781.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 **场景2**
 
-当RabbitMQ采用简单队列模式的时候，如果消费者采用多线程的方式来加速消息的处理，此时也会出现消息乱序的问题。
+当RabbitMQ采用简单队列模式的时候，如果消费者采用多线程处理消息，会出现消息乱序的问题。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210103191047377.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+解决方案：消费者拉取消息然后根据 ID 算出一个 Hash 然后把相同 ID 的数据压到同一个内存队列，让同一个线程去处理，保证有序。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210126162801750.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ## 重复消费
 

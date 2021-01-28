@@ -4,6 +4,8 @@
 
 ### List
 
+> ArrayList、LinkedList、Vector、Stack、CopyOnWriteArrayList
+
 | 名称       | 特点                 | get(index) | add(E) | add(index, E) | remove(E) |
 | ---------- | -------------------- | ---------- | ------ | ------------- | --------- |
 | ArrayList  | 高效，线程不安全     | O(1)       | O(1)   | O(n)          | O(n)      |
@@ -25,10 +27,6 @@
 2. 链表删除和增加快，查询和修改慢
 3. 实现了Queue接口，所以还提供了offer(), peek(), poll()等方法
 
-#### Vector
-
-#### Stack
-
 #### CopyOnWriteArrayList
 
 写时加锁，读时不加锁，复制一个新的数组，把新数组指向原来的数组
@@ -36,6 +34,8 @@
 适用于读多写少的场景
 
 ### Set
+
+> LinkedHashSet、TreeSet、EnumSet、CopyOnWriteArraySet、ConcurrentSkipListSet
 
 | 名称          | 特点                         | add(E)  | remove(E) | contains(E) |
 | ------------- | ---------------------------- | ------- | --------- | ----------- |
@@ -50,33 +50,17 @@
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209154216578.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-#### LinkedHashSet
-
-#### SortedSet TreeSet
-
-底层是TreeMap
-
-#### EnumSet
-
-#### CopyOnWriteArraySet
-
-#### ConcurrentSkipListSet
-
 ### Queue
 
 在多线程的情况下，多考虑使用Queue
 
-#### Deque
+#### Deque 双端队列
 
-双端队列
-
-##### ArrayDeque
-
-##### BlockingDeque
-
-##### LinkedBlockingDeque
+> ArrayDeque、BlockingDeque、LinkedBlockingDeque
 
 #### BlokingQueue
+
+> ArrayBlockingQueue、ProrityBlockingQueue、LinkedBlockingQueue
 
 获取数据时队列中无数据，阻塞。添加数据时队列已满，阻塞。
 
@@ -99,12 +83,6 @@ take：获取元素，队列为空时，队列阻塞
 element：查看队首元素，队列元素为空抛异常
 
 peek：查看队首元素，队列元素为空返回 null
-
-##### ArrayBlockingQueue
-
-##### ProrityBlockingQueue
-
-##### LinkedBlockingQueue
 
 ##### SynchronousQueue
 

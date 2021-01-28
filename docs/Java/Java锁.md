@@ -328,7 +328,7 @@ new Thread(() -> {
 
 ## 线程等待和唤醒
 
-#### Object: wait, notify
+### Object: wait, notify
 
 1. 都需要在同步代码块中执行(synchronized)
 2. 先wait再notify，等待中的线程才会被唤醒，否则无法唤醒
@@ -336,7 +336,7 @@ new Thread(() -> {
 4. notify不释放锁，需要等待线程执行完或者线程中wait()才释放
 5. notifyAll将所有线程唤醒，去争抢锁，但抢到锁的依旧只有一个线程
 
-#### Condition: await, signal
+### Condition: await, signal
 
 1. 都需要在同步代码块中执行
 2. 先await再signal，等待中的线程才会被唤醒，否则无法唤醒
@@ -347,7 +347,7 @@ Condition condition1 = lock.newCondition();
 Condition condition2 = lock.newCondition();
 ```
 
-#### LockSupport: pack, unpack
+### LockSupport: pack, unpack
 
 线程阻塞工具类，可以让线程在任意位置阻塞，阻塞后也有对应的唤醒方法，底层调用Unsafe的native方法
 
@@ -432,13 +432,12 @@ JDK9使用VarHandle：普通的原子操作，比反射快，直接操作二进�
 
 ## ThreadLocal
 
-> 线程独享的只有一个键值对的Map
+> 线程独享的Map
 
-**ThreadLocal中的Entry是弱引用**
+**ThreadLocalMap中的Entry是弱引用**
 
 1.  若是强引用，即使tl == null，但key的引用依然指向ThreadLocal对象，所以有内存泄露，而使用弱引用则不会。
-
-2. 但还是有内存泄露的存在，ThreadLocalMap是永远存在的，当ThreadLocal被回收，key的值变成null，则导致整个value再也无法被访问到，因此依然存在内存泄露。所以ThreadLocal不用了需要调用 `remove()`回收
+2. 但还是有内存泄露的存在，ThreadLocalMap 是 Thread 的一个属性，生命周期跟 Thread 一致，当ThreadLocal被回收，key的值变成null，则导致整个value再也无法被访问到，因此依然存在内存泄露。所以ThreadLocal不用了需要调用 `remove()`回收
 
 ```java
 ThreadLocal<M> tl = new ThreadLocal<>();

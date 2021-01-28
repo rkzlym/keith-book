@@ -49,21 +49,19 @@ JIT：Just In-Time compiler
 
 **各个类加载器的作用**
 
-引导类加载器：加载JVM自身需要的类，使用C++实现，负责加载`%JAVA_HOME%/jre/lib.jar`核心类库。
+BootStrapClassLoader 引导类加载器：加载JVM自身需要的类，使用C++实现，负责加载`%JAVA_HOME%/jre/lib.jar`核心类库。
 
-扩展类加载器：负责加载%JAVA_HOME%/lib/ext目录下的类。
+ExtensionClassLoader 扩展类加载器：负责加载%JAVA_HOME%/lib/ext目录下的类。
 
-系统类加载器：负责加载系统类路径`java -classpath`或`-D java.class.path` 指定路径下的类库。
+AppClassLoader 系统类加载器：负责加载系统类路径`java -classpath`或`-D java.class.path` 指定路径下的类库。
 
-自定义类加载器：Java.lang.ClassLoader的子类
+CustomClassLoader 自定义类加载器：继承ClassLoader重写findClass方法
 
 **双亲委派**：JVM收到类加载请求，他会自底向上地去缓存中找这个类，找到了返回，没找到就把这个请求委派给父加载器（不是继承）去寻找，直到BootstrapClassLoader也没找到时，会自顶向下加载这个class，如果到最后还没加载成功，则会抛出异常 `ClassNotFoundException`
 
 作用：沙箱安全，不让自己定义的类去勿扰JDK出厂自带的类
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111223139570.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-自定义类加载器：继承ClassLoader重写findClass方法
 
 ## JVM 内存模型
 
@@ -90,7 +88,7 @@ Frame：每个方法对应一个 Frame
 
 Frame 存放：Local Variable Table, Operated Stack, Dynamic Linking, Return Address
 
-Local Variable Table：boolean、byte、char、short、int、float、long、double、reference
+Local Variable Table：byte、short、int、long、float、double、boolean、char、reference
 
 Dynamic Linking：A方法调用B方法，这个过程就叫动态链接
 
@@ -172,6 +170,7 @@ GC是什么（分代收集算法）
 - 基本不动元空间
 
 普通GC(Minor GC):只针对新生代区域的GC，指发生在新生代的垃圾收集动作，因为大部分Java对象存活率不高，所以Minor GC非常频繁，一般回收速度也比较快。
+
 全局GC(Major GC / Full GC)：指发生在老年代的垃圾收集动作，出现了Major GC，经常会伴随至少一次的Minor GC，Major GC的速度一般要比Minor GC慢10倍以上。
 
 ### 如何定位垃圾
@@ -189,20 +188,23 @@ Java 可以做GC Root的对象：局部变量表、类静态属性引用的对�
 
 ### 常用的垃圾回收算法
 
-2. 复制算法（Copying）：没有碎片，浪费空间
-   
+1. 复制算法（Copying）：没有碎片，浪费空间
+
    YGC用的是复制算法，复制算法的基本思想是将内存分为两块，每次只用其中一块，当一块内存用完，就将还活着的对象复制到另一块上面，复制算法不会产生内存碎片。
    原理：从根集合（GC Root）开始，通过Tracing从From中找到存活对象，拷贝到To中。From和To交换身份，下次内存分配从To开始
    缺点：浪费了一半内存
-   
+
 2. 标记清除（Mark-Sweep）：位置不连续，产生碎片，效率偏低（两遍扫描）
 
    老年代一般由标记清除和标记整理混合实现
+
    原理：算法分成标记和清除两个阶段。先标记出要回收的对象，然后统一回收这些对象。
+
    解释：程序运行期间，可用内存将被耗尽的时候,GC线程就会被触发并将程序暂停，随后将要回收的对象标记一遍，最终统一回收这些对象。
+
    缺点：两次扫描，耗时严重，会产生内存碎片（清理出来的内存是不连续的）
 
-3. 标记压缩（Mark-Compact）：没有碎片，效率偏低（两遍扫描，指针需要调整）
+3. 标记清除压缩（Mark-Compact）：没有碎片，效率偏低（两遍扫描，指针需要调整）
 
    即标记清除整理
    第一步：标记清除
@@ -275,8 +277,6 @@ jinfo <pid>		# 打印虚拟机详细信息
 jstat -gc <pid> <time>	# 打印gc信息，每<time>毫秒打印一次
 jconsole	# java控制面板
 ```
-
-
 
 ### JVM调优场景
 

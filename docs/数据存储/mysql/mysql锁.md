@@ -62,8 +62,17 @@ set autocommit = 0;
 update dept set dname = '开发部2' where deptno = 1; 
 commit;
 ```
-### 2. 手动上锁
+### 2. 悲观锁
 当查询deptno=1的数据的时候，加`for update`语句，此时其它会话修改这条记录就会被阻塞。
 ```sql
 select * from dept where deptno = 1 for update;
 ```
+
+### 3. 乐观锁
+
+```sql
+update t_goods   
+set status=2,version=version+1  
+where id=#{id} and version=#{version};  
+```
+

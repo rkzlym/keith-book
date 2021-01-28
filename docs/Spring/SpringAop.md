@@ -71,9 +71,13 @@ Spring 提供了两种方式来生成代理对象: JDKProxy 和 Cglib，具体�
 
 **JDK动态接口代理**
 
+> 需要有接口
+
 JDK 动态代理主要涉及到 java.lang.reflect 包中的两个类：Proxy 和 InvocationHandler。InvocationHandler是一个接口，通过实现该接口定义横切逻辑，并通过反射机制调用目标类的代码，动态将横切逻辑和业务逻辑编制在一起。Proxy 利用 InvocationHandler 动态创建一个符合某一接口的实例，生成目标类的代理对象。
 
 **CGLib 动态代理**
+
+> 不需要有接口
 
 CGLib 全称为 Code Generation Library，是一个强大的高性能，高质量的代码生成类库，可以在运行期扩展 Java 类与实现 Java 接口，CGLib 封装了 asm，可以再运行期动态生成新的 class。和 JDK 动态代理相比较：JDK 创建代理有一个限制，就是只能为接口创建代理实例，而对于没有通过接口定义业务方法的类，则可以通过 CGLib 创建动态代理。
 
@@ -82,31 +86,31 @@ CGLib 全称为 Code Generation Library，是一个强大的高性能，高质�
 如果该Bean有Advice则返回代理对象，否则返回普通对象
 
 ```java
-	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
-		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
-			return bean;
-		}
-		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
-			return bean;
-		}
-		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
-			this.advisedBeans.put(cacheKey, Boolean.FALSE);
-			return bean;
-		}
+protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
+    if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
+        return bean;
+    }
+    if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
+        return bean;
+    }
+    if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
+        this.advisedBeans.put(cacheKey, Boolean.FALSE);
+        return bean;
+    }
 
-		// Create proxy if we have advice.
-		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
-		if (specificInterceptors != DO_NOT_PROXY) {
-			this.advisedBeans.put(cacheKey, Boolean.TRUE);
-			Object proxy = createProxy(
-					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
-			this.proxyTypes.put(cacheKey, proxy.getClass());
-			return proxy;
-		}
+    // Create proxy if we have advice.
+    Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
+    if (specificInterceptors != DO_NOT_PROXY) {
+        this.advisedBeans.put(cacheKey, Boolean.TRUE);
+        Object proxy = createProxy(
+            bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
+        this.proxyTypes.put(cacheKey, proxy.getClass());
+        return proxy;
+    }
 
-		this.advisedBeans.put(cacheKey, Boolean.FALSE);
-		return bean;
-	}
+    this.advisedBeans.put(cacheKey, Boolean.FALSE);
+    return bean;
+}
 ```
 
 如果是接口，创建JDK代理对象，否则创建Cglib代理对象
