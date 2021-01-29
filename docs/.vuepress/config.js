@@ -16,6 +16,7 @@ module.exports = {
             { text: '数据存储', link: '/数据存储/' },
             { text: '设计模式', link: '/设计模式/' },
             { text: '数据结构', link: '/数据结构/' },
+            { text: '分布式', link: '/分布式/' },
             { text: '运维', link: '/运维/' },
             { text: '前端', link: '/前端/' },
             { text: '其它', link: '/其它/' },
@@ -80,6 +81,7 @@ module.exports = {
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
+                        '/数据存储/redis/redis基础',
                         '/数据存储/redis/redis命令速查',
                         '/数据存储/redis/redis常见缓存问题',
                         '/数据存储/redis/redis配置',
@@ -90,6 +92,7 @@ module.exports = {
                         '/数据存储/redis/redis集群',
                         '/数据存储/redis/redis哨兵模式',
                         '/数据存储/redis/redis主从复制',
+                        '/数据存储/redis/redis持久化',
                     ],
                 },
                 {
@@ -181,9 +184,24 @@ module.exports = {
                     ]
                 }
             ],
+            '/分布式/': [
+                {
+                    title: '分布式',     
+                    path: '/分布式/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/分布式/分布式锁',
+                        '/分布式/分布式事务',
+                        '/分布式/Dubbo',
+                        '/分布式/Zookeeper',
+                        '/分布式/附录',
+                    ]
+                }
+            ],
             '/运维/': [
                 {
-                    title: 'Docker',     
+                    title: '运维',     
                     path: '/运维/',
                     collapsable: false,
                     sidebarDepth: 2,
@@ -222,7 +240,6 @@ module.exports = {
                     sidebarDepth: 2,
                     children: [
                         '/其它/计算机网络',
-                        '/其它/分布式',
                         '/其它/JMH',
                         '/其它/Lua',
                     ]
