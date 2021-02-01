@@ -370,11 +370,7 @@ Condition condition2 = lock.newCondition();
 
 概念：是用来构建锁或者其它同步组件的抽象父类
 
-同步器：ReentrantLock, CountDownLatch, Semaphore等
-
-如果共享资源被占用，就需要一定的阻塞等待唤醒机制来保证锁的分配。这个机制主要用的是CLH队列的变体实现的，将暂时获取不到锁的线程加入到队列中，这个队列就是AQS的抽象表现。它将请求共享资源的线程封装成队列的节点（Node），通过CAS、自旋以及LockSupport.park()的方式，维护state变量的状态，使并发达到同步的控制效果。
-
-**AQS总结：CAS + volatile state + 双端队列**
+**CAS + volatile state + 双端队列**
 
 CAS：在往队列末端加线程的时候使用的是CAS
 
@@ -384,9 +380,29 @@ state：根据子类的具体实现来分配，如ReentrantLock加锁,是1，不
 
 双端队列：CLH变种的双端队列，Node中存放的是线程
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20201218203120948.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+**公平锁和非公平锁**
 
-非公平锁和公平锁的唯一区别：公平锁获取同步状态时多了一个限制条件 hasQueuedPredecessors，该方法是公平锁加锁时判断等待队列中是否存在有效节点的方法
+1. 非公平锁在调用 lock 后，首先就会调用 CAS 进行一次抢锁，如果这个时候恰巧锁没有被占用，那么直接就获取到锁返回了。
+2. 非公平锁在 CAS 失败后，和公平锁一样都会进入到 tryAcquire 方法，在 tryAcquire 方法中，如果发现锁这个时候被释放了，非公平锁会直接 CAS 抢锁，但是公平锁会判断等待队列是否有线程处于等待状态，如果有则不去抢锁，乖乖排到后面。
+
+```java
+/* 公平锁会通过 hasQueuedPredecessors 方法判断队列前是否有元素 有就排队 */
+if (c == 0) {
+    if (!hasQueuedPredecessors() && compareAndSetState(0, acquires)) {
+        setExclusiveOwnerThread(current);
+        return true;
+    }
+}
+/* 非公平锁上来直接就抢锁 */
+if (c == 0) {
+    if (compareAndSetState(0, acquires)) {
+        setExclusiveOwnerThread(current);
+        return true;
+    }
+}
+```
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201218203120948.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 源码说明
 
