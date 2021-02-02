@@ -73,6 +73,8 @@ module.exports = {
                         '/数据存储/mysql/mysql锁',
                         '/数据存储/mysql/mysql主从复制',
                         '/数据存储/mysql/mysql调优',
+                        '/数据存储/mysql/mysql分区表',
+                        '/数据存储/mysql/mysql服务器参数配置',
                     ],
                 },
                 {
