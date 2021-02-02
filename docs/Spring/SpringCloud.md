@@ -1,12 +1,22 @@
 ## Spring Cloud
 
-## Spring Cloud 的三套组件
+## Spring Cloud 组件
 
-Spring Cloud Netflix
+Eureka：服务注册发现
 
-Spring Cloud Alibaba
+Feign：web调用客户端，简化Http接口调用
 
-Spring Cloud Apache
+Ribbon：基于客户端的负载均衡
+
+Hystrix：服务熔断降级
+
+Zuul：网关路由，提供路由转发，请求过滤，限流降级等功能
+
+Config：配置中心，分布式配置管理
+
+Sleuth：服务链路追踪
+
+Admin：服务健康管理
 
 ## Spring Cloud Eureka
 
