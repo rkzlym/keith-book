@@ -6,12 +6,12 @@ tagline: 像珍惜礼物一样珍惜今天
 actionText: 快速上手
 actionLink: /Java/
 features:
-- title: 至简
+- title: 
   details: 
-- title: 网状
+- title: 
   details: 
-- title: 体系
+- title: 
   details: 
-footer: MIT Licensed | Copyright © 2020-present Evan You
+footer: MIT Licensed | Copyright © 2021-present Evan You
 ---
 

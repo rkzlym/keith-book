@@ -16,10 +16,9 @@ module.exports = {
             { text: '数据存储', link: '/数据存储/' },
             { text: '设计模式', link: '/设计模式/' },
             { text: '数据结构', link: '/数据结构/' },
-            { text: '分布式', link: '/分布式/' },
-            { text: '运维', link: '/运维/' },
+            { text: '服务器', link: '/服务器/' },
             { text: '前端', link: '/前端/' },
-            { text: '其它', link: '/其它/' },
+            { text: '拓展', link: '/拓展/' },
         ],
         sidebar: {
             '/Java/': [
@@ -186,39 +185,49 @@ module.exports = {
                     ]
                 }
             ],
-            '/分布式/': [
+            '/服务器/': [
+                {
+                    title: 'Linux',     
+                    path: '/服务器/Linux/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/服务器/Linux/1.Linux常用命令',
+                        '/服务器/Linux/2.IO模型',
+                        '/服务器/Linux/3.Shell',
+                        '/服务器/Linux/4.Tomcat',
+                        '/服务器/Linux/5.Netty',
+                        '/服务器/Linux/6.Openresty',
+                        '/服务器/Linux/7.FastDFS',
+                        '/服务器/Linux/8.Linux安装Redis',
+                        '/服务器/Linux/99.附录',
+                    ]
+                },
+                {
+                    title: 'Docker',     
+                    path: '/服务器/Docker/',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/服务器/Docker/1.Docker基本操作',
+                        '/服务器/Docker/2.Docker安装Redis',
+                        '/服务器/Docker/3.Docker安装Nginx',
+                        '/服务器/Docker/4.Docker安装Mysql',
+                        '/服务器/Docker/5.Docker安装Jenkins',
+                        '/服务器/Docker/6.Docker安装RabbitMq',
+                    ]
+                },
                 {
                     title: '分布式',     
-                    path: '/分布式/',
+                    path: '/服务器/分布式/',
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
-                        '/分布式/分布式锁',
-                        '/分布式/分布式事务',
-                        '/分布式/Dubbo',
-                        '/分布式/Zookeeper',
-                        '/分布式/附录',
-                    ]
-                }
-            ],
-            '/运维/': [
-                {
-                    title: '运维',     
-                    path: '/运维/',
-                    collapsable: false,
-                    sidebarDepth: 2,
-                    children: [
-                        '/运维/操作系统',
-                        '/运维/Linux',
-                        '/运维/FastDFS',
-                        '/运维/Openresty',
-                        '/运维/Tomcat',
-                        '/运维/Docker基本操作',
-                        '/运维/Docker安装Redis',
-                        '/运维/Docker安装Nginx',
-                        '/运维/Docker安装Mysql',
-                        '/运维/Docker安装Jenkins',
-                        '/运维/Docker安装RabbitMq',
+                        '/服务器/分布式/1.分布式锁',
+                        '/服务器/分布式/2.分布式事务',
+                        '/服务器/分布式/3.Zookeeper',
+                        '/服务器/分布式/4.Dubbo',
+                        '/服务器/分布式/99.附录',
                     ]
                 }
             ],
@@ -234,16 +243,16 @@ module.exports = {
                     ]
                 }
             ],
-            '/其它/': [
+            '/拓展/': [
                 {
-                    title: '其它',     
-                    path: '/其它/',
+                    title: '拓展',     
+                    path: '/拓展/',
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
-                        '/其它/计算机网络',
-                        '/其它/JMH',
-                        '/其它/Lua',
+                        '/拓展/计算机网络',
+                        '/拓展/JMH',
+                        '/拓展/Lua',
                     ]
                 }
             ]
