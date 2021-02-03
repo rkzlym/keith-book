@@ -106,7 +106,7 @@ public class RegistryApplication {
 
 ## Spring Cloud Config Center
 
-### 1. 新建一个Git仓库用于存储配置文件
+### 1. 新建一个Git配置仓库
 
 配置文件命名规则
 
@@ -118,7 +118,7 @@ public class RegistryApplication {
 /{label}/{application}-{profile}.properties
 ```
 
-### 2. 新建一个项目 config-center
+### 2. 基本依赖和配置
 
 引入依赖
 
@@ -152,16 +152,10 @@ spring.cloud.config.label=master
 eureka.client.service-url.defaultZone=http://eureka1.com:5000/eureka
 ```
 
-### 3. 启动类增加注解 @EnableConfigServer
+### 3. 启动类增加注解
 
 ```java
-@SpringBootApplication
 @EnableConfigServer
-public class ConfigCenterApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(ConfigCenterApplication.class, args);
-    }
-}
 ```
 
 ### 4. 访问测试
@@ -228,6 +222,118 @@ spring.rabbitmq.password=admin
 
 `http://localhost:5100/actuator/bus-refresh` 
 
+## Spring Cloud Hystrix
+
+> 容错组件 实现了超时机制和断路器模式
+
+### 1. 主要功能
+
+1. 为系统提供保护机制。在依赖的服务出现高延迟或失败时，为系统提供保护和控制。
+2. 防止雪崩。
+3. 包裹请求：使用HystrixCommand（或HystrixObservableCommand）包裹对依赖的调用逻辑，每个命令在独立线程中运行。
+4. 跳闸机制：当某服务失败率达到一定的阈值时，Hystrix可以自动跳闸，停止请求该服务一段时间。
+5. 资源隔离：Hystrix为每个请求都的依赖都维护了一个小型线程池，如果该线程池已满，发往该依赖的请求就被立即拒绝，而不是排队等候，从而加速失败判定。防止级联失败。
+6. 快速失败：Fail Fast。同时能快速恢复。侧重点是：（不去真正的请求服务，发生异常再返回），而是直接失败。
+7. 监控：Hystrix可以实时监控运行指标和配置的变化，提供近实时的监控、报警、运维控制。
+8. 回退机制：fallback，当请求失败、超时、被拒绝，或当断路器被打开时，执行回退逻辑。回退逻辑我们自定义，提供优雅的服务降级。
+9. 自我修复：断路器打开一段时间后，会自动进入“半开”状态，可以进行打开，关闭，半开状态的转换。前面有介绍。
+
+### 2. 独立使用
+
+```java
+public class HystrixTestService extends HystrixCommand<String> {
+
+    protected HystrixTestService(HystrixCommandGroupKey group) {
+        super(group);
+    }
+
+    @Override
+    protected String run() throws Exception {
+        System.out.println("执行逻辑");
+        // 当执行 1/0 后抛出异常会执行 Fallback 逻辑，否则执行正常逻辑
+        int i = 1 / 0;
+        return "ok";
+    }
+
+    @Override
+    protected String getFallback() {
+        return "Fallback Function";
+    }
+
+    public static void main(String[] args) {
+        Future<String> futureResult = new HystrixTestService(HystrixCommandGroupKey.Factory.asKey("ext")).queue();
+        try {
+            String result = futureResult.get();
+            System.out.println("程序结果："+result);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### 3. 整合 RestTemplate
+
+```java
+// 启动类增加注解 @EnableCircuitBreaker
+@EnableCircuitBreaker
+public class UserApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(UserApplication.class, args);
+    }
+}
+```
+
+```java
+@HystrixCommand(fallbackMethod = "fallback")
+public String alive() {
+	// 自动处理URL
+	RestTemplate restTemplate = new RestTemplate();
+	String url ="http://user-provider/User/alive";
+	String result = restTemplate.getForObject(url, String.class);
+	return result;
+}
+
+public String fallback() {	
+	return "Fallback Function";
+}
+```
+
+### 4. 整合 Fegin
+
+```properties
+# 配置开启 Hystrix
+feign.hystrix.enabled=true
+```
+
+```java
+@FeignClient(name = "user-provider",fallback = AliveBack.class)
+public interface ConsumerApi {
+
+	@GetMapping(value = "/user/alive")
+	public String alive();
+	
+	@GetMapping(value = "/user/getById")
+	public String getById(Integer id);
+}
+```
+
+```java
+@Component
+public class AliveBack implements ConsumerApi{
+
+	@Override
+	public String alive() {
+		return "call exception";
+	}
+
+	@Override
+	public String getById(Integer id) {
+		return null;
+	}
+}
+```
+
 ## 草稿
 
 **Zuul网关作用**：Nginx的网址重定向、服务的跨域配置、JWT鉴权
@@ -246,17 +352,5 @@ Spring Cloud Ribbon是基于Netflix Ribbon实现的一套<font color=red>客户�
 - RetryRule：先按照RoundRobinRule获取服务，如果获取服务失败则在指定时间内重试，获取可用的服务。
 - BestAvailableRule：会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量小的服务。
 - ZoneAvoidanceRule：复合判断Server所在区域的性能和Server的可用性选择服务器
-
-**Hystrix**
-
-当某个服务单元发生故障之后，通过断路器的故障监控（类似熔断保险丝），向调用方返回一个符合预期的、可处理的备选响应（FallBack），而不是长时间的等待或者抛出调用方无法处理的异常。
-
-**服务熔断**
-
-一般由某个服务故障或异常引起的，当某个异常条件被触发，直接熔断整个服务，而不是一直等到此服务超时。
-
-**服务降级**
-
-当某个服务熔断后，服务器将不再被调用。此时客户端可以自己准备一个本地的fallback回调，返回一个缺省值。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201228100709357.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
