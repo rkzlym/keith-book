@@ -222,6 +222,21 @@ spring.rabbitmq.password=admin
 
 `http://localhost:5100/actuator/bus-refresh` 
 
+## Spring Cloud Ribbon
+
+> 客户端负载均衡
+
+配置文件中列出 Load Balancer 后面所有的机器，Ribbon 会自动的帮助你基于某种规则去连接这些机器。
+
+- RoundRobinRule：轮询
+
+- RandomRule：随机
+- AvailabilityFilteringRule：会先过滤由于多次访问故障而处于断路器跳闸状态的服务，还有并发的连接数超过阈值的服务，然后对剩余的服务列表按照轮询的方式进行访问
+- WeightedResponseTimeRule：根据平均响应时间计算所有服务的权重，响应时间越快服务权重越大被选中的概率越高。刚启动如果统计信息不足，则使用RoundRobinRule策略，等统计信息足够，会切换到WeightedResponseTimeRule。
+- RetryRule：先按照RoundRobinRule获取服务，如果获取服务失败则在指定时间内重试，获取可用的服务。
+- BestAvailableRule：会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量小的服务。
+- ZoneAvoidanceRule：复合判断Server所在区域的性能和Server的可用性选择服务器
+
 ## Spring Cloud Hystrix
 
 > 容错组件 实现了超时机制和断路器模式
@@ -337,20 +352,3 @@ public class AliveBack implements ConsumerApi{
 ## 草稿
 
 **Zuul网关作用**：Nginx的网址重定向、服务的跨域配置、JWT鉴权
-
-**Ribbon**
-
-Spring Cloud Ribbon是基于Netflix Ribbon实现的一套<font color=red>客户端 负载均衡</font>的工具。
-
-配置文件中列出Load Balancer后面所有的机器，Ribbon会自动的帮助你基于某种规则去连接这些机器。
-
-- RoundRobinRule：轮询
-
-- RandomRule：随机
-- AvailabilityFilteringRule：会先过滤由于多次访问故障而处于断路器跳闸状态的服务，还有并发的连接数超过阈值的服务，然后对剩余的服务列表按照轮询的方式进行访问
-- WeightedResponseTimeRule：根据平均响应时间计算所有服务的权重，响应时间越快服务权重越大被选中的概率越高。刚启动如果统计信息不足，则使用RoundRobinRule策略，等统计信息足够，会切换到WeightedResponseTimeRule。
-- RetryRule：先按照RoundRobinRule获取服务，如果获取服务失败则在指定时间内重试，获取可用的服务。
-- BestAvailableRule：会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量小的服务。
-- ZoneAvoidanceRule：复合判断Server所在区域的性能和Server的可用性选择服务器
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20201228100709357.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)

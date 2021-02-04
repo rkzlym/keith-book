@@ -65,8 +65,11 @@ void test(int n){
 线性结构有两种不同的存储结构：
 
 - 顺序表：存储的元素是连续的
-
+  - 优点：支持随机存取，存储密度高
+  - 缺点：大片连续空间分配不方便，改变容量不方便
 - 链表：存储元素不一定是连续的，元素节点中存放数据元素以及相邻元素的地址信息
+  - 优点：离散的小空间分配方便，改变容量方便
+  - 缺点：不可随机存取，存储密度低
 
 **非线性结构**：二维数组，多维数组，广义表，树结构，图结构
 
@@ -515,16 +518,185 @@ public class Maze {
 }
 ```
 
-## 树
+## 字符串模式匹配
 
-### 二叉树
+### 暴力匹配
 
-二叉树的遍历方式
+```java
+public static int indexOf(String str, String subStr) {
+    char[] s = str.toCharArray();
+    char[] t = subStr.toCharArray();
+    int i = 0, j = 0;
+    while (i < s.length && j < t.length) {
+        if (s[i] == t[j]) {
+            i++;
+            j++;
+        } else {
+            i = i - (j - 1);	// 每次比对失败回溯到开始节点+1的位置
+            j = 0;
+        }
+    }
+    if (j == t.length)
+        return (i - j);     //主串中存在该模式返回下标号
+    else
+        return -1;          //主串中不存在该模式
+}
+```
 
-前序遍历：先访问根节点，再遍历左子树，最后遍历右子树。
+### KMP算法
+
+> 用于字符串子串的查找，通过消除回溯来提高匹配效率
+
+对于每模式串 t 的每个元素 t[i]，都存在一个实数 k ，使得模式串 t 开头的 k 个字符依次与 t[i] 前面的 k 个字符相同，如果这样的 k 有多个，则取最大的一个。
+
+如果 j = k 时才发现匹配失败，说明 1 ~ k - 1 都匹配成功
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2021020420593768.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+```java
+public static int indexOf(String s, String t){
+    char[] s_arr = s.toCharArray();
+    char[] t_arr = t.toCharArray();
+    int[] next = getNextArray(t_arr);
+    int i = 0, j = 0;
+    while (i<s_arr.length && j<t_arr.length){
+        if(j == -1 || s_arr[i]==t_arr[j]){
+            i++;
+            j++;
+        }
+        else
+            j = next[j];
+    }
+    if(j == t_arr.length)
+        return i-j;
+    else
+        return -1;
+}
+
+private static int[] getNextArray(char[] t) {
+    int[] next = new int[t.length];
+    next[0] = -1;
+    next[1] = 0;
+    int k;
+    for (int j = 2; j < t.length; j++) {
+        k=next[j-1];
+        while (k!=-1) {
+            if (t[j - 1] == t[k]) {
+                next[j] = k + 1;
+                break;
+            }
+            else {
+                k = next[k];
+            }
+            next[j] = 0;  //当k==-1而跳出循环时，next[j] = 0，否则next[j]会在break之前被赋值
+        }
+    }
+    return next;
+}
+```
+
+## 二叉树
+
+**二叉树的遍历方式**
+
+前序遍历：先访问根节点，再遍历左子树，最后遍历右子树。时间复杂度 O(n)
+
+```java
+void preOrder(Node n){
+    if (n != null){
+        visit(n);
+        preOrder(n.left);
+        preOrder(n.right)
+    }
+}
+```
 
 中序遍历：先遍历左子树，再访问根节点，最后遍历右子树。
 
+```java
+void InOrder(Node n){
+    if (n != null){
+        InOrder(n.left);
+        visit(n);
+        InOrder(n.right)
+    }
+}
+```
+
 后序遍历：从左到后从叶子节点遍历左右子树，最后访问根节点。
 
-层序遍历：从根节点从上往下逐层遍历，在同一层，按从左到右的顺序对节点逐个访问。
+```java
+void postOrder(Node n){
+    if (n != null){
+        postOrder(n.left);
+        postOrder(n.right)
+        visit(n);
+    }
+}
+```
+
+层次遍历：从根节点一层一层的从左到右遍历整个二叉树树
+
+算法思想：
+
+1. 初始将根入队并访问根节点
+2. 若有左子树，则将左子树的根入队
+3. 若有右子树，则将右子树的根入队
+4. 然后出队，访问该节点
+5. 反复这个过程直到队列空为止
+
+```java
+void levelOrder(BiTreeNode t) {
+	if (t == null)
+		return;
+	Queue<BiTreeNode> queue = new LinkedBlockingQueue<>();
+	BiTreeNode curr;
+	queue.add(t);
+	while (!queue.isEmpty()) {
+		curr = queue.remove();
+		System.out.println(curr.value);
+		if (curr.left != null)
+			queue.add(curr.left);
+		if (curr.right != null)
+			queue.add(curr.right);
+	}
+}
+```
+
+**中序遍历转换为非递归算法**
+
+1. 初始时依次扫描根节点的所有左侧节点并将它们一一进栈
+2. 出栈一个节点，访问它
+3. 扫描该节点的右孩子节点并将其进栈
+4. 依次扫描右孩子节点的所有左侧节点并一一进栈
+5. 反复该过程直到栈空为止
+
+```java
+void InOrder(Node n){
+    Node p = n;
+    while(!stack.isEmpty()){
+        if (p != null){
+            stack.push(p);
+            p = p.left;
+        } else {
+            visit(stack.pop());
+       		p = p.right;
+        }
+    }
+}
+```
+
+**使用遍历构造二叉树**
+
+先序 / 后序遍历序列 + 中序遍历序列可以确定一棵二叉树
+
+先序遍历序列 + 后序遍历序列<font color=blue>不能</font>确定一棵二叉树
+
+原因：中序遍历序列可以确定左右子树，先序 / 后序 遍历序列可以确定根节点
+
+1. 在先序序列中，第一个节点是根节点
+2. 根节点将中序遍历序列划分为两部分
+3. 然后在先序序列中确定两部分的节点，并且两部分的第一个节点分别为左子树的根和右子树的根
+4. 在子树中重复递归该过程，便能唯一确定一棵二叉树
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210204231919982.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
