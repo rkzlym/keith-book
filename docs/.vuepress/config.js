@@ -94,6 +94,7 @@ module.exports = {
                         '/数据存储/redis/redis哨兵模式',
                         '/数据存储/redis/redis主从复制',
                         '/数据存储/redis/redis持久化',
+                        '/数据存储/redis/redis漏斗算法',
                     ],
                 },
                 {

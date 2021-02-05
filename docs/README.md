@@ -2,7 +2,7 @@
 home: true
 heroImage: /favicon.ico
 heroText: 鸿鹄笔记
-tagline: 像珍惜礼物一样珍惜今天
+tagline: 活到老，学到死
 actionText: 快速上手
 actionLink: /Java/
 features:
