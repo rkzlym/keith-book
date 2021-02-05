@@ -1,3 +1,4 @@
+---
 home: true
 heroImage: /favicon.ico
 heroText: 鸿鹄笔记
@@ -12,4 +13,4 @@ features:
 - title: 
   details: 
 footer: MIT Licensed | Copyright © 2021-present Evan You
-
+---
