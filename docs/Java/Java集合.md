@@ -160,17 +160,38 @@ public static void main(String[] args) {
 
 ### HashMap
 
+**JDK7和8的异同**
+
+JDK7：
+
+1. 数组 + 链表
+2. 插入链表头部
+3. 直接计算 key 的 HashCode 值
+4. 扩容时会颠倒链表顺序
+5. 只要大于阈值就直接扩容2倍
+
+JDK8：
+
+1. 数组 + 链表 + 红黑树
+2. 插入链表尾部
+3. 采用 Key 的 HashCode 异或上 Key 的 HashCode 进行无符号右移16位的结果 `(h = key.hashCode()) ^ (h >>> 16)`，避免了只靠低位数据来计算哈希时导致的冲突，计算结果由高低位结合决定，使元素分布更均匀
+4. 扩容时保持原链表顺序
+5. 当数组容量小于64时，直接扩容。大于64时，若链表长度大于8就转红黑树，否则就扩容。
+
+**JDK8添加过程**
+
 1. 底层：数组 + 链表 + 红黑树
 2. 首次添加操作创建数组，长度16，存的是<font color=red>一维数组Entry[]</font>
 3. 扩容：超过临界值(Capacity * Load Factory)，则扩容为原来2倍，并将元数据复制过来
-4. 添加过程
    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209154206861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### LinkedHashMap
 
+基于链表实现的 HashMap
+
 ### TreeMap
 
-> 底层使用红黑树
+基于红黑树实现的有序Map
 
 ### ConcurrentHashMap
 
@@ -189,3 +210,5 @@ public static void main(String[] args) {
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210115222639601.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### WeakHashMap
+
+Entry 是弱引用，如果没有被其他强引用，那么GC后就会被回收
