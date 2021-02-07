@@ -210,7 +210,6 @@ public class DispatcherServletAutoConfiguration{
         }
     }
 }
-
 ```
 
 ### 定制化配置
@@ -780,3 +779,59 @@ public void refresh() throws BeansException, IllegalStateException {
     }
 }
 ```
+
+## Spring Boot 自动配置原理
+
+> 以自动配置 Eureka Client 为例
+
+spring boot项目引入eureka-client依赖，并注入spring 容器。
+
+在spring-boot项目中pom文件里面添加的依赖中的bean。是如何注册到spring-boot项目的spring容器中的呢？spring.factories文件是帮助spring-boot项目包以外的bean（即在pom文件中添加依赖中的bean）注册到spring-boot项目的spring容器的。
+
+由于@ComponentScan注解只能扫描spring-boot项目包内的bean并注册到spring容器中，因此需要@EnableAutoConfiguration（在SpringBootApplication下），注解来注册项目包外的bean。而spring.factories文件，则是用来记录项目包外需要注册的bean类名。
+
+点进去@SpringBootApplication注解，发现@EnableAutoConfiguration，点@EnableAutoConfiguration进去。
+
+```java
+@Import(AutoConfigurationImportSelector.class)
+public @interface EnableAutoConfiguration {
+```
+
+AutoConfigurationImportSelector
+
+```java
+/**
+ * 向spring ioc容器注入bean。返回bean全名。import将bean全名注入。
+ **/
+@Override
+public String[] selectImports(AnnotationMetadata annotationMetadata) {
+    if (!isEnabled(annotationMetadata)) {
+        return NO_IMPORTS;
+    }
+    AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader
+        .loadMetadata(this.beanClassLoader);
+    AutoConfigurationEntry autoConfigurationEntry = getAutoConfigurationEntry(autoConfigurationMetadata,
+                                                                              annotationMetadata);
+    return StringUtils.toStringArray(autoConfigurationEntry.getConfigurations());
+}
+```
+
+进入 getAutoConfigurationEntry
+
+```java
+List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
+```
+
+进入 getCandidateConfigurations
+
+```java
+List<String> configurations = SpringFactoriesLoader
+    .loadFactoryNames(getSpringFactoriesLoaderFactoryClass(),getBeanClassLoader());
+```
+
+进入 SpringFactoriesLoader
+
+```java
+public static final String FACTORIES_RESOURCE_LOCATION = "META-INF/spring.factories";
+```
+
