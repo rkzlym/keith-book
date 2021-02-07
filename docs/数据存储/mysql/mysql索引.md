@@ -191,7 +191,7 @@ explain select name,age,pos from staffs where name = 'July' and age = 25 and pos
 > 数据库索引所使用的数据结构是 B+Tree 和 Hash表
 
 1. 二叉树：极端情况变成链表
-  ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209094343621.png)
+    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209094343621.png)
 2. AVL树：最长子树和最短子树的高度差不能超过1，插入数据会进行1-N次旋转，即插入效率低，查询效率高
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210123100737778.png)
@@ -221,7 +221,7 @@ explain select name,age,pos from staffs where name = 'July' and age = 25 and pos
 - 叶子节点包含所有索引字段。
 - 叶子节点用指针连接，提高访问的性能。
 
-![image-20210123104335824](C:\Users\a\AppData\Roaming\Typora\typora-user-images\image-20210123104335824.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2021020710474436.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 6. Hash表 （memory 存储引擎）
 
