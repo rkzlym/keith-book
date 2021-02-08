@@ -18,7 +18,7 @@
 </dependency>
 ```
 
-```
+```java
 @RestController
 @RequestMapping("user")
 public class UserController {

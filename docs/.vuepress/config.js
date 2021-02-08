@@ -40,17 +40,30 @@ module.exports = {
             '/Spring/': [
                 {
                     title: 'Spring',
-                    path: '/Spring/',
+                    path: '/Spring/Spring',
                     collapsable: false,
                     sidebarDepth: 2,
                     children: [
-                        '/Spring/SpringIoc',
-                        '/Spring/SpringAop',
-                        '/Spring/SpringMvc',
-                        '/Spring/SpringBoot',
-                        '/Spring/SpringCloud',
-                        '/Spring/SpringWebFlux',
-                        '/Spring/Mybatis',
+                        '/Spring/Spring/SpringIoc',
+                        '/Spring/Spring/SpringAop',
+                        '/Spring/Spring/SpringMvc',
+                        '/Spring/Spring/SpringBoot',
+                        '/Spring/Spring/SpringWebFlux',
+                        '/Spring/Spring/Mybatis',
+                    ]
+                },
+                {
+                    title: 'Spring Cloud',
+                    path: '/Spring/SpringCloud',
+                    collapsable: false,
+                    sidebarDepth: 2,
+                    children: [
+                        '/Spring/SpringCloud/注册中心',
+                        '/Spring/SpringCloud/服务调用',
+                        '/Spring/SpringCloud/服务网关',
+                        '/Spring/SpringCloud/链路追踪',
+                        '/Spring/SpringCloud/配置中心',
+                        '/Spring/SpringCloud/健康检查',
                     ]
                 }
             ],
