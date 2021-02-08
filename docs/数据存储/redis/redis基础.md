@@ -90,3 +90,100 @@ object encoding key
 redis-cli --raw
 ```
 
+## bitmap
+
+1字节 = 8位 即 1字节 = 0000 0000
+
+将k1偏移量为1的位置上设置为1，即 0100 0000
+
+```shell
+setbit k1 1 1
+strlen k1 # 长度是1
+```
+
+将k1偏移量为9的位置上设置为1，即 0000 0000 0100 0000
+
+```shell
+setbit k2 9 1
+strlen k2 # 长度是2
+```
+
+**bitpos**
+
+```shell
+bitpos key bit start end
+```
+
+从第一个字节中找出1的第一次出现位置
+
+```shell
+bitpos k1 1 0 0
+(integer) 1
+```
+
+从第二个字节中找出1的第一次出现位置
+
+```shell
+bitpos k2 1 1 1
+(integer) 9
+```
+
+**bitcount**
+
+```shell
+BITCOUNT key [start] [end]
+```
+
+`start` 和 `end` 都可以使用负数值：比如 `-1` 表示最后一个位，而 `-2` 表示倒数第二个位，以此类推。
+
+返回前两个字节中1的个数
+
+```shell
+bitcount k1 0 1
+```
+
+**bitop**
+
+```shell
+# 按位与 有0则0
+bitop and ka k1 k2
+# 按位或 有1则1
+bitop or ko k1 k2
+```
+
+**应用场景**
+
+1. 有用户系统，统计用户登录天数，且窗口随机
+
+```shell
+setbit sean 1 1		# 第1天登录
+setbit sean 7 1		# 第7天登录
+setbit sean 364 1	# 第364天登录
+# 查看长度，即46个字节即可保存一个用户一年的登录天数
+strlen sean
+(integer) 46
+# 反向索引找到最后一次的登录时间
+bitcount sean -2 -1
+```
+
+2. 统计某几天的活跃用户数
+
+```shell
+# 2020-6-18 号用户数1个
+setbit 20200618 1 1
+# 2020-6-18 号用户数2个
+setbit 20200619	1 1
+setbit 20200619	7 1
+# 按位或运算
+bitop or destkey 20190618 20190619
+# 统计人数
+bitcount destkey 0 -1
+```
+
+位图可以这样表示：user1登录了一天，user2登录了两天，user3没登录
+
+| key      | user1 | user2 | user3 |
+| -------- | ----- | ----- | ----- |
+| 20200618 | 0     | 1     | 0     |
+| 20200619 | 1     | 1     | 0     |
+
