@@ -130,94 +130,6 @@ public class SpringConfig {
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201228222953379.png)
 
-## 自动配置原理
-
-### 流程图
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020122821461787.png)
-
-### 自动包规则原理 
-
-AutoConfigurationPackages.Registrar
-
-```java
-// 导入 Registrar 注解路径
-@SpringBootApplication
-@EnableAutoConfiguration
-@AutoConfigurationPackage
-@Import(AutoConfigurationPackages.Registrar.class)
-```
-
-```java
-// 获取到标注类上的包名，将包名下的所有组件注册进容器
-register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
-```
-
-### 自动配置原理
-
-@Import(AutoConfigurationImportSelector.class)
-
-```java
-// 导入 AutoConfigurationImportSelector 注解路径
-@SpringBootApplication
-@EnableAutoConfiguration
-@Import(AutoConfigurationImportSelector.class)
-```
-
-```java
-// 获取自动配置的入口
-getAutoConfigurationEntry(annotationMetadata);
-// 获取所有候选的配置    
-List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
-// META-INF/spring.factories里面写了SpringBoot一启动就需加载的所有配置类
-Enumeration<URL> urls = classLoader.getResources(FACTORIES_RESOURCE_LOCATION);
-```
-
-### 按需开启配置项
-
-```
-SpringBoot使用spring.factories导入了所有场景启动器
-但是由于@Conditional会按需将相应的场景启动器加载到容器中
-```
-
-以DispatcherServlet为例
-
-```java
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@Configuration(proxyBeanMethods = false)
-// 在Servlet的Web模块才生效
-@ConditionalOnWebApplication(type = Type.SERVLET)
-// 容器中拥有DispatcherServlet这个类才生效
-@ConditionalOnClass(DispatcherServlet.class)
-// 在 ServletWebServerFactoryAutoConfiguration 后配置
-@AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
-public class DispatcherServletAutoConfiguration{
-	@Configuration(proxyBeanMethods = false)
-    // 匹配自定义规则
-	@Conditional(DefaultDispatcherServletCondition.class)
-	@ConditionalOnClass(ServletRegistration.class)
-	@EnableConfigurationProperties(WebMvcProperties.class)
-    protected static class DispatcherServletConfiguration {
-        @Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-        public DispatcherServlet dispatcherServlet(WebMvcProperties webMvcProperties) {
-            DispatcherServlet dispatcherServlet = new DispatcherServlet();
-            dispatcherServlet.setDispatchOptionsRequest(webMvcProperties.isDispatchOptionsRequest());
-            dispatcherServlet.setDispatchTraceRequest(webMvcProperties.isDispatchTraceRequest());
-            dispatcherServlet.setThrowExceptionIfNoHandlerFound(webMvcProperties.isThrowExceptionIfNoHandlerFound());
-            dispatcherServlet.setPublishEvents(webMvcProperties.isPublishRequestHandledEvents());
-            dispatcherServlet.setEnableLoggingRequestDetails(webMvcProperties.isLogRequestDetails());
-            return dispatcherServlet;
-        }
-    }
-}
-```
-
-### 定制化配置
-
-- 修改配置文件为自定义的值
-- 使用@Bean去替换底层的组件
-- 使用自定义器XxxCustomizer
-
 ## 指标监控
 
 > Spring Boot Ac0tuator
@@ -782,56 +694,432 @@ public void refresh() throws BeansException, IllegalStateException {
 
 ## Spring Boot 自动配置原理
 
-> 以自动配置 Eureka Client 为例
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2020122821461787.png)
 
-spring boot项目引入eureka-client依赖，并注入spring 容器。
-
-在spring-boot项目中pom文件里面添加的依赖中的bean。是如何注册到spring-boot项目的spring容器中的呢？spring.factories文件是帮助spring-boot项目包以外的bean（即在pom文件中添加依赖中的bean）注册到spring-boot项目的spring容器的。
-
-由于@ComponentScan注解只能扫描spring-boot项目包内的bean并注册到spring容器中，因此需要@EnableAutoConfiguration（在SpringBootApplication下），注解来注册项目包外的bean。而spring.factories文件，则是用来记录项目包外需要注册的bean类名。
-
-点进去@SpringBootApplication注解，发现@EnableAutoConfiguration，点@EnableAutoConfiguration进去。
+### 自动包配置原理
 
 ```java
-@Import(AutoConfigurationImportSelector.class)
-public @interface EnableAutoConfiguration {
+@SpringBootApplication -> @EnableAutoConfiguration -> @AutoConfigurationPackage -> 
+@Import(AutoConfigurationPackages.Registrar.class)
 ```
 
-AutoConfigurationImportSelector
+```java
+// 获取到标注类上的包名，将包名下的所有组件注册进容器
+register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
+```
+
+### 自动配置原理
+
+spring.factories 是帮助 SpringBoot 项目包以外的 Bean 注册到 SpringBoot 项目的 Spring 容器的。
+
+由于 @ComponentScan 注解只能扫描 SpringBoot 项目包内的 Bean 并注册到 Spring 容器中，因此需要 @EnableAutoConfiguration 来注册项目包外的bean，而 spring.factories 则是用来记录项目包外需要注册的bean类名。
 
 ```java
-/**
- * 向spring ioc容器注入bean。返回bean全名。import将bean全名注入。
- **/
-@Override
-public String[] selectImports(AnnotationMetadata annotationMetadata) {
-    if (!isEnabled(annotationMetadata)) {
-        return NO_IMPORTS;
+@SpringBootApplication -> @EnableAutoConfiguration -> @Import(AutoConfigurationImportSelector.class)
+```
+
+```java
+// 获取自动配置的入口
+getAutoConfigurationEntry(annotationMetadata);
+// 获取所有候选的配置    
+List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
+// META-INF/spring.factories 里面写了 SpringBoot 一启动就需加载的所有配置类
+Enumeration<URL> urls = classLoader.getResources(FACTORIES_RESOURCE_LOCATION);
+```
+
+**按需开启配置项：以DispatcherServlet为例**
+
+```java
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+@Configuration(proxyBeanMethods = false)
+// 在Servlet的Web模块才生效
+@ConditionalOnWebApplication(type = Type.SERVLET)
+// 容器中拥有DispatcherServlet这个类才生效
+@ConditionalOnClass(DispatcherServlet.class)
+// 在 ServletWebServerFactoryAutoConfiguration 后配置
+@AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
+public class DispatcherServletAutoConfiguration{
+	@Configuration(proxyBeanMethods = false)
+    // 匹配自定义规则，只有满足这些条件才会将Bean注入进来
+	@Conditional(DefaultDispatcherServletCondition.class)
+	@ConditionalOnClass(ServletRegistration.class)
+	@EnableConfigurationProperties(WebMvcProperties.class)
+    protected static class DispatcherServletConfiguration {
+        @Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+        public DispatcherServlet dispatcherServlet(WebMvcProperties webMvcProperties) {
+            DispatcherServlet dispatcherServlet = new DispatcherServlet();
+            dispatcherServlet.setDispatchOptionsRequest(webMvcProperties.isDispatchOptionsRequest());
+            dispatcherServlet.setDispatchTraceRequest(webMvcProperties.isDispatchTraceRequest());
+            dispatcherServlet.setThrowExceptionIfNoHandlerFound(webMvcProperties.isThrowExceptionIfNoHandlerFound());
+            dispatcherServlet.setPublishEvents(webMvcProperties.isPublishRequestHandledEvents());
+            dispatcherServlet.setEnableLoggingRequestDetails(webMvcProperties.isLogRequestDetails());
+            return dispatcherServlet;
+        }
     }
-    AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader
-        .loadMetadata(this.beanClassLoader);
-    AutoConfigurationEntry autoConfigurationEntry = getAutoConfigurationEntry(autoConfigurationMetadata,
-                                                                              annotationMetadata);
-    return StringUtils.toStringArray(autoConfigurationEntry.getConfigurations());
 }
 ```
 
-进入 getAutoConfigurationEntry
+**自动配置启动流程**
 
 ```java
-List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
+prepareContext -> load
 ```
-
-进入 getCandidateConfigurations
 
 ```java
-List<String> configurations = SpringFactoriesLoader
-    .loadFactoryNames(getSpringFactoriesLoaderFactoryClass(),getBeanClassLoader());
+private int load(Object source) {
+	Assert.notNull(source, "Source must not be null");
+    // 如果是class类型，启用注解类型
+	if (source instanceof Class<?>) {
+		return load((Class<?>) source);
+	}
+    // 如果是resource类型，启动xml解析
+	if (source instanceof Resource) {
+		return load((Resource) source);
+	}
+    // 如果是package类型，启用扫描包，例如@ComponentScan
+	if (source instanceof Package) {
+		return load((Package) source);
+	}
+    // 如果是字符串类型，直接加载
+	if (source instanceof CharSequence) {
+		return load((CharSequence) source);
+	}
+	throw new IllegalArgumentException("Invalid source type " + source.getClass());
+}
 ```
-
-进入 SpringFactoriesLoader
+```java
+private int load(Class<?> source) {
+    // 判断是否使用groovy脚本
+    if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
+        GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
+        load(loader);
+    }
+    // 如果数据来源合法 则注册Bean
+    if (isEligible(source)) {
+        this.annotatedReader.register(source);	
+        return 1;
+    }
+    return 0;
+}
+```
+进入 `this.annotatedReader.register(source)` 追溯
 
 ```java
-public static final String FACTORIES_RESOURCE_LOCATION = "META-INF/spring.factories";
+/**
+ * 从给定的bean class中注册一个bean对象，从注解中找到相关的元数据
+ * 将启动类注册成为一个 BeanDefination
+ */
+private <T> void doRegisterBean(Class<T> beanClass, @Nullable String name,
+      @Nullable Class<? extends Annotation>[] qualifiers, @Nullable Supplier<T> supplier,
+      @Nullable BeanDefinitionCustomizer[] customizers) {
+
+   AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
+   if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
+      return;
+   }
+
+   abd.setInstanceSupplier(supplier);
+   ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
+   abd.setScope(scopeMetadata.getScopeName());
+   String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
+
+   AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+   if (qualifiers != null) {
+      for (Class<? extends Annotation> qualifier : qualifiers) {
+         if (Primary.class == qualifier) {
+            abd.setPrimary(true);
+         }
+         else if (Lazy.class == qualifier) {
+            abd.setLazyInit(true);
+         }
+         else {
+            abd.addQualifier(new AutowireCandidateQualifier(qualifier));
+         }
+      }
+   }
+   if (customizers != null) {
+      for (BeanDefinitionCustomizer customizer : customizers) {
+         customizer.customize(abd);
+      }
+   }
+
+   BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
+   definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+   BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
+}
 ```
 
+刷新容器自动装配入口
+
+```java
+public void refresh() throws BeansException, IllegalStateException {
+    synchronized (this.startupShutdownMonitor) {
+        // 此处是自动装配的入口
+        invokeBeanFactoryPostProcessors(beanFactory);
+    }
+}
+```
+
+在invokeBeanFactoryPostProcessors方法中完成bean的实例化和执行
+
+```java
+public static void invokeBeanFactoryPostProcessors(
+    ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
+    // 开始遍历三个内部类，如果属于BeanDefinitionRegistryPostProcessor子类，加入到bean注册的集合
+    // 否则加入到regularPostProcessors
+    for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
+        if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
+            BeanDefinitionRegistryPostProcessor registryProcessor =
+                (BeanDefinitionRegistryPostProcessor) postProcessor;
+            //* 进入此方法的实现 ConfigurationClassPostProcessor
+            registryProcessor.postProcessBeanDefinitionRegistry(registry); 
+            registryProcessors.add(registryProcessor);
+        } else {
+            regularPostProcessors.add(postProcessor);
+        }
+    }
+}
+```
+
+```java
+postProcessBeanDefinitionRegistry -> processConfigBeanDefinitions -> parser.parse
+```
+
+开始执行自动配置逻辑（启动类指定的配置，非默认配置），最终会在ConfigurationClassParser类中，此类是所有配置类的解析类，所有的解析逻辑在parser.parse(candidates)中
+
+```java
+public void parse(Set<BeanDefinitionHolder> configCandidates) {
+    for (BeanDefinitionHolder holder : configCandidates) {
+        BeanDefinition bd = holder.getBeanDefinition();
+        try {
+            if (bd instanceof AnnotatedBeanDefinition) {
+                //* 解析逻辑
+                parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
+            }
+            else if (bd instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) bd).hasBeanClass()) {
+                parse(((AbstractBeanDefinition) bd).getBeanClass(), holder.getBeanName());
+            }
+            else {
+                parse(bd.getBeanClassName(), holder.getBeanName());
+            }
+        }
+        catch (BeanDefinitionStoreException ex) {
+            throw ex;
+        }
+        catch (Throwable ex) {
+            throw new BeanDefinitionStoreException(
+                "Failed to parse configuration class [" + bd.getBeanClassName() + "]", ex);
+        }
+    }
+	//* 执行配置类
+    this.deferredImportSelectorHandler.process();
+}
+```
+
+```java
+parse -> processConfigurationClass -> doProcessConfigurationClass
+```
+
+跟进doProcessConfigurationClass方法，此方式是支持注解配置的核心逻辑
+
+```java
+protected final SourceClass doProcessConfigurationClass(ConfigurationClass configClass, SourceClass sourceClass) throws IOException {
+
+    //处理内部类逻辑，由于传来的参数是启动类，并不包含内部类，所以跳过
+    if (configClass.getMetadata().isAnnotated(Component.class.getName())) {
+        // Recursively process any member (nested) classes first
+        processMemberClasses(configClass, sourceClass);
+    }
+
+    // Process any @PropertySource annotations
+    // 针对属性配置的解析
+    for (AnnotationAttributes propertySource : AnnotationConfigUtils.attributesForRepeatable(
+        sourceClass.getMetadata(), PropertySources.class,
+        org.springframework.context.annotation.PropertySource.class)) {
+        if (this.environment instanceof ConfigurableEnvironment) {
+            processPropertySource(propertySource);
+        }
+        else {
+            logger.info("Ignoring @PropertySource annotation on [" + sourceClass.getMetadata().getClassName() +
+                        "]. Reason: Environment must implement ConfigurableEnvironment");
+        }
+    }
+
+    // Process any @ComponentScan annotations
+    // 这里是根据启动类@ComponentScan注解来扫描项目中的bean
+    Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(
+        sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
+    if (!componentScans.isEmpty() &&
+        !this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
+
+        for (AnnotationAttributes componentScan : componentScans) {
+            // The config class is annotated with @ComponentScan -> perform the scan immediately
+            //遍历项目中的bean，如果是注解定义的bean，则进一步解析
+            Set<BeanDefinitionHolder> scannedBeanDefinitions =
+                this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
+            // Check the set of scanned definitions for any further config classes and parse recursively if needed
+            for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
+                BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
+                if (bdCand == null) {
+                    bdCand = holder.getBeanDefinition();
+                }
+                if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
+                    //递归解析，所有的bean,如果有注解，会进一步解析注解中包含的bean
+                    parse(bdCand.getBeanClassName(), holder.getBeanName());
+                }
+            }
+        }
+    }
+
+    // Process any @Import annotations
+    //递归解析，获取导入的配置类，很多情况下，导入的配置类中会同样包含导入类注解
+    processImports(configClass, sourceClass, getImports(sourceClass), true);
+
+    // Process any @ImportResource annotations
+    //解析@ImportResource配置类
+    AnnotationAttributes importResource =
+        AnnotationConfigUtils.attributesFor(sourceClass.getMetadata(), ImportResource.class);
+    if (importResource != null) {
+        String[] resources = importResource.getStringArray("locations");
+        Class<? extends BeanDefinitionReader> readerClass = importResource.getClass("reader");
+        for (String resource : resources) {
+            String resolvedResource = this.environment.resolveRequiredPlaceholders(resource);
+            configClass.addImportedResource(resolvedResource, readerClass);
+        }
+    }
+
+    // Process individual @Bean methods
+    //处理@Bean注解修饰的类
+    Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
+    for (MethodMetadata methodMetadata : beanMethods) {
+        configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
+    }
+
+    // Process default methods on interfaces
+    // 处理接口中的默认方法
+    processInterfaces(configClass, sourceClass);
+
+    // Process superclass, if any
+    //如果该类有父类，则继续返回，上层方法判断不为空，则继续递归执行
+    if (sourceClass.getMetadata().hasSuperClass()) {
+        String superclass = sourceClass.getMetadata().getSuperClassName();
+        if (superclass != null && !superclass.startsWith("java") &&
+            !this.knownSuperclasses.containsKey(superclass)) {
+            this.knownSuperclasses.put(superclass, configClass);
+            // Superclass found, return its annotation metadata and recurse
+            return sourceClass.getSuperClass();
+        }
+    }
+
+    // No superclass -> processing is complete
+    return null;
+}
+```
+
+查看获取配置类的逻辑
+
+```java
+processImports(configClass, sourceClass, getImports(sourceClass), true);
+
+private Set<SourceClass> getImports(SourceClass sourceClass) throws IOException {
+    Set<SourceClass> imports = new LinkedHashSet<>();
+    Set<SourceClass> visited = new LinkedHashSet<>();
+    collectImports(sourceClass, imports, visited);
+    return imports;
+}
+// 所有的bean都以导入的方式被加载进去
+private void collectImports(SourceClass sourceClass, Set<SourceClass> imports, Set<SourceClass> visited)
+    throws IOException {
+
+    if (visited.add(sourceClass)) {
+        for (SourceClass annotation : sourceClass.getAnnotations()) {
+            String annName = annotation.getMetadata().getClassName();
+            if (!annName.equals(Import.class.getName())) {
+                collectImports(annotation, imports, visited);
+            }
+        }
+        imports.addAll(sourceClass.getAnnotationAttributes(Import.class.getName(), "value"));
+    }
+}
+```
+
+继续回到ConfigurationClassParser中的parse方法中的最后一行,继续跟进该方法
+
+```java
+this.deferredImportSelectorHandler.process()
+-------------
+public void process() {
+			List<DeferredImportSelectorHolder> deferredImports = this.deferredImportSelectors;
+			this.deferredImportSelectors = null;
+			try {
+				if (deferredImports != null) {
+					DeferredImportSelectorGroupingHandler handler = new DeferredImportSelectorGroupingHandler();
+					deferredImports.sort(DEFERRED_IMPORT_COMPARATOR);
+					deferredImports.forEach(handler::register);
+					handler.processGroupImports();
+				}
+			}
+			finally {
+				this.deferredImportSelectors = new ArrayList<>();
+			}
+		}
+---------------
+  public void processGroupImports() {
+			for (DeferredImportSelectorGrouping grouping : this.groupings.values()) {
+				grouping.getImports().forEach(entry -> {
+					ConfigurationClass configurationClass = this.configurationClasses.get(
+							entry.getMetadata());
+					try {
+						processImports(configurationClass, asSourceClass(configurationClass),
+								asSourceClasses(entry.getImportClassName()), false);
+					}
+					catch (BeanDefinitionStoreException ex) {
+						throw ex;
+					}
+					catch (Throwable ex) {
+						throw new BeanDefinitionStoreException(
+								"Failed to process import candidates for configuration class [" +
+										configurationClass.getMetadata().getClassName() + "]", ex);
+					}
+				});
+			}
+		}
+------------
+    /**
+		 * Return the imports defined by the group.
+		 * @return each import with its associated configuration class
+		 */
+		public Iterable<Group.Entry> getImports() {
+			for (DeferredImportSelectorHolder deferredImport : this.deferredImports) {
+				this.group.process(deferredImport.getConfigurationClass().getMetadata(),
+						deferredImport.getImportSelector());
+			}
+			return this.group.selectImports();
+		}
+	}
+------------
+    public DeferredImportSelector getImportSelector() {
+			return this.importSelector;
+		}
+------------
+    @Override
+		public void process(AnnotationMetadata annotationMetadata, DeferredImportSelector deferredImportSelector) {
+			Assert.state(deferredImportSelector instanceof AutoConfigurationImportSelector,
+					() -> String.format("Only %s implementations are supported, got %s",
+							AutoConfigurationImportSelector.class.getSimpleName(),
+							deferredImportSelector.getClass().getName()));
+			AutoConfigurationEntry autoConfigurationEntry = ((AutoConfigurationImportSelector) deferredImportSelector)
+					.getAutoConfigurationEntry(getAutoConfigurationMetadata(), annotationMetadata);
+			this.autoConfigurationEntries.add(autoConfigurationEntry);
+			for (String importClassName : autoConfigurationEntry.getConfigurations()) {
+				this.entries.putIfAbsent(importClassName, annotationMetadata);
+			}
+		}
+
+```
+
+**定制化配置**
+
+- 修改配置文件为自定义的值
+- 使用@Bean去替换底层的组件
+- 使用自定义器XxxCustomizer
