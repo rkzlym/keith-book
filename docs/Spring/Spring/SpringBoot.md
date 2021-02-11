@@ -925,7 +925,7 @@ parse -> processConfigurationClass -> doProcessConfigurationClass
 ```java
 protected final SourceClass doProcessConfigurationClass(ConfigurationClass configClass, SourceClass sourceClass) throws IOException {
 
-    //处理内部类逻辑，由于传来的参数是启动类，并不包含内部类，所以跳过
+    // 处理内部类逻辑，由于传来的参数是启动类，并不包含内部类，所以跳过
     if (configClass.getMetadata().isAnnotated(Component.class.getName())) {
         // Recursively process any member (nested) classes first
         processMemberClasses(configClass, sourceClass);
@@ -972,7 +972,7 @@ protected final SourceClass doProcessConfigurationClass(ConfigurationClass confi
     }
 
     // Process any @Import annotations
-    //递归解析，获取导入的配置类，很多情况下，导入的配置类中会同样包含导入类注解
+    // 递归解析，获取导入的配置类，很多情况下，导入的配置类中会同样包含导入类注解
     processImports(configClass, sourceClass, getImports(sourceClass), true);
 
     // Process any @ImportResource annotations
@@ -1035,6 +1035,7 @@ private void collectImports(SourceClass sourceClass, Set<SourceClass> imports, S
         for (SourceClass annotation : sourceClass.getAnnotations()) {
             String annName = annotation.getMetadata().getClassName();
             if (!annName.equals(Import.class.getName())) {
+                // 递归
                 collectImports(annotation, imports, visited);
             }
         }
@@ -1047,75 +1048,74 @@ private void collectImports(SourceClass sourceClass, Set<SourceClass> imports, S
 
 ```java
 this.deferredImportSelectorHandler.process()
--------------
-public void process() {
-			List<DeferredImportSelectorHolder> deferredImports = this.deferredImportSelectors;
-			this.deferredImportSelectors = null;
-			try {
-				if (deferredImports != null) {
-					DeferredImportSelectorGroupingHandler handler = new DeferredImportSelectorGroupingHandler();
-					deferredImports.sort(DEFERRED_IMPORT_COMPARATOR);
-					deferredImports.forEach(handler::register);
-					handler.processGroupImports();
-				}
-			}
-			finally {
-				this.deferredImportSelectors = new ArrayList<>();
-			}
-		}
----------------
-  public void processGroupImports() {
-			for (DeferredImportSelectorGrouping grouping : this.groupings.values()) {
-				grouping.getImports().forEach(entry -> {
-					ConfigurationClass configurationClass = this.configurationClasses.get(
-							entry.getMetadata());
-					try {
-						processImports(configurationClass, asSourceClass(configurationClass),
-								asSourceClasses(entry.getImportClassName()), false);
-					}
-					catch (BeanDefinitionStoreException ex) {
-						throw ex;
-					}
-					catch (Throwable ex) {
-						throw new BeanDefinitionStoreException(
-								"Failed to process import candidates for configuration class [" +
-										configurationClass.getMetadata().getClassName() + "]", ex);
-					}
-				});
-			}
-		}
-------------
-    /**
-		 * Return the imports defined by the group.
-		 * @return each import with its associated configuration class
-		 */
-		public Iterable<Group.Entry> getImports() {
-			for (DeferredImportSelectorHolder deferredImport : this.deferredImports) {
-				this.group.process(deferredImport.getConfigurationClass().getMetadata(),
-						deferredImport.getImportSelector());
-			}
-			return this.group.selectImports();
-		}
-	}
-------------
-    public DeferredImportSelector getImportSelector() {
-			return this.importSelector;
-		}
-------------
-    @Override
-		public void process(AnnotationMetadata annotationMetadata, DeferredImportSelector deferredImportSelector) {
-			Assert.state(deferredImportSelector instanceof AutoConfigurationImportSelector,
-					() -> String.format("Only %s implementations are supported, got %s",
-							AutoConfigurationImportSelector.class.getSimpleName(),
-							deferredImportSelector.getClass().getName()));
-			AutoConfigurationEntry autoConfigurationEntry = ((AutoConfigurationImportSelector) deferredImportSelector)
-					.getAutoConfigurationEntry(getAutoConfigurationMetadata(), annotationMetadata);
-			this.autoConfigurationEntries.add(autoConfigurationEntry);
-			for (String importClassName : autoConfigurationEntry.getConfigurations()) {
-				this.entries.putIfAbsent(importClassName, annotationMetadata);
-			}
-		}
+```
 
+```java
+public void process() {
+    List<DeferredImportSelectorHolder> deferredImports = this.deferredImportSelectors;
+    this.deferredImportSelectors = null;
+    try {
+        if (deferredImports != null) {
+            DeferredImportSelectorGroupingHandler handler = new DeferredImportSelectorGroupingHandler();
+            deferredImports.sort(DEFERRED_IMPORT_COMPARATOR);
+            deferredImports.forEach(handler::register);
+            handler.processGroupImports();
+        }
+    }
+    finally {
+        this.deferredImportSelectors = new ArrayList<>();
+    }
+}
+```
+
+```java
+public void processGroupImports() {
+    for (DeferredImportSelectorGrouping grouping : this.groupings.values()) {
+        grouping.getImports().forEach(entry -> {
+            ConfigurationClass configurationClass = this.configurationClasses.get(
+                entry.getMetadata());
+            try {
+                processImports(configurationClass, asSourceClass(configurationClass),
+                               asSourceClasses(entry.getImportClassName()), false);
+            }
+            catch (BeanDefinitionStoreException ex) {
+                throw ex;
+            }
+            catch (Throwable ex) {
+                throw new BeanDefinitionStoreException(
+                    "Failed to process import candidates for configuration class [" +
+                    configurationClass.getMetadata().getClassName() + "]", ex);
+            }
+        });
+    }
+}
+```
+
+```java
+public Iterable<Group.Entry> getImports() {
+    for (DeferredImportSelectorHolder deferredImport : this.deferredImports) {
+        this.group.process(deferredImport.getConfigurationClass().getMetadata(),
+                           deferredImport.getImportSelector());
+    }
+    return this.group.selectImports();
+}
+
+public DeferredImportSelector getImportSelector() {
+    return this.importSelector;
+}
+
+public void process(AnnotationMetadata annotationMetadata, DeferredImportSelector deferredImportSelector) {
+    Assert.state(deferredImportSelector instanceof AutoConfigurationImportSelector,
+                 () -> String.format("Only %s implementations are supported, got %s",
+                                     AutoConfigurationImportSelector.class.getSimpleName(),
+                                     deferredImportSelector.getClass().getName()));
+    AutoConfigurationEntry autoConfigurationEntry = ((AutoConfigurationImportSelector) deferredImportSelector)
+        .getAutoConfigurationEntry(getAutoConfigurationMetadata(), annotationMetadata);
+    this.autoConfigurationEntries.add(autoConfigurationEntry);
+    for (String importClassName : autoConfigurationEntry.getConfigurations()) {
+        this.entries.putIfAbsent(importClassName, annotationMetadata);
+    }
+}
 ```
 
 **定制化配置**
