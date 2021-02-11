@@ -19,10 +19,22 @@
 **网络传输格式**
 
 - XML：文件大，性能低，结构严谨，可使用XSD校验
-
 - JSON：文件小，性能高，结构不严谨，可读性差
-
 - 序列化：最小（二进制数据），性能最高，面向对象，无可读性
+
+**DDD（Domain Driven Design）**
+
+领域驱动设计，项目以Domain（实体类）的方式切入，先确定Domain再进行后续开发
+
+https://www.jdon.com/
+
+聚合根：将同类的领域实体聚合到一起，由一个 root 来管理设计、实现、改变状态的方法。
+
+举例：
+
+Teacher 有属性 name age price，有方法 teach() eat()
+
+那么先设计出Teacher这个Domain再去技术选型，设计框架，需求分析等
 
 ## CAP
 
