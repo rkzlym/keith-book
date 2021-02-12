@@ -90,6 +90,75 @@ object encoding key
 redis-cli --raw
 ```
 
+## List
+
+栈：同向命令，如 lpush + lpop，rpush + rpop
+
+队列：反向命令：如 lpush + rpop，rpush + lpop
+
+```shell
+# 查看list命令
+help @list
+# 取出指定 key 的 start 到 end 个元素
+LRANGE KEY START END
+# 例：取出 k1 的所有元素
+LRANGE k1 0 -1
+
+# 实现一个简单的阻塞队列
+BLPOP k1 0 # 客户端1阻塞
+LPUSH k1 1 2 3 # 客户端2压入数据客户端1取消阻塞
+```
+
+## Hash
+
+```shell
+HSET sean name zzl
+HMSET sean age 18 address bj
+hget sean name
+hmget sean name age
+hkeys sean
+```
+
+## Set
+
+```shell
+# 向set里加入数据并去重
+sadd kset 1 1 2 3 4 5 6
+# 随机取出3个元素，去重
+srandmember kset 3
+# 随机取出3个元素，可以有重复
+srandmember kset -3
+# 弹出一个元素
+spop kset
+# 取两个集合的交集
+sinter a b
+# 取两个集合的并集
+sunion a b
+# 取a集合对于b集合的差集
+sdiff a b
+```
+
+## Sorted Set
+
+> skip list
+
+```shell
+# 添加元素到zset
+zadd kzset 8 apple 2 banana 3 orange
+# 查看zset的元素，带分值
+zrange kzset 0 -1 WITHSCORES
+# 取出分值3-8之间的元素
+zrangbyscore kzset 3 8
+# 取出对应元素的分值
+zscore kzset apple
+# 得到对应元素的排名
+zrank kzset apple
+# 增加对应元素分值+ 
+zincrby kzset 2.5 banana
+# 并集 第一个集合权重1 第二个集合权重0.5
+zunionstore unkey 2 k1 k2 weights 1 0.5
+```
+
 ## bitmap
 
 1字节 = 8位 即 1字节 = 0000 0000
