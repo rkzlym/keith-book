@@ -179,6 +179,10 @@ GC是什么（分代收集算法）
 
 全局GC(Major GC / Full GC)：指发生在老年代的垃圾收集动作，出现了Major GC，经常会伴随至少一次的Minor GC，Major GC的速度一般要比Minor GC慢10倍以上。
 
+**Card Table**
+
+由于做 YGC 时，需要扫描整个 OLD 区，效率非常低，所以 JVM 设计了 Card Table，如果一个 OLD 区的 Card Table 中有对象指向 Y 区，就将它设为 Dirty，下次扫描时，只需要扫描 Ditry Card。在结构上，Card Table 用 Bit Map 实现
+
 ### 如何定位垃圾
 
 **引用计数法**
@@ -233,13 +237,15 @@ Java 可以做GC Root的对象：局部变量表、类静态属性引用的对�
 
   - CSM的问题：会产生碎片，有浮动垃圾，当老年代碎片过多，换Serial Old上场
 
-  - CMS问题解决方案之一：降低触发CMS的阈值
+  - CMS问题解决方案之一：降低触发CMS的阈值，如果频繁发生SerialOld卡顿，应该调小阈值
 
     ```shell
-    -XX:CMSInitiatingOccupancyFraction 70% # 内存空间降低到70%再进行回收
+    -XX:CMSInitiatingOccupancyFraction 70% # 内存空间降低到70%再进行回收，默认是68%
     ```
 
 - G1：将堆内存分割成不同的区域并发的对其进行垃圾回收，只在逻辑上分年轻代老年代
+
+  G1可以指定一个建议的暂停时间，但不推荐指定 Young 区的大小，原因是 G1 会进行动态的调整，调整的依据是 YGC 的暂停时间。比如指定的暂定时间是20ms，此时10个 region 中有6个Y区，但回收时间是30ms，那么G1会将6个Y区减少至5个或4个Y区直到暂定时间小于20ms为止。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2021011714275194.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
@@ -249,6 +255,99 @@ Java 可以做GC Root的对象：局部变量表、类静态属性引用的对�
 - 软引用：内存不足时回收
 - 弱引用：只要执行GC就被回收
 - 虚引用：跟没引用一样，可以用来管理堆外内存（直接内存），当对象被回收时，通过Queue可以检测到，然后清理堆外内存。堆外内存如何回收 -- Unsafe.freeMemory(address)
+
+### GC 常用参数
+
+```shell
+# 年轻代 最小堆 最大堆 栈空间
+-Xmn -Xms -Xmx -Xss
+# 使用TLAB，默认打开
+-XX:+UseTLAB
+# 打印TLAB的使用情况
+-XX:+PrintTLAB
+# 设置TLAB大小
+-XX:TLABSize
+# 禁用 System.gc()，System.gc()是Full GC
+-XX:+DisableExplictGC
+# 打印GC
+-XX:+PrintGC
+-XX:+PrintGCDetails
+-XX:+PrintGCTimeStamps
+-XX:+PrintHeapAtGC
+-XX:+PrintGCTimeStamps
+# 打印应用程序时间
+-XX:+PrintGCApplicationConcurrentTime
+# 打印暂停时长
+-XX:+PrintGCApplicationStoppedTime
+# 记录回收了多少种不同引用类型的引用
+-XX:+PrintReferenceGC
+# 可在程序运行时，打印虚拟机接受到的命令行显示参数
+-XX:+PrintVMOptions
+# GC的升代年龄
+-XX:MaxTenuringThreshold
+# 锁自旋次数
+-XX:PreBlockSpin
+# 热点代码检测参数，执行多少次会变成热点代码进行本地化的编译
+-XX:ComplieThreshold
+```
+
+### Parallel 常用参数
+
+```shell
+# Survivor的比例
+-XX:SurvivorRatio
+# 多大的大对象会被直接分配到Old区
+-XX:PreTenureSizeThreshold
+# 并行收集器的线程数，同样适用于CMS，一般设为和CPU核数相同
+-XX:+ParallelGCThreads
+# 自动选择各区大小比例
+-XX:+UseAdaptiveSizePolicy
+```
+
+### CMS 常用参数
+
+```shell
+# 使用CMS
+-XX:+UseConcMarkSweepGC
+# CMS线程数量
+-XX:ParallelCMSThreads
+# 使用多少比例的老年代后开始CMS收集，默认是68%
+-XX:CMSInitiatingOccupancyFraction
+# 在FGC时进行压缩(标记整理)
+-XX:+UseCMSCompactAtFullCollection
+# 多少次FGC后进行压缩
+-XX:CMSFullGCsBeforeCompaction
+# 停顿时间
+-XX:MaxGCPauseMillis
+# 回收永久代
+-XX:+CMSClassUnloadingEnabled
+# 达到什么比例时进行Perm回收
+-XX:CMSInitiatingPermOccupancyFraction
+# 设置GC时间占用程序运行时间的百分比
+GCTimeRatio
+```
+
+### G1 常用参数
+
+```shell
+# 使用G1
+-XX:+UseG1GC
+# 建议最大停顿时间，GC会尝试调整Young区的块数来达到这个值
+-XX:MaxGCPauseMillis
+# 分区大小，建议逐渐增大该值，1 2 4 8 16 32
+# 随着size增加，垃圾存活的时间更长，GC间隔更长，但每次GC的时间也会更长
+-XX:+G1HeapRegionSize
+# 新生代最小比例，默认5%
+G1NewSizePercent
+# 新生代最大比例，默认60%
+G1MaxNewSizePercent
+# GC时间建议比例，G1会根据这个值调整空间
+GCTimeRatio
+# 线程数量
+ConcGCThreads
+# 启动G1的堆空间占用比例
+InitiatingHeapOccupancyPercent
+```
 
 ## JVM调优
 
@@ -360,6 +459,48 @@ jmap -histo 21853 | head -20
 ```
 
 解决方案2：有服务器备份（高可用），停掉这台服务器对其它服务器不影响
+
+### jconsole 远程连接
+
+程序启动加入参数：
+
+```shell
+java -Djava.rmi.server.hostname=192.168.17.11
+-Dcom.sun.management.jmxremote=11111
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.ssl=false
+```
+
+windows 打开 jconsole 远程连接 192.168.17.11:11111
+
+### GC 日志分析
+
+执行命令
+
+```shell
+java -Xms20M -Xmx20M -XX:+PrintGCDetails -XX:+UseConcMarkSweepGC GCDemo
+```
+
+日志说明
+
+```shell
+[GC (Allocation Failure) [ParNew: 4544K->260K(6144K), 0.0012072 secs] 4544K->261K(19840K), 0.0012674 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+
+ParNew：年轻代收集器
+4544k->260k: 收集前后对比
+(6144k): 整个年轻代容量
+4544K->261K: 整个堆的情况
+(19840K)：整个堆的大小
+```
+
+### G1 日志
+
+```shell
+[GC pause (G1 Evacuation pause)(young)(initial-mark), 0.0015790 secs]
+
+G1 Evacuation pause: 年轻代复制存活对象
+initial-mark: 混合回收阶段，这里是YGC混合老年代回收
+```
 
 ## 附录
 

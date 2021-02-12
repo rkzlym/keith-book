@@ -2,6 +2,10 @@
 
 ## 线程的概念
 
+**操作系统是如何切换线程的**
+
+Cpu会从内存里取出线程，线程内部状态是由线程栈来维护的。
+
 一个程序的不同分支
 
 ```java
@@ -171,3 +175,16 @@ try {
 - IO密集型(需要不断取数据)：
   - IO密集型并不是一直在执行任务，配置尽可能多的线程，如Cpu核数 * 2
   - Cpu核数 / 1 - 阻塞系数(0.8~0.9)	例如8核Cpu：8 / (1 - 0.9) = 80个线程数
+
+### 2.7 自定义线程池的线程名称
+
+自定义 ThreadFactory 
+
+```java
+public class TimerTaskThread extends Thread {
+	public TimerTaskThread() {
+        super.setName("TimerTaskThread");
+    }
+}
+```
+
