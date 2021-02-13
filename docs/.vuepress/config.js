@@ -104,7 +104,6 @@ module.exports = {
                         '/数据存储/redis/redis过期策略',
                         '/数据存储/redis/redis分布式锁',
                         '/数据存储/redis/redis集群',
-                        '/数据存储/redis/redis哨兵模式',
                         '/数据存储/redis/redis主从复制',
                         '/数据存储/redis/redis持久化',
                         '/数据存储/redis/redis漏斗算法',
