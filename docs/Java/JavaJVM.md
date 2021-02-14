@@ -153,7 +153,7 @@ Person person = new Person("张三", 22);
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131193503949.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## 实例化对象分配
+### 实例化对象分配
 
 1. 栈上分配
 
@@ -175,40 +175,55 @@ GC是什么（分代收集算法）
 - 较少收集Old区
 - 基本不动元空间
 
-普通GC(Minor GC):只针对新生代区域的GC，指发生在新生代的垃圾收集动作，因为大部分Java对象存活率不高，所以Minor GC非常频繁，一般回收速度也比较快。
+普通GC(Minor GC)：只针对新生代区域的GC，指发生在新生代的垃圾收集动作，因为大部分Java对象存活率不高，所以Minor GC非常频繁，一般回收速度也比较快。
 
 全局GC(Major GC / Full GC)：指发生在老年代的垃圾收集动作，出现了Major GC，经常会伴随至少一次的Minor GC，Major GC的速度一般要比Minor GC慢10倍以上。
 
 **Card Table**
 
-由于做 YGC 时，需要扫描整个 OLD 区，效率非常低，所以 JVM 设计了 Card Table，如果一个 OLD 区的 Card Table 中有对象指向 Y 区，就将它设为 Dirty，下次扫描时，只需要扫描 Ditry Card。在结构上，Card Table 用 Bit Map 实现
+由于做 YGC 时，需要扫描整个 OLD 区，效率非常低，所以 JVM 设计了 Card Table，如果一个 OLD 区的 Card Table 中有对象指向 Y 区，就将它设为 Dirty，下次扫描时，只需要扫描 Ditry Card。在结构上，Card Table 用 Bit Map 实现。
+
+**CSet（Collection Set）**
+
+一组可以被回收的集合，在CSet中存活的数据会在GC的过程中被移动到另一个可用分区，CSet中的分区可以来自Eden、Survivor、Old区，CSet会占用不到整个堆空间1%的大小。简单来说，G1中需要被回收的Card的集合。
+
+**RSet（Remembered Set）**
+
+记录了其它 Region 中的对象到本 Region 的引用
+
+使得垃圾回收器不需要扫描整个堆栈来找到谁引用了当前分区中的对象，只需要扫描 RSet 即可
+
+由于RSet的存在，那么每次给对象赋值引用的时候，就得做一些额外的操作：在RSet中做一些额外的记录，在GC中被称为写屏障（这个写屏障 不等于内存屏障）
 
 ### 如何定位垃圾
 
 **引用计数法**
 
 没有被引用的内存空间就是垃圾，需要被收集
+
 缺点：计数器本身有消耗，较难处理循环引用
 
 **根可达性分析算法**
 
 通过一系列的名为“GC Root”的对象作为起点，从这些节点向下搜索，搜索所走过的路径称为引用链(Reference Chain)，当一个对象到GC Root没有任何引用链相连时，则该对象不可达，该对象是不可使用的，垃圾收集器将回收其所占的内存。
 
-Java 可以做GC Root的对象：局部变量表、类静态属性引用的对象、常量引用的对象、Native方法引用的对象。
+Java 可以做GC Root的对象：局部变量表、静态变量引用的对象、常量池引用的对象、Native方法引用的对象。
 
 ### 常用的垃圾回收算法
 
 1. 复制算法（Copying）：没有碎片，浪费空间
 
    YGC用的是复制算法，复制算法的基本思想是将内存分为两块，每次只用其中一块，当一块内存用完，就将还活着的对象复制到另一块上面，复制算法不会产生内存碎片。
+
    原理：从根集合（GC Root）开始，通过Tracing从From中找到存活对象，拷贝到To中。From和To交换身份，下次内存分配从To开始
+
    缺点：浪费了一半内存
 
 2. 标记清除（Mark-Sweep）：位置不连续，产生碎片，效率偏低（两遍扫描）
 
    老年代一般由标记清除和标记整理混合实现
 
-   原理：算法分成标记和清除两个阶段。先标记出要回收的对象，然后统一回收这些对象。
+   原理：算法分成标记和清除两个阶段。在标记阶段，collector从根对象开始进行遍历，对从根对象可以访问到的对象都打上一个标识，将其记录为可达对象。在清除阶段，collector对堆内存从头到尾进行线性的遍历，如果发现某个对象没有标记为可达对象，则就将其回收。
 
    解释：程序运行期间，可用内存将被耗尽的时候,GC线程就会被触发并将程序暂停，随后将要回收的对象标记一遍，最终统一回收这些对象。
 
@@ -216,14 +231,10 @@ Java 可以做GC Root的对象：局部变量表、类静态属性引用的对�
 
 3. 标记清除压缩（Mark-Compact）：没有碎片，效率偏低（两遍扫描，指针需要调整）
 
-   即标记清除整理
    第一步：标记清除
    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200117210457686.png)
-   第二步：压缩
-   再次扫描，并往一端滑动存活对象
+   第二步：压缩，再次扫描，并往一端滑动存活对象
    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200117210521309.png)
-   优势：没有碎片
-   劣势：需要移动对象的成本
 
 ### 垃圾回收器
 
@@ -245,9 +256,51 @@ Java 可以做GC Root的对象：局部变量表、类静态属性引用的对�
 
 - G1：将堆内存分割成不同的区域并发的对其进行垃圾回收，只在逻辑上分年轻代老年代
 
-  G1可以指定一个建议的暂停时间，但不推荐指定 Young 区的大小，原因是 G1 会进行动态的调整，调整的依据是 YGC 的暂停时间。比如指定的暂定时间是20ms，此时10个 region 中有6个Y区，但回收时间是30ms，那么G1会将6个Y区减少至5个或4个Y区直到暂定时间小于20ms为止。
+  G1可以在大多数情况下实现指定的GC暂停时间，同时还能保持较高的吞吐量。
+  
+  <font color=blue>G1可以动态地调整新老年代的比例</font>，调整的依据是 YGC 的暂停时间。比如指定的暂定时间是20ms，此时10个 region 中有6个Y区，但回收时间是30ms，那么G1会将6个Y区减少至5个或4个Y区直到暂定时间小于20ms为止。
+  
+  G1在对象太多的时候也会产生Full GC，如果产生Full GC，我们应该做：
+  
+  1. 扩内存
+  
+  2. 提高 CPU 性能
+  
+  3. <font color=blue>降低 MixedGC 触发的阈值，让MixedGC提早发生（默认45%）</font>
+  
+     MixedGC（类似CMS）：初始标记STW，并发标记，最终标记STW，筛选回收STW（并行）
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2021011714275194.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+### 垃圾回收器算法
+
+**垃圾回收器使用的算法**
+
+CMS：三色标记 + Incremental Update
+
+G1：三色标记 + SATB（Snapshot at the begining）
+
+ZGC：Colored Pointers（颜色指针）
+
+**三色标记算法**
+
+三色标记把对象在逻辑上分成三种颜色
+
+白：未被标记的对象
+
+灰：自身被标记，成员变量未被标记
+
+黑：自身和成员变量均已标记完成
+
+漏标：本来是 live object，但是由于没有遍历到，被当成 garbage 回收掉了。在并发标记的过程中，黑色指向了白色，如果不对黑色重新扫描，则会把白色对象当做没有新引用指向从而回收掉。
+
+如果解决漏标：Incremental Update、SATB
+
+Incremental Update（增量更新）：当一个白色对象被一个黑色对象引用，将黑色重启标记为灰色，让 Controller 重新扫描
+
+SATB（Snapshot at the begining）：在起始的时候做一个快照，当灰色->白色引用消失时，要把这个<font color=blue>引用</font>推到GC的堆栈，下次扫描时拿到这个引用，由于有RSet的存在，不需要扫描整个堆区查找指向白色的引用，效率比较高。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210214141554379.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### 引用
 
@@ -355,7 +408,7 @@ InitiatingHeapOccupancyPercent
 
 吞吐量：用户代码时间 / ( 用户代码执行时间 + 垃圾回收时间 )
 
-响应时间：STW越短，响应时间越好
+响应时间：STW（Stop The World）越短，响应时间越好
 
 ### JVM调优指令
 
@@ -509,3 +562,5 @@ JVM一个线程的成本：1MB
 线程多了调度成本就高了，造成了CPU的浪费
 
 class被load到内存之后，class的二进制文件加载到内存里，与此同时生成了class类的对象，该对象指向了二进制文件。class对象存在metaspace
+
+阿里多租户JVM：每租户单空间，Session based GC
