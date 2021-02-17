@@ -36,6 +36,12 @@ Teacher 有属性 name age price，有方法 teach() eat()
 
 那么先设计出Teacher这个Domain再去技术选型，设计框架，需求分析等
 
+**Spring Cloud 和 Dubbo**
+
+Dubbo基于dubbo协议，长连接，数据一致性得到保证，可用性下降
+
+Spring Cloud 基于Http协议，短连接，降低数据一致性，提升可用性，优势是跨语言，可插拔
+
 ## CAP
 
 1. Consistency 一致性

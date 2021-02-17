@@ -4,19 +4,13 @@
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210208092332722.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-1. 服务注册与发现组件：Eureka，Zookeeper，Consul,Nacos等。Eureka基于REST风格的。
-
-2. 服务调用组件：Hystrix（熔断降级，在出现依赖服务失效的情况下，通过隔离 系统依赖服务  的方式，防止服务级联失败，同时提供失败回滚机制，使系统能够更快地从异常中恢复），Ribbon（客户端负载均衡，用于提供客户端的软件负载均衡算法，提供了一系列完善的配置项：连接超时、重试等），OpenFeign（优雅的封装Ribbon，是一个声明式RESTful网络请求客户端，它使编写Web服务客户端变得更加方便和快捷）。
-
-3. 网关：路由和过滤。Zuul，Gateway。
-
+1. 注册中心：Eureka（Restful），Zookeeper，Consul，Nacos
+2. 服务调用组件：Hystrix（熔断降级），Ribbon（客户端负载均衡），OpenFeign（声明式RESTful网络请求客户端）
+3. 网关：Zuul，Gateway。
 4. 配置中心：提供了配置集中管理，动态刷新配置的功，配置通过Git或者其他方式来存储。
-
-5. 消息组件：Spring Cloud Stream（对分布式消息进行抽象，包括发布订阅、分组消费等功能，实现了微服务之间的异步通信）和Spring Cloud Bus（主要提供服务间的事件通信，如刷新配置）
-
+5. 消息组件：Spring Cloud Stream（对分布式消息进行抽象，包括发布订阅、分组消费等功能，实现了微服务之间的异步通信），Spring Cloud Bus（主要提供服务间的事件通信，如刷新配置）
 6. 安全控制组件：Spring Cloud Security 基于OAuth2.0开放网络的安全标准，提供了单点登录、资源授权和令牌管理等功能。
-
-7. 链路追踪组件：Spring Cloud Sleuth（收集调用链路上的数据），Zipkin（对Sleuth收集的信息，进行存储，统计，展示）。
+7. 链路追踪组件：Spring Cloud Sleuth（收集调用链路上的数据），Zipkin（对Sleuth收集的信息，进行存储，统计，展示）
 
 ## Spring Cloud 总体架构视图
 
