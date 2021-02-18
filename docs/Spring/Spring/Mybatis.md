@@ -65,6 +65,10 @@ MyBatis 用了一个装饰器的类来维护二级缓存，就是CachingExecutor
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210208104315871.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
+**不推荐开启二级缓存**
+
+因为二级缓存是基于 namespace 的（即一个 Mapper.xml 文件），所有基于该 Mapper 的增删改操作都会刷新缓存，但是如果其他的 Mapper 中有对该 Mapper 中数据表的操作，就会导致两个 namesapce 中的数据不一致。推荐使用 redis 替代。
+
 ## Mybatis 批量删除
 
 ```java

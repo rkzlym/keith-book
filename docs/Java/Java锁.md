@@ -68,11 +68,30 @@ mfence：modify/mix | 在mfence指令前的读写操作必须在mfence指令后�
 
 **原理**：Unsafe、自旋锁、乐观锁
 
-- Unsafe：基于Unsafe内部native方法可以直接操作内存。
+- Unsafe：Java无法直接访问底层系统，可以基于Unsafe内部native方法可以像C的指针一样直接操作内存。
 
 - 自旋锁：循环判断工作内存与主内存的值是否相等，如相等则返回。
 
 **缺点**：循环时间长开销大、只能保证一个共享变量的原子操作、ABA问题。
+
+**CAS是怎么保证原子性的**
+
+获取内存中的值，CAS比较不一致，则继续获取内存中的值，直到CAS成功为止
+
+```java
+// var1: 当前对象
+// var2: 当前对象的内存偏移量地址
+// var4: 增加的值
+public final int getAndAddInt(Object var1, long var2, int var4) {
+    int var5;
+    do {
+        // 根据当前对象的内存偏移量获取当前对象的值
+        var5 = this.getIntVolatile(var1, var2);
+    // 如果CAS比较结果不一致，则继续循环，否则退出循环
+    } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
+    return var5;
+}
+```
 
 **为什么CAS要比synchronized快**
 
