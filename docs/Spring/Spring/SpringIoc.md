@@ -639,6 +639,8 @@ https://blog.csdn.net/weixin_42103026/article/details/112846171
 
 ## Spring 事件监听器
 
+### 基本使用
+
 ApplicationListener：监听容器中的事件，事件驱动模型开发。
 
 1. 写一个监听器（实现 `ApplicationListener`）来监听某个事件（ `ApplicationEvent` 及其子类）
@@ -707,6 +709,33 @@ public class MyService {
         System.out.println("接收事件:" + event.getTimestamp());
     }
 }
+```
+
+### 源码解析
+
+> Observer模式，优势在于发布一个事件后可以有多个监听器对其作出反应，对其进行处理
+
+```java
+// 1.发布事件
+applicationContext.publishEvent(new MyApplicationEvent(this));
+// 2.广播这个事件
+getApplicationEventMulticaster().multicastEvent(applicationEvent, eventType);
+// 3.获取线程池，后续如果有线程池则异步执行，如果没有则同步执行
+Executor executor = getTaskExecutor();
+// 4.根据事件和事件类型获取Listeners
+getApplicationListeners(event, type);
+// 4.1.cacheKey = 事件类型+事件源类型
+ListenerCacheKey cacheKey = new ListenerCacheKey(eventType, sourceType);
+// 4.2.通过cacheKey查retrieverCache
+CachedListenerRetriever existingRetriever = this.retrieverCache.get(cacheKey);
+// 4.2.1.如果查不到CachedListenerRetriever则就新建并填充，然后put到retrieverCache
+CachedListenerRetriever newRetriever = new CachedListenerRetriever();
+retriever.applicationListeners = filteredListeners;
+retriever.applicationListenerBeans = filteredListenerBeans;
+// 4.3.最终返回符合条件的Listeners
+return retrieveApplicationListeners(eventType, sourceType, newRetriever);
+// 5.遍历这些Listeners，调用每个Listener
+for (ApplicationListener<?> listener : getApplicationListeners(event, type))
 ```
 
 ## Spring 循环依赖
