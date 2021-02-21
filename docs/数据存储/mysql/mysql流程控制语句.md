@@ -1,4 +1,4 @@
-# mysql流程控制语句
+# mysql 流程控制语句
 
 ## IF函数
 语法：IF(表达式1，表达式2，表达式3)
@@ -41,14 +41,14 @@ END IF
 
 **while语法**
 ```sql
-# 标签可不写
+-- 标签可不写
 标签:while 循环条件 do
 	循环体;
 end while 标签
 ```
 **loop语法**
 ```sql
-# 可以用来模拟简单的死循环
+-- 可以用来模拟简单的死循环
 标签:loop
 	循环体;
 end loop 标签;
@@ -62,7 +62,7 @@ end repeat
 ```
 **while案例**
 ```sql
-# 向admin表批量插入count条记录
+-- 向admin表批量插入count条记录
 CREATE PROCEDURE proc_test(IN count INT)
 BEGIN
 	DECLARE i INT DEFAULT 1;

@@ -1,29 +1,47 @@
-# mysql主从复制
+# mysql 主从复制
 
-## 1. 复制原理
+## binlog的格式
+
+binlog_format=STATEMENT（默认）：记录写操作SQL，会有以下问题
+
+```sql
+-- 如果有时间函数，那么主从复制的时间会不一致
+update xxx set time = now() where name = 'zhangsan'
+```
+
+binlog_format=ROW：记录一整行记录，会完全拷贝原记录，效率低
+
+binlog_format=MIXED：判断写操作有没有函数，有则用STATEMENT，没有则用ROW
+
+```sql
+-- 如果出现系统变量，也会出现主从复制不一致
+@@host name
+```
+
+## 复制原理
 1. master将改变记录到二进制日志(binary log)，这个记录过程叫二进制日志事件(binary log events)。
 2. slave将master的binary log events拷贝到它的中继日志(relay log)。
 3. slave重做中继日志中的事件，将改变应用到自己的数据库中，Mysql复制是异步且串行化的。
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200203173115696.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## 2. 配置(基于mysql 8.x)
-### 2.1 master配置文件修改
-```
+## 配置(基于mysql 8.x)
+### master配置文件修改
+```properties
 [mysqld]
 # 设置主机Id
 server-id=1
 # 启用二进制日志
 log-bin=E:\\Software\\mysql-8.0.19\\data\\logbin
 ```
-### 2.2 slave配置文件修改
-```
+### slave配置文件修改
+```properties
 [mysqld]
 # 设置从机Id
 server-id=2
 # 启用二进制日志
 log-bin=/var/run/mysqld/logbin
 ```
-### 2.3 具体操作
+### 具体操作
 >主机IP：192.168.1.104
 >从机IP：192.168.25.103
 
@@ -74,26 +92,20 @@ insert into dog (dog_name) values ('大白');
 insert into dog (dog_name) values ('汪汪');
 ```
 主机从机同步，测试成功。
-## 3. 番外之常用命令
+## 常用命令
 ```sql
-# 获取binlog文件列表
+-- 获取binlog文件列表
 show binary logs;
-
-# 查看指定binlog文件的内容
+-- 查看指定binlog文件的内容
 show binlog events in 'binlog.000017';
-
-# 停止同步
+-- 停止同步
 stop slave;
-
-# 查询用户
+-- 查询用户
 select * from mysql.user;
-
-# 删除用户
+-- 删除用户
 DELETE FROM `mysql`.`user` WHERE (`Host` = '192.168.25.103') and (`User` = 'rep1');
-
-# 修改用户密码
+-- 修改用户密码
 alter user 'repl'@'192.168.1.104' identified with mysql_native_password by '654321';
-
-# 授予用户权限
+-- 授予用户权限
 grant replication slave on *.* to 'repl'@'192.168.1.104';
 ```

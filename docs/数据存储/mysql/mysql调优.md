@@ -1,4 +1,4 @@
-# mysql调优
+# mysql 调优
 
 导入mysql官方案例数据库 https://dev.mysql.com/doc/index-other.html 
 

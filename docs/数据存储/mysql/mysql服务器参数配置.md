@@ -1,4 +1,4 @@
-# mysql服务器参数设置
+# mysql 服务器参数设置
 
 ## general
 
