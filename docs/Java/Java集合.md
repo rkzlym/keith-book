@@ -197,7 +197,7 @@ JDK8：
 
 1.7：Segment + HashEntry + Unsafe
 
-1.8：移除Segment，使锁的粒度更小，Synchronized + CAS + Node + Unsafe
+1.8：移除Segment，使锁的粒度更小，Synchronized + CAS
 
 ### ConcurrentSkitListMap
 
