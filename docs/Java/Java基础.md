@@ -166,6 +166,24 @@ String、包装类等属于引用数据类型，同时是**不可变对象**
 > 不可变对象(Immutable Object)：对象一旦被创建后，对象所有的状态及属性在其生命周期内不会发生任何变化。
 > 由于ImmutableObject不提供任何setter方法，并且成员变量value是基本数据类型，getter方法返回的是value的拷贝，所以一旦ImmutableObject实例被创建后，该实例的状态无法再进行更改，因此该类具备不可变性。
 
+## 序列化与反序列化
+
+对象的序列化主要有两种用途：
+
+1. 把对象的字节序列永久地保存到硬盘上，通常存放在一个文件中
+2. 在网络上传送对象的字节序列
+
+serialVersionUID作用：序列化时为了保持版本的兼容性，即在版本升级时反序列化仍保持对象的唯一性。
+
+有两种生成方式：
+
+1. 默认的1L，比如：private static final long serialVersionUID = 1L
+2. 根据类名、接口名、成员方法及属性等来生成一个64位的哈希字段，比如：
+
+```java
+private static final long serialVersionUID = xxxxL;
+```
+
 ## 反射
 
 > JAVA反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法。对于任意一个对象，都能够调用它的任意方法和属性。
