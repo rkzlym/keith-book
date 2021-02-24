@@ -88,6 +88,7 @@ module.exports = {
                         '/数据存储/mysql/mysql分区表',
                         '/数据存储/mysql/mysql服务器参数配置',
                         '/数据存储/mysql/mysql分库分表',
+                        '/数据存储/mysql/SQL执行底层原理',
                     ],
                 },
                 {

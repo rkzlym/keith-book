@@ -1,5 +1,7 @@
 # redis分布式锁
 
+https://juejin.cn/post/6844904106461495303
+
 ## 1. 实现方式
 
 redis与zookeeper的区别：redis是ap不保证一致性，zk是cp不保证高可用
@@ -73,8 +75,7 @@ private Redisson redisson;
 
 @GetMapping("buy")
 public String buyGoods() {
-    String uuid = UUID.randomUUID().toString();
-    RLock lock = redisson.getLock(REDIS_LOCK);
+    RLock lock = redisson.getLock("REDIS_LOCK");
     lock.lock();
     Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(REDIS_LOCK, uuid, 10L, TimeUnit.SECONDS);
     if (flag == null || !flag) return "抢锁失败";
@@ -87,3 +88,16 @@ public String buyGoods() {
     }
 }
 ```
+
+## 3. redisson 看门狗
+
+用于解决锁过期，业务却还没执行完的场景
+
+原理：他是一个后台线程（定时任务），会每隔10秒检查一下，如果客户端还持有锁key，那么就会不断的延长锁key的生存时间。如果服务挂掉了，定时任务自然也就跑不下去了。
+
+**指定 redisson 锁的过期时间**
+
+```java
+lock.lock(10,TimeUnit.SECONDS)
+```
+

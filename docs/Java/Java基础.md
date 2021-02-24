@@ -235,6 +235,12 @@ public static void setFieldValue(String fieldName, Object object, Object value) 
 }
 ```
 
+## 反射中Class.forName和ClassLoader.loadClass的区别
+
+1. class.forName除了将类的class文件加载到jvm中之外，还会对类进行解释，执行类中的static块，还会执行给静态变量赋值的静态方法
+
+2. classLoader只干一件事情，就是将class文件加载到jvm中，不会执行static中的内容,只有在newInstance才会去执行static块。
+
 ## 注解
 
 可以通过注解来获取相关属性，通过这些属性再配合反射实现相应业务。
