@@ -159,6 +159,9 @@ public class JdbcConfig {
         return dataSource;
     }
 
+    /**
+     * 配置事务管理器
+     */
     @Bean
     public PlatformTransactionManager transactionManager(){
         return new DataSourceTransactionManager(dataSource());
@@ -166,30 +169,163 @@ public class JdbcConfig {
 }
 ```
 
-### 声明式事务和编程式事务
+### 事务管理器
+
+Spring只是个容器，因此它并不做任何事务的具体实现。他只是提供了事务管理的接口PlatformTransactionManager，具体内容由就由各个事务管理器来实现。
+
+原理：通过 `TransactionAwareDataSourceProxy` 包装 `DataSource` 
+
+而在 `PlatformTransactionManager` 的实现类中可以操作 `DataSource` ，在 Spring 中实现 `commit` 和 `rollback`
+
+### Transactional 注解参数
+
+```java
+/**
+ * 事务管理器
+ */
+String transactionManager() default "";
+
+/**
+ * 事务传播行为
+ */
+Propagation propagation() default Propagation.REQUIRED;
+
+/**
+ * 事务隔离级别
+ */
+Isolation isolation() default Isolation.DEFAULT;
+
+/**
+ * 事务的超时时间
+ */
+int timeout() default TransactionDefinition.TIMEOUT_DEFAULT;
+
+/**
+ * 该事务是否为只读
+ */
+boolean readOnly() default false;
+
+/**
+ * 哪种异常需要回滚
+ */
+Class<? extends Throwable>[] rollbackFor() default {};
+
+/**
+ * 哪种异常不需要回滚
+ */
+Class<? extends Throwable>[] noRollbackFor() default {};
+```
+
+### Spring 事务传播行为
+
+```java
+/**
+ * 若当前事务存在，则在当前事务中运行，否则开启一个新事务
+ * Support a current transaction, create a new one if none exists.
+ */
+REQUIRED(TransactionDefinition.PROPAGATION_REQUIRED),
+
+/**
+ * 若当前事务存在，则在当前事务中运行，否则不开启事务
+ * Support a current transaction, execute non-transactionally if none exists.
+ */
+SUPPORTS(TransactionDefinition.PROPAGATION_SUPPORTS),
+
+/**
+ * 若当前事务不存在则抛异常
+ * Support a current transaction, throw an exception if none exists.
+ */
+MANDATORY(TransactionDefinition.PROPAGATION_MANDATORY),
+
+/**
+ * 开启一个事务并挂起当前事务
+ * Create a new transaction, and suspend the current transaction if one exists.
+ */
+REQUIRES_NEW(TransactionDefinition.PROPAGATION_REQUIRES_NEW),
+
+/**
+ * 运行在事务中被挂起
+ * Execute non-transactionally, suspend the current transaction if one exists.
+ */
+NOT_SUPPORTED(TransactionDefinition.PROPAGATION_NOT_SUPPORTED),
+
+/**
+ * 在事务中运行将会抛异常
+ * Execute non-transactionally, throw an exception if a transaction exists.
+ */
+NEVER(TransactionDefinition.PROPAGATION_NEVER),
+
+/**
+ * 嵌套在当前事务中运行
+ * Execute within a nested transaction if a current transaction exists,
+ * behave like PROPAGATION_REQUIRED else. There is no analogous feature in EJB.
+ */
+NESTED(TransactionDefinition.PROPAGATION_NESTED);
+```
+
+### Spring 事务失效场景
+
+1. 数据库引擎不支持事务：InnoDB支持事务，MyISAM不支持事务
+2. 数据源没配置事务管理器
+3. 没有抛出异常，或异常类型错误
+4. 方法没有被切面管理，即不是代理对象
+
+```java
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    @Transactional
+    public void update(Order order) {
+        updateOrder(order);
+    }
+    
+    // 新开的事务不管用，因为没有被切面管理
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateOrder(Order order) {
+        // update order
+    }
+}
+
+/**
+ * 解决上述问题可以将新开的事务写在不同类中
+ */
+@Service
+public class ServiceA {
+    @Autowired
+    private ServiceB serviceB;
+
+    @Transactional
+    public void doSomething(){
+        serviceB.insert();
+    }
+}
+
+@Service
+public class ServiceB {
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void insert(){
+        // 向数据库中添加数据
+    }
+}
+
+/**
+ * 解决方案2: 配置文件中加 <aop:config expose-proxy="true">
+ * 并且使用如下方式调用:
+ * ((ServiceA) AopContext.currentProxy()).insert();
+ */
+```
+
+### 附录
+
+**声明式事务和编程式事务**
 
 编程式事务：通过硬编码的形式手动控制事务的提交和回滚。
 
 声明式事务：只需告诉Spring哪个方法是事务方法即可。
 
-### Spring事务异常
+**Spring事务异常**
 
 运行时异常：可以不用处理，默认都回滚。
 
 编译时异常：要么try-catch，要么thows，默认不回滚。
-
-### Spring事务传播行为
-
-REQUIRED: 如当前事务存在，方法将在该事务中运行，否则开一个新事务。
-
-REQUIRED_NEW: 开一个新事务。
-
-SUPPORTS: 如当前事务存在，方法将在该事务中运行，否则不开事务。
-
-NOT_SUPPORTED: 运行在事务中将被挂起。
-
-MANDATORY: 不在事务中运行则抛异常。
-
-NEVER: 在事务中运行则抛异常。
-
-NESTED: 嵌套在事务中运行
