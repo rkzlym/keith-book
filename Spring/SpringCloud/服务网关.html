@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Spring Cloud 服务网关 | 鸿鹄笔记</title>
+    <meta name="generator" content="VuePress 1.8.0">
+    <link rel="icon" content="/favicon.ico">
+    <meta name="description" content="鸿鹄的个人笔记">
+    <meta rel="author" content="Keith">
+    
+    <link rel="preload" href="/keith-book/assets/css/0.styles.86c07c9d.css" as="style"><link rel="preload" href="/keith-book/assets/js/app.7ae60ab7.js" as="script"><link rel="preload" href="/keith-book/assets/js/2.044773f5.js" as="script"><link rel="preload" href="/keith-book/assets/js/18.1ae9a1fd.js" as="script"><link rel="prefetch" href="/keith-book/assets/js/10.13f771ae.js"><link rel="prefetch" href="/keith-book/assets/js/100.af11b532.js"><link rel="prefetch" href="/keith-book/assets/js/101.b5e393e3.js"><link rel="prefetch" href="/keith-book/assets/js/102.7a7d2386.js"><link rel="prefetch" href="/keith-book/assets/js/103.4b5c8925.js"><link rel="prefetch" href="/keith-book/assets/js/104.8c63d13c.js"><link rel="prefetch" href="/keith-book/assets/js/105.2bfbf884.js"><link rel="prefetch" href="/keith-book/assets/js/106.47faa20d.js"><link rel="prefetch" href="/keith-book/assets/js/107.9ad2a314.js"><link rel="prefetch" href="/keith-book/assets/js/108.008b5fa7.js"><link rel="prefetch" href="/keith-book/assets/js/109.62761423.js"><link rel="prefetch" href="/keith-book/assets/js/11.a6a3b5c9.js"><link rel="prefetch" href="/keith-book/assets/js/110.8afb8e61.js"><link rel="prefetch" href="/keith-book/assets/js/111.57012fed.js"><link rel="prefetch" href="/keith-book/assets/js/112.535b424f.js"><link rel="prefetch" href="/keith-book/assets/js/113.c23530b0.js"><link rel="prefetch" href="/keith-book/assets/js/114.834b12cd.js"><link rel="prefetch" href="/keith-book/assets/js/115.ce1b3169.js"><link rel="prefetch" href="/keith-book/assets/js/116.65b1520c.js"><link rel="prefetch" href="/keith-book/assets/js/117.fd80cfe9.js"><link rel="prefetch" href="/keith-book/assets/js/118.f05a98aa.js"><link rel="prefetch" href="/keith-book/assets/js/119.4cea8196.js"><link rel="prefetch" href="/keith-book/assets/js/12.42246af7.js"><link rel="prefetch" href="/keith-book/assets/js/120.275abc51.js"><link rel="prefetch" href="/keith-book/assets/js/121.0a4ec53d.js"><link rel="prefetch" href="/keith-book/assets/js/122.aebc3a0f.js"><link rel="prefetch" href="/keith-book/assets/js/123.a9c61bf2.js"><link rel="prefetch" href="/keith-book/assets/js/124.54f656c9.js"><link rel="prefetch" href="/keith-book/assets/js/125.554faf7e.js"><link rel="prefetch" href="/keith-book/assets/js/126.88f70416.js"><link rel="prefetch" href="/keith-book/assets/js/127.7aeb22c3.js"><link rel="prefetch" href="/keith-book/assets/js/128.5e8f8a6c.js"><link rel="prefetch" href="/keith-book/assets/js/129.d96c386d.js"><link rel="prefetch" href="/keith-book/assets/js/13.614d862e.js"><link rel="prefetch" href="/keith-book/assets/js/14.d938dc50.js"><link rel="prefetch" href="/keith-book/assets/js/15.27956206.js"><link rel="prefetch" href="/keith-book/assets/js/16.8259d213.js"><link rel="prefetch" href="/keith-book/assets/js/17.59fccf41.js"><link rel="prefetch" href="/keith-book/assets/js/19.3f56180c.js"><link rel="prefetch" href="/keith-book/assets/js/20.a6a8e2d9.js"><link rel="prefetch" href="/keith-book/assets/js/21.fa3c5532.js"><link rel="prefetch" href="/keith-book/assets/js/22.8c3384e6.js"><link rel="prefetch" href="/keith-book/assets/js/23.8ea8dbc6.js"><link rel="prefetch" href="/keith-book/assets/js/24.d65bce25.js"><link rel="prefetch" href="/keith-book/assets/js/25.b2d0686f.js"><link rel="prefetch" href="/keith-book/assets/js/26.fdc5f5b5.js"><link rel="prefetch" href="/keith-book/assets/js/27.8bb47b1d.js"><link rel="prefetch" href="/keith-book/assets/js/28.e087e2b0.js"><link rel="prefetch" href="/keith-book/assets/js/29.4306565c.js"><link rel="prefetch" href="/keith-book/assets/js/3.83866d44.js"><link rel="prefetch" href="/keith-book/assets/js/30.92b9c15a.js"><link rel="prefetch" href="/keith-book/assets/js/31.a231c5d0.js"><link rel="prefetch" href="/keith-book/assets/js/32.30b3c540.js"><link rel="prefetch" href="/keith-book/assets/js/33.d4ae83e5.js"><link rel="prefetch" href="/keith-book/assets/js/34.2d831459.js"><link rel="prefetch" href="/keith-book/assets/js/35.fd638673.js"><link rel="prefetch" href="/keith-book/assets/js/36.a936bf23.js"><link rel="prefetch" href="/keith-book/assets/js/37.f0a03b08.js"><link rel="prefetch" href="/keith-book/assets/js/38.635b6ac3.js"><link rel="prefetch" href="/keith-book/assets/js/39.dc3d7a09.js"><link rel="prefetch" href="/keith-book/assets/js/4.e2dc8d0c.js"><link rel="prefetch" href="/keith-book/assets/js/40.06264354.js"><link rel="prefetch" href="/keith-book/assets/js/41.a5492cc2.js"><link rel="prefetch" href="/keith-book/assets/js/42.be57bef1.js"><link rel="prefetch" href="/keith-book/assets/js/43.88a27c79.js"><link rel="prefetch" href="/keith-book/assets/js/44.c4499e0a.js"><link rel="prefetch" href="/keith-book/assets/js/45.bc3d4bb0.js"><link rel="prefetch" href="/keith-book/assets/js/46.77fe74ff.js"><link rel="prefetch" href="/keith-book/assets/js/47.a6d9e6fb.js"><link rel="prefetch" href="/keith-book/assets/js/48.aef4698e.js"><link rel="prefetch" href="/keith-book/assets/js/49.a0d6928f.js"><link rel="prefetch" href="/keith-book/assets/js/5.281837e2.js"><link rel="prefetch" href="/keith-book/assets/js/50.97367378.js"><link rel="prefetch" href="/keith-book/assets/js/51.5aa97e63.js"><link rel="prefetch" href="/keith-book/assets/js/52.c8645f8c.js"><link rel="prefetch" href="/keith-book/assets/js/53.ddb048d3.js"><link rel="prefetch" href="/keith-book/assets/js/54.4b3240ad.js"><link rel="prefetch" href="/keith-book/assets/js/55.906f19b3.js"><link rel="prefetch" href="/keith-book/assets/js/56.ab84e214.js"><link rel="prefetch" href="/keith-book/assets/js/57.4b0773ba.js"><link rel="prefetch" href="/keith-book/assets/js/58.ba67fb3c.js"><link rel="prefetch" href="/keith-book/assets/js/59.c70cec7d.js"><link rel="prefetch" href="/keith-book/assets/js/6.a3b769ae.js"><link rel="prefetch" href="/keith-book/assets/js/60.328ff957.js"><link rel="prefetch" href="/keith-book/assets/js/61.821c95c9.js"><link rel="prefetch" href="/keith-book/assets/js/62.a8706fa5.js"><link rel="prefetch" href="/keith-book/assets/js/63.7893739a.js"><link rel="prefetch" href="/keith-book/assets/js/64.e0e82da5.js"><link rel="prefetch" href="/keith-book/assets/js/65.c8630545.js"><link rel="prefetch" href="/keith-book/assets/js/66.71acb88b.js"><link rel="prefetch" href="/keith-book/assets/js/67.1d69d8ae.js"><link rel="prefetch" href="/keith-book/assets/js/68.cbcd16b5.js"><link rel="prefetch" href="/keith-book/assets/js/69.7ad720f1.js"><link rel="prefetch" href="/keith-book/assets/js/7.4d8a2bf7.js"><link rel="prefetch" href="/keith-book/assets/js/70.94b0ffc1.js"><link rel="prefetch" href="/keith-book/assets/js/71.f82c5f63.js"><link rel="prefetch" href="/keith-book/assets/js/72.bc8c9c4e.js"><link rel="prefetch" href="/keith-book/assets/js/73.0705a1c5.js"><link rel="prefetch" href="/keith-book/assets/js/74.5f096bb0.js"><link rel="prefetch" href="/keith-book/assets/js/75.3f8747a5.js"><link rel="prefetch" href="/keith-book/assets/js/76.651eb39a.js"><link rel="prefetch" href="/keith-book/assets/js/77.f999879e.js"><link rel="prefetch" href="/keith-book/assets/js/78.61f7757f.js"><link rel="prefetch" href="/keith-book/assets/js/79.8bd2dd06.js"><link rel="prefetch" href="/keith-book/assets/js/8.d352d476.js"><link rel="prefetch" href="/keith-book/assets/js/80.b123974d.js"><link rel="prefetch" href="/keith-book/assets/js/81.2009dcf1.js"><link rel="prefetch" href="/keith-book/assets/js/82.29cd7333.js"><link rel="prefetch" href="/keith-book/assets/js/83.936db179.js"><link rel="prefetch" href="/keith-book/assets/js/84.bc885c59.js"><link rel="prefetch" href="/keith-book/assets/js/85.d4e8c66d.js"><link rel="prefetch" href="/keith-book/assets/js/86.7cc46a2b.js"><link rel="prefetch" href="/keith-book/assets/js/87.2c8ce44d.js"><link rel="prefetch" href="/keith-book/assets/js/88.bb2c361f.js"><link rel="prefetch" href="/keith-book/assets/js/89.9a1ee5e4.js"><link rel="prefetch" href="/keith-book/assets/js/9.29357314.js"><link rel="prefetch" href="/keith-book/assets/js/90.aa69ffbe.js"><link rel="prefetch" href="/keith-book/assets/js/91.a8944021.js"><link rel="prefetch" href="/keith-book/assets/js/92.cd8a456d.js"><link rel="prefetch" href="/keith-book/assets/js/93.0b16e3c6.js"><link rel="prefetch" href="/keith-book/assets/js/94.d8822045.js"><link rel="prefetch" href="/keith-book/assets/js/95.fa963ca4.js"><link rel="prefetch" href="/keith-book/assets/js/96.c4728133.js"><link rel="prefetch" href="/keith-book/assets/js/97.f29d3516.js"><link rel="prefetch" href="/keith-book/assets/js/98.64cb768c.js"><link rel="prefetch" href="/keith-book/assets/js/99.7f8d1f38.js">
+    <link rel="stylesheet" href="/keith-book/assets/css/0.styles.86c07c9d.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/keith-book/" class="home-link router-link-active"><img src="/keith-book/favicon.ico" alt="鸿鹄笔记" class="logo"> <span class="site-name can-hide">鸿鹄笔记</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/keith-book/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/keith-book/Java/" class="nav-link">
+  Java
+</a></div><div class="nav-item"><a href="/keith-book/Spring/" class="nav-link router-link-active">
+  Spring
+</a></div><div class="nav-item"><a href="/keith-book/数据存储/" class="nav-link">
+  数据存储
+</a></div><div class="nav-item"><a href="/keith-book/设计模式/" class="nav-link">
+  设计模式
+</a></div><div class="nav-item"><a href="/keith-book/数据结构/" class="nav-link">
+  数据结构
+</a></div><div class="nav-item"><a href="/keith-book/服务器/" class="nav-link">
+  服务器
+</a></div><div class="nav-item"><a href="/keith-book/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/keith-book/拓展/" class="nav-link">
+  拓展
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/keith-book/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/keith-book/Java/" class="nav-link">
+  Java
+</a></div><div class="nav-item"><a href="/keith-book/Spring/" class="nav-link router-link-active">
+  Spring
+</a></div><div class="nav-item"><a href="/keith-book/数据存储/" class="nav-link">
+  数据存储
+</a></div><div class="nav-item"><a href="/keith-book/设计模式/" class="nav-link">
+  设计模式
+</a></div><div class="nav-item"><a href="/keith-book/数据结构/" class="nav-link">
+  数据结构
+</a></div><div class="nav-item"><a href="/keith-book/服务器/" class="nav-link">
+  服务器
+</a></div><div class="nav-item"><a href="/keith-book/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/keith-book/拓展/" class="nav-link">
+  拓展
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><a href="/keith-book/Spring/Spring" class="sidebar-heading clickable"><span>Spring</span> <!----></a> <ul class="sidebar-links sidebar-group-items"><li><a href="/keith-book/Spring/Spring/SpringIoc.html" class="sidebar-link">Spring IOC</a></li><li><a href="/keith-book/Spring/Spring/SpringAop.html" class="sidebar-link">Spring AOP</a></li><li><a href="/keith-book/Spring/Spring/SpringMvc.html" class="sidebar-link">Spring MVC</a></li><li><a href="/keith-book/Spring/Spring/SpringBoot.html" class="sidebar-link">Spring Boot</a></li><li><a href="/keith-book/Spring/Spring/SpringWebFlux.html" class="sidebar-link">Spring WebFlux</a></li><li><a href="/keith-book/Spring/Spring/Mybatis.html" class="sidebar-link">Mybatis</a></li></ul></section></li><li><section class="sidebar-group depth-0"><a href="/keith-book/Spring/SpringCloud" class="sidebar-heading clickable router-link-active open"><span>Spring Cloud</span> <!----></a> <ul class="sidebar-links sidebar-group-items"><li><a href="/keith-book/Spring/SpringCloud/注册中心.html" class="sidebar-link">Spring Cloud 注册中心</a></li><li><a href="/keith-book/Spring/SpringCloud/服务调用.html" class="sidebar-link">Spring Cloud 服务调用</a></li><li><a href="/keith-book/Spring/SpringCloud/服务网关.html" class="active sidebar-link">Spring Cloud 服务网关</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/keith-book/Spring/SpringCloud/服务网关.html#zuul" class="sidebar-link">Zuul</a></li><li class="sidebar-sub-header"><a href="/keith-book/Spring/SpringCloud/服务网关.html#gateway" class="sidebar-link">Gateway</a></li></ul></li><li><a href="/keith-book/Spring/SpringCloud/链路追踪.html" class="sidebar-link">Spring Cloud 链路追踪</a></li><li><a href="/keith-book/Spring/SpringCloud/配置中心.html" class="sidebar-link">Spring Cloud 配置中心</a></li><li><a href="/keith-book/Spring/SpringCloud/健康检查.html" class="sidebar-link">Spring Cloud Admin 健康检查</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="spring-cloud-服务网关"><a href="#spring-cloud-服务网关" class="header-anchor">#</a> Spring Cloud 服务网关</h1> <h2 id="zuul"><a href="#zuul" class="header-anchor">#</a> Zuul</h2> <p>基于 Servlet</p> <h3 id="zuul-概述"><a href="#zuul-概述" class="header-anchor">#</a> Zuul 概述</h3> <p>Zuul是Netflix开源的微服务网关，核心是一系列过滤器。这些过滤器可以完成以下功能。</p> <ol><li>是所有微服务入口，进行分发。</li> <li>身份认证与安全：识别合法的请求，拦截不合法的请求。</li> <li>监控：在入口处监控，更全面。</li> <li>动态路由：动态将请求分发到不同的后端集群。</li> <li>压力测试：可以逐渐增加对后端服务的流量，进行测试。</li> <li>负载均衡</li> <li>限流：比如我每秒只要1000次，1001次就不让访问了。</li> <li>服务熔断</li></ol> <p>zuul是跑在Tomcat上的，性能较低，可以使用读写分离，写请求通过zuul来实现</p> <h3 id="zuul-配置"><a href="#zuul-配置" class="header-anchor">#</a> Zuul 配置</h3> <p>引入依赖</p> <div class="language-xml extra-class"><pre class="language-xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">&gt;</span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">&gt;</span></span>spring-cloud-starter-netflix-eureka-client<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">&gt;</span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">&gt;</span></span>spring-cloud-starter-netflix-zuul<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>配置文件</p> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token comment"># 需要和其他服务注册到同一个注册中心</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>5000/eureka
+<span class="token key atrule">zuul</span><span class="token punctuation">:</span>
+  <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+    <span class="token key atrule">sardine-user</span><span class="token punctuation">:</span> /user/<span class="token important">**</span>
+    <span class="token key atrule">sardine-cookbook</span><span class="token punctuation">:</span> /cookbook/<span class="token important">**</span>
+    <span class="token key atrule">sardine-file</span><span class="token punctuation">:</span> /file/<span class="token important">**</span>
+  <span class="token key atrule">prefix</span><span class="token punctuation">:</span> /api
+  <span class="token key atrule">add-host-header</span><span class="token punctuation">:</span> <span class="token boolean important">true</span> <span class="token comment"># 携带域名信息</span>
+  <span class="token key atrule">sensitive-headers</span><span class="token punctuation">:</span>    <span class="token comment"># 忽略头信息</span>
+</code></pre></div><p>启动类增加注解</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@EnableZuulProxy</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ZuulApplication</span> <span class="token punctuation">{</span>
+</code></pre></div><h3 id="zuul-过滤器"><a href="#zuul-过滤器" class="header-anchor">#</a> Zuul 过滤器</h3> <div class="language-java extra-class"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginFilter</span> <span class="token keyword">extends</span> <span class="token class-name">ZuulFilter</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> <span class="token class-name">UserClient</span> userClient<span class="token punctuation">;</span>
+    
+    <span class="token comment">/**
+     * 过滤器的类型: pre route post error
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">filterType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token class-name">FilterConstants</span><span class="token punctuation">.</span>PRE_TYPE<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * 过滤器的执行顺序: 返回值越小，优先级越高
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">filterOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token number">10</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * 是否执行run方法
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">shouldFilter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">RequestContext</span> context <span class="token operator">=</span> <span class="token class-name">RequestContext</span><span class="token punctuation">.</span><span class="token function">getCurrentContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 如果执行了context.setSendZuulResponse(false)方法，就不执行过滤器</span>
+        <span class="token comment">// 相当于不执行后面的过滤器了</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>context <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>context<span class="token punctuation">.</span><span class="token function">sendZuulResponse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * 过滤器的业务逻辑
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">RequestContext</span> context <span class="token operator">=</span> <span class="token class-name">RequestContext</span><span class="token punctuation">.</span><span class="token function">getCurrentContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">HttpServletRequest</span> request <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">String</span> token <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getHeader</span><span class="token punctuation">(</span>authProperties<span class="token punctuation">.</span><span class="token function">getTokenName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name">StringUtils</span><span class="token punctuation">.</span><span class="token function">isBlank</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token function">noAuthorization</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">UserDto</span> user <span class="token operator">=</span> userClient<span class="token punctuation">.</span><span class="token function">identify</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRecord</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>user <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token function">noAuthorization</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * 拦截此次请求
+     */</span>
+    <span class="token keyword">private</span> <span class="token class-name">Object</span> <span class="token function">noAuthorization</span><span class="token punctuation">(</span><span class="token class-name">RequestContext</span> context<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        context<span class="token punctuation">.</span><span class="token function">setSendZuulResponse</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        context<span class="token punctuation">.</span><span class="token function">setResponseStatusCode</span><span class="token punctuation">(</span><span class="token class-name">HttpStatus</span><span class="token punctuation">.</span>SC_UNAUTHORIZED<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        context<span class="token punctuation">.</span><span class="token function">setResponseBody</span><span class="token punctuation">(</span><span class="token string">&quot;No Authorization&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="gateway"><a href="#gateway" class="header-anchor">#</a> Gateway</h2> <p>基于 Netty，Spring WebFlux 响应式编程，在请求的时候就封装好了Response</p> <h3 id="基本使用"><a href="#基本使用" class="header-anchor">#</a> 基本使用</h3> <p>Predicates 断言</p> <blockquote><p>多个断言可以配合使用</p></blockquote> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">predicates</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> Path=/img/<span class="token important">**</span>	<span class="token comment"># 匹配路径</span>
+  <span class="token punctuation">-</span> Query=foo<span class="token punctuation">,</span>ba	<span class="token comment"># 匹配参数，可使用正则</span>
+  <span class="token punctuation">-</span> Method=get		<span class="token comment"># 匹配请求方式</span>
+  <span class="token punctuation">-</span> Host=demo.com	<span class="token comment"># 匹配Host</span>
+  <span class="token punctuation">-</span> Cookie=aaa		<span class="token comment"># 匹配Cookie</span>
+</code></pre></div><p>pom</p> <div class="language-xml extra-class"><pre class="language-xml"><code><span class="token comment">&lt;!-- Spring Cloud Gateway --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">&gt;</span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">&gt;</span></span>spring-cloud-starter-gateway<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>配置文件</p> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> sardine<span class="token punctuation">-</span>gateway
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>route
+          <span class="token key atrule">uri</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span><span class="token number">7012</span>
+          <span class="token key atrule">predicates</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> Path=/gateway/<span class="token important">**</span>      <span class="token comment"># 将后缀是此路径的转发到uri</span>
+          <span class="token key atrule">filters</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> StripPrefix=1         <span class="token comment"># 去掉1个前缀</span>
+</code></pre></div><h3 id="整合-eureka"><a href="#整合-eureka" class="header-anchor">#</a> 整合 Eureka</h3> <p><strong>使用默认路由</strong></p> <p>pom</p> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">5001</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> sardine<span class="token punctuation">-</span>gateway
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">discovery</span><span class="token punctuation">:</span>
+        <span class="token key atrule">locator</span><span class="token punctuation">:</span>
+          <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>7000/eureka
+</code></pre></div><p>默认是根据 Eureka 的服务名进行转发（注意要大写0）：http://localhost:5001/SARDINE-USER/hello</p> <p><strong>使用自定义路由</strong></p> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">5001</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> sardine<span class="token punctuation">-</span>gateway
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">discovery</span><span class="token punctuation">:</span>
+        <span class="token key atrule">locator</span><span class="token punctuation">:</span>
+          <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+      <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> sardine<span class="token punctuation">-</span>user
+          <span class="token key atrule">predicates</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> Path=/user/<span class="token important">**</span>
+          <span class="token key atrule">uri</span><span class="token punctuation">:</span> lb<span class="token punctuation">:</span>//SARDINE<span class="token punctuation">-</span>USER
+          <span class="token key atrule">filters</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> StripPrefix=1
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>7000/eureka
+</code></pre></div><p>访问该地址可以得到同样的效果： http://localhost:5001/user/hello</p> <h3 id="自定义负载均衡策略"><a href="#自定义负载均衡策略" class="header-anchor">#</a> 自定义负载均衡策略</h3> <p>定义自定义负载均衡策略</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyRule</span> <span class="token keyword">extends</span> <span class="token class-name">AbstractLoadBalancerRule</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">initWithNiwsConfig</span><span class="token punctuation">(</span><span class="token class-name">IClientConfig</span> iClientConfig<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Server</span> <span class="token function">choose</span><span class="token punctuation">(</span><span class="token class-name">Object</span> o<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;MyRule&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>在 gateway 服务中增加以下配置</p> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">SARDINE-USER</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ribbon</span><span class="token punctuation">:</span>
+    <span class="token key atrule">NFLoadBalancerRuleClassName</span><span class="token punctuation">:</span> com.sardine.gateway.config.MyRule
+</code></pre></div><h3 id="自定义路由"><a href="#自定义路由" class="header-anchor">#</a> 自定义路由</h3> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> <span class="token class-name">RouteLocator</span> <span class="token function">routeLocator</span><span class="token punctuation">(</span><span class="token class-name">RouteLocatorBuilder</span> locatorBuilder<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> locatorBuilder<span class="token punctuation">.</span><span class="token function">routes</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">route</span><span class="token punctuation">(</span>p <span class="token operator">-&gt;</span> p<span class="token punctuation">.</span><span class="token function">path</span><span class="token punctuation">(</span><span class="token string">&quot;/u/**&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filters</span><span class="token punctuation">(</span>f <span class="token operator">-&gt;</span> f<span class="token punctuation">.</span><span class="token function">stripPrefix</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">uri</span><span class="token punctuation">(</span><span class="token string">&quot;lb://SARDINE-USER&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="过滤器"><a href="#过滤器" class="header-anchor">#</a> 过滤器</h3> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyFilter</span> <span class="token keyword">implements</span> <span class="token class-name">Ordered</span><span class="token punctuation">,</span> <span class="token class-name">GlobalFilter</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Mono</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Void</span><span class="token punctuation">&gt;</span></span> <span class="token function">filter</span><span class="token punctuation">(</span><span class="token class-name">ServerWebExchange</span> exchange<span class="token punctuation">,</span> <span class="token class-name">GatewayFilterChain</span> chain<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;执行过滤器&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">ServerHttpRequest</span> request <span class="token operator">=</span> exchange<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">MultiValueMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">&gt;</span></span> queryParams <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getQueryParams</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">&gt;</span></span> list <span class="token operator">=</span> queryParams<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">&quot;id&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>list <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> list<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;非法请求&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);</span>
+<span class="token comment">//            return exchange.getResponse().setComplete();</span>
+            <span class="token class-name">DataBuffer</span> dataBuffer <span class="token operator">=</span> exchange<span class="token punctuation">.</span><span class="token function">getResponse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">bufferFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">wrap</span><span class="token punctuation">(</span><span class="token string">&quot;Illegal Request&quot;</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> exchange<span class="token punctuation">.</span><span class="token function">getResponse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">writeWith</span><span class="token punctuation">(</span><span class="token class-name">Mono</span><span class="token punctuation">.</span><span class="token function">just</span><span class="token punctuation">(</span>dataBuffer<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> chain<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>exchange<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">getOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="限流-整合guava"><a href="#限流-整合guava" class="header-anchor">#</a> 限流（整合Guava）</h3> <p>限流实现类</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Primary</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DefaultRateLimiter</span> <span class="token keyword">extends</span> <span class="token class-name">AbstractRateLimiter</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">DefaultRateLimiter</span><span class="token punctuation">.</span><span class="token class-name">Config</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">RateLimiter</span> limiter <span class="token operator">=</span> <span class="token class-name">RateLimiter</span><span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">DefaultRateLimiter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">super</span><span class="token punctuation">(</span><span class="token class-name">Config</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token string">&quot;default-rate-limiter&quot;</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">ConfigurationService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Mono</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Response</span><span class="token punctuation">&gt;</span></span> <span class="token function">isAllowed</span><span class="token punctuation">(</span><span class="token class-name">String</span> routeId<span class="token punctuation">,</span> <span class="token class-name">String</span> id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">Config</span> config <span class="token operator">=</span> <span class="token function">getConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>routeId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        limiter<span class="token punctuation">.</span><span class="token function">setRate</span><span class="token punctuation">(</span><span class="token class-name">Objects</span><span class="token punctuation">.</span><span class="token function">isNull</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">getPermitsPerSecond</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token number">1</span> <span class="token operator">:</span> config<span class="token punctuation">.</span><span class="token function">getPermitsPerSecond</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">boolean</span> isAllow <span class="token operator">=</span> limiter<span class="token punctuation">.</span><span class="token function">tryAcquire</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token class-name">Mono</span><span class="token punctuation">.</span><span class="token function">just</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Response</span><span class="token punctuation">(</span>isAllow<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Config</span> <span class="token punctuation">{</span>
+
+        <span class="token annotation punctuation">@DecimalMin</span><span class="token punctuation">(</span><span class="token string">&quot;0.1&quot;</span><span class="token punctuation">)</span>
+        <span class="token keyword">private</span> <span class="token class-name">Double</span> permitsPerSecond<span class="token punctuation">;</span>
+
+        <span class="token keyword">public</span> <span class="token class-name">Double</span> <span class="token function">getPermitsPerSecond</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> permitsPerSecond<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">public</span> <span class="token class-name">Config</span> <span class="token function">setPermitsPerSecond</span><span class="token punctuation">(</span><span class="token class-name">Double</span> permitsPerSecond<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span>permitsPerSecond <span class="token operator">=</span> permitsPerSecond<span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>配置需要根据什么维度进行限流</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">RateLimitConfig</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> <span class="token class-name">KeyResolver</span> <span class="token function">userKeyResolver</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment">// 获取请求用户IP作为限流key</span>
+        <span class="token keyword">return</span> exchange <span class="token operator">-&gt;</span> <span class="token class-name">Mono</span><span class="token punctuation">.</span><span class="token function">just</span><span class="token punctuation">(</span>exchange<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRemoteAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getHostName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>配置文件</p> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> sardine<span class="token punctuation">-</span>gateway
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">discovery</span><span class="token punctuation">:</span>
+        <span class="token key atrule">locator</span><span class="token punctuation">:</span>
+          <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+      <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> sardine<span class="token punctuation">-</span>user
+        <span class="token key atrule">predicates</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> Path=/user/<span class="token important">**</span>
+        <span class="token key atrule">uri</span><span class="token punctuation">:</span> lb<span class="token punctuation">:</span>//SARDINE<span class="token punctuation">-</span>USER
+        <span class="token key atrule">filters</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> StripPrefix=1
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> RequestRateLimiter
+          <span class="token key atrule">args</span><span class="token punctuation">:</span>
+          	<span class="token comment"># 限流的实现类，Spring的EL表达式，拿到这个Bean</span>
+            <span class="token key atrule">rate-limiter</span><span class="token punctuation">:</span> <span class="token string">'#{@defaultRateLimiter}'</span>
+            <span class="token comment"># 需要限流的规则</span>
+            <span class="token key atrule">key-resolver</span><span class="token punctuation">:</span> <span class="token string">'#{@userKeyResolver}'</span>
+            <span class="token comment"># 每秒发放令牌个数</span>
+            <span class="token key atrule">default-rate-limiter.premitPerSecond</span><span class="token punctuation">:</span> <span class="token number">0.5</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">2/21/2021, 11:41:55 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/keith-book/Spring/SpringCloud/服务调用.html" class="prev">
+        Spring Cloud 服务调用
+      </a></span> <span class="next"><a href="/keith-book/Spring/SpringCloud/链路追踪.html">
+        Spring Cloud 链路追踪
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/keith-book/assets/js/app.7ae60ab7.js" defer></script><script src="/keith-book/assets/js/2.044773f5.js" defer></script><script src="/keith-book/assets/js/18.1ae9a1fd.js" defer></script>
+  </body>
+</html>

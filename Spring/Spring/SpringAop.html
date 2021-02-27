@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Spring AOP | 鸿鹄笔记</title>
+    <meta name="generator" content="VuePress 1.8.0">
+    <link rel="icon" content="/favicon.ico">
+    <meta name="description" content="鸿鹄的个人笔记">
+    <meta rel="author" content="Keith">
+    
+    <link rel="preload" href="/keith-book/assets/css/0.styles.86c07c9d.css" as="style"><link rel="preload" href="/keith-book/assets/js/app.7ae60ab7.js" as="script"><link rel="preload" href="/keith-book/assets/js/2.044773f5.js" as="script"><link rel="preload" href="/keith-book/assets/js/25.b2d0686f.js" as="script"><link rel="prefetch" href="/keith-book/assets/js/10.13f771ae.js"><link rel="prefetch" href="/keith-book/assets/js/100.af11b532.js"><link rel="prefetch" href="/keith-book/assets/js/101.b5e393e3.js"><link rel="prefetch" href="/keith-book/assets/js/102.7a7d2386.js"><link rel="prefetch" href="/keith-book/assets/js/103.4b5c8925.js"><link rel="prefetch" href="/keith-book/assets/js/104.8c63d13c.js"><link rel="prefetch" href="/keith-book/assets/js/105.2bfbf884.js"><link rel="prefetch" href="/keith-book/assets/js/106.47faa20d.js"><link rel="prefetch" href="/keith-book/assets/js/107.9ad2a314.js"><link rel="prefetch" href="/keith-book/assets/js/108.008b5fa7.js"><link rel="prefetch" href="/keith-book/assets/js/109.62761423.js"><link rel="prefetch" href="/keith-book/assets/js/11.a6a3b5c9.js"><link rel="prefetch" href="/keith-book/assets/js/110.8afb8e61.js"><link rel="prefetch" href="/keith-book/assets/js/111.57012fed.js"><link rel="prefetch" href="/keith-book/assets/js/112.535b424f.js"><link rel="prefetch" href="/keith-book/assets/js/113.c23530b0.js"><link rel="prefetch" href="/keith-book/assets/js/114.834b12cd.js"><link rel="prefetch" href="/keith-book/assets/js/115.ce1b3169.js"><link rel="prefetch" href="/keith-book/assets/js/116.65b1520c.js"><link rel="prefetch" href="/keith-book/assets/js/117.fd80cfe9.js"><link rel="prefetch" href="/keith-book/assets/js/118.f05a98aa.js"><link rel="prefetch" href="/keith-book/assets/js/119.4cea8196.js"><link rel="prefetch" href="/keith-book/assets/js/12.42246af7.js"><link rel="prefetch" href="/keith-book/assets/js/120.275abc51.js"><link rel="prefetch" href="/keith-book/assets/js/121.0a4ec53d.js"><link rel="prefetch" href="/keith-book/assets/js/122.aebc3a0f.js"><link rel="prefetch" href="/keith-book/assets/js/123.a9c61bf2.js"><link rel="prefetch" href="/keith-book/assets/js/124.54f656c9.js"><link rel="prefetch" href="/keith-book/assets/js/125.554faf7e.js"><link rel="prefetch" href="/keith-book/assets/js/126.88f70416.js"><link rel="prefetch" href="/keith-book/assets/js/127.7aeb22c3.js"><link rel="prefetch" href="/keith-book/assets/js/128.5e8f8a6c.js"><link rel="prefetch" href="/keith-book/assets/js/129.d96c386d.js"><link rel="prefetch" href="/keith-book/assets/js/13.614d862e.js"><link rel="prefetch" href="/keith-book/assets/js/14.d938dc50.js"><link rel="prefetch" href="/keith-book/assets/js/15.27956206.js"><link rel="prefetch" href="/keith-book/assets/js/16.8259d213.js"><link rel="prefetch" href="/keith-book/assets/js/17.59fccf41.js"><link rel="prefetch" href="/keith-book/assets/js/18.1ae9a1fd.js"><link rel="prefetch" href="/keith-book/assets/js/19.3f56180c.js"><link rel="prefetch" href="/keith-book/assets/js/20.a6a8e2d9.js"><link rel="prefetch" href="/keith-book/assets/js/21.fa3c5532.js"><link rel="prefetch" href="/keith-book/assets/js/22.8c3384e6.js"><link rel="prefetch" href="/keith-book/assets/js/23.8ea8dbc6.js"><link rel="prefetch" href="/keith-book/assets/js/24.d65bce25.js"><link rel="prefetch" href="/keith-book/assets/js/26.fdc5f5b5.js"><link rel="prefetch" href="/keith-book/assets/js/27.8bb47b1d.js"><link rel="prefetch" href="/keith-book/assets/js/28.e087e2b0.js"><link rel="prefetch" href="/keith-book/assets/js/29.4306565c.js"><link rel="prefetch" href="/keith-book/assets/js/3.83866d44.js"><link rel="prefetch" href="/keith-book/assets/js/30.92b9c15a.js"><link rel="prefetch" href="/keith-book/assets/js/31.a231c5d0.js"><link rel="prefetch" href="/keith-book/assets/js/32.30b3c540.js"><link rel="prefetch" href="/keith-book/assets/js/33.d4ae83e5.js"><link rel="prefetch" href="/keith-book/assets/js/34.2d831459.js"><link rel="prefetch" href="/keith-book/assets/js/35.fd638673.js"><link rel="prefetch" href="/keith-book/assets/js/36.a936bf23.js"><link rel="prefetch" href="/keith-book/assets/js/37.f0a03b08.js"><link rel="prefetch" href="/keith-book/assets/js/38.635b6ac3.js"><link rel="prefetch" href="/keith-book/assets/js/39.dc3d7a09.js"><link rel="prefetch" href="/keith-book/assets/js/4.e2dc8d0c.js"><link rel="prefetch" href="/keith-book/assets/js/40.06264354.js"><link rel="prefetch" href="/keith-book/assets/js/41.a5492cc2.js"><link rel="prefetch" href="/keith-book/assets/js/42.be57bef1.js"><link rel="prefetch" href="/keith-book/assets/js/43.88a27c79.js"><link rel="prefetch" href="/keith-book/assets/js/44.c4499e0a.js"><link rel="prefetch" href="/keith-book/assets/js/45.bc3d4bb0.js"><link rel="prefetch" href="/keith-book/assets/js/46.77fe74ff.js"><link rel="prefetch" href="/keith-book/assets/js/47.a6d9e6fb.js"><link rel="prefetch" href="/keith-book/assets/js/48.aef4698e.js"><link rel="prefetch" href="/keith-book/assets/js/49.a0d6928f.js"><link rel="prefetch" href="/keith-book/assets/js/5.281837e2.js"><link rel="prefetch" href="/keith-book/assets/js/50.97367378.js"><link rel="prefetch" href="/keith-book/assets/js/51.5aa97e63.js"><link rel="prefetch" href="/keith-book/assets/js/52.c8645f8c.js"><link rel="prefetch" href="/keith-book/assets/js/53.ddb048d3.js"><link rel="prefetch" href="/keith-book/assets/js/54.4b3240ad.js"><link rel="prefetch" href="/keith-book/assets/js/55.906f19b3.js"><link rel="prefetch" href="/keith-book/assets/js/56.ab84e214.js"><link rel="prefetch" href="/keith-book/assets/js/57.4b0773ba.js"><link rel="prefetch" href="/keith-book/assets/js/58.ba67fb3c.js"><link rel="prefetch" href="/keith-book/assets/js/59.c70cec7d.js"><link rel="prefetch" href="/keith-book/assets/js/6.a3b769ae.js"><link rel="prefetch" href="/keith-book/assets/js/60.328ff957.js"><link rel="prefetch" href="/keith-book/assets/js/61.821c95c9.js"><link rel="prefetch" href="/keith-book/assets/js/62.a8706fa5.js"><link rel="prefetch" href="/keith-book/assets/js/63.7893739a.js"><link rel="prefetch" href="/keith-book/assets/js/64.e0e82da5.js"><link rel="prefetch" href="/keith-book/assets/js/65.c8630545.js"><link rel="prefetch" href="/keith-book/assets/js/66.71acb88b.js"><link rel="prefetch" href="/keith-book/assets/js/67.1d69d8ae.js"><link rel="prefetch" href="/keith-book/assets/js/68.cbcd16b5.js"><link rel="prefetch" href="/keith-book/assets/js/69.7ad720f1.js"><link rel="prefetch" href="/keith-book/assets/js/7.4d8a2bf7.js"><link rel="prefetch" href="/keith-book/assets/js/70.94b0ffc1.js"><link rel="prefetch" href="/keith-book/assets/js/71.f82c5f63.js"><link rel="prefetch" href="/keith-book/assets/js/72.bc8c9c4e.js"><link rel="prefetch" href="/keith-book/assets/js/73.0705a1c5.js"><link rel="prefetch" href="/keith-book/assets/js/74.5f096bb0.js"><link rel="prefetch" href="/keith-book/assets/js/75.3f8747a5.js"><link rel="prefetch" href="/keith-book/assets/js/76.651eb39a.js"><link rel="prefetch" href="/keith-book/assets/js/77.f999879e.js"><link rel="prefetch" href="/keith-book/assets/js/78.61f7757f.js"><link rel="prefetch" href="/keith-book/assets/js/79.8bd2dd06.js"><link rel="prefetch" href="/keith-book/assets/js/8.d352d476.js"><link rel="prefetch" href="/keith-book/assets/js/80.b123974d.js"><link rel="prefetch" href="/keith-book/assets/js/81.2009dcf1.js"><link rel="prefetch" href="/keith-book/assets/js/82.29cd7333.js"><link rel="prefetch" href="/keith-book/assets/js/83.936db179.js"><link rel="prefetch" href="/keith-book/assets/js/84.bc885c59.js"><link rel="prefetch" href="/keith-book/assets/js/85.d4e8c66d.js"><link rel="prefetch" href="/keith-book/assets/js/86.7cc46a2b.js"><link rel="prefetch" href="/keith-book/assets/js/87.2c8ce44d.js"><link rel="prefetch" href="/keith-book/assets/js/88.bb2c361f.js"><link rel="prefetch" href="/keith-book/assets/js/89.9a1ee5e4.js"><link rel="prefetch" href="/keith-book/assets/js/9.29357314.js"><link rel="prefetch" href="/keith-book/assets/js/90.aa69ffbe.js"><link rel="prefetch" href="/keith-book/assets/js/91.a8944021.js"><link rel="prefetch" href="/keith-book/assets/js/92.cd8a456d.js"><link rel="prefetch" href="/keith-book/assets/js/93.0b16e3c6.js"><link rel="prefetch" href="/keith-book/assets/js/94.d8822045.js"><link rel="prefetch" href="/keith-book/assets/js/95.fa963ca4.js"><link rel="prefetch" href="/keith-book/assets/js/96.c4728133.js"><link rel="prefetch" href="/keith-book/assets/js/97.f29d3516.js"><link rel="prefetch" href="/keith-book/assets/js/98.64cb768c.js"><link rel="prefetch" href="/keith-book/assets/js/99.7f8d1f38.js">
+    <link rel="stylesheet" href="/keith-book/assets/css/0.styles.86c07c9d.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/keith-book/" class="home-link router-link-active"><img src="/keith-book/favicon.ico" alt="鸿鹄笔记" class="logo"> <span class="site-name can-hide">鸿鹄笔记</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/keith-book/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/keith-book/Java/" class="nav-link">
+  Java
+</a></div><div class="nav-item"><a href="/keith-book/Spring/" class="nav-link router-link-active">
+  Spring
+</a></div><div class="nav-item"><a href="/keith-book/数据存储/" class="nav-link">
+  数据存储
+</a></div><div class="nav-item"><a href="/keith-book/设计模式/" class="nav-link">
+  设计模式
+</a></div><div class="nav-item"><a href="/keith-book/数据结构/" class="nav-link">
+  数据结构
+</a></div><div class="nav-item"><a href="/keith-book/服务器/" class="nav-link">
+  服务器
+</a></div><div class="nav-item"><a href="/keith-book/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/keith-book/拓展/" class="nav-link">
+  拓展
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/keith-book/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/keith-book/Java/" class="nav-link">
+  Java
+</a></div><div class="nav-item"><a href="/keith-book/Spring/" class="nav-link router-link-active">
+  Spring
+</a></div><div class="nav-item"><a href="/keith-book/数据存储/" class="nav-link">
+  数据存储
+</a></div><div class="nav-item"><a href="/keith-book/设计模式/" class="nav-link">
+  设计模式
+</a></div><div class="nav-item"><a href="/keith-book/数据结构/" class="nav-link">
+  数据结构
+</a></div><div class="nav-item"><a href="/keith-book/服务器/" class="nav-link">
+  服务器
+</a></div><div class="nav-item"><a href="/keith-book/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/keith-book/拓展/" class="nav-link">
+  拓展
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><a href="/keith-book/Spring/Spring" class="sidebar-heading clickable router-link-active open"><span>Spring</span> <!----></a> <ul class="sidebar-links sidebar-group-items"><li><a href="/keith-book/Spring/Spring/SpringIoc.html" class="sidebar-link">Spring IOC</a></li><li><a href="/keith-book/Spring/Spring/SpringAop.html" aria-current="page" class="active sidebar-link">Spring AOP</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/keith-book/Spring/Spring/SpringAop.html#spring-aop常用注解" class="sidebar-link">Spring AOP常用注解</a></li><li class="sidebar-sub-header"><a href="/keith-book/Spring/Spring/SpringAop.html#spring-aop执行顺序" class="sidebar-link">Spring Aop执行顺序</a></li><li class="sidebar-sub-header"><a href="/keith-book/Spring/Spring/SpringAop.html#spring-aop-原理" class="sidebar-link">Spring Aop 原理</a></li><li class="sidebar-sub-header"><a href="/keith-book/Spring/Spring/SpringAop.html#spring-事务" class="sidebar-link">Spring 事务</a></li></ul></li><li><a href="/keith-book/Spring/Spring/SpringMvc.html" class="sidebar-link">Spring MVC</a></li><li><a href="/keith-book/Spring/Spring/SpringBoot.html" class="sidebar-link">Spring Boot</a></li><li><a href="/keith-book/Spring/Spring/SpringWebFlux.html" class="sidebar-link">Spring WebFlux</a></li><li><a href="/keith-book/Spring/Spring/Mybatis.html" class="sidebar-link">Mybatis</a></li></ul></section></li><li><section class="sidebar-group depth-0"><a href="/keith-book/Spring/SpringCloud" class="sidebar-heading clickable"><span>Spring Cloud</span> <!----></a> <ul class="sidebar-links sidebar-group-items"><li><a href="/keith-book/Spring/SpringCloud/注册中心.html" class="sidebar-link">Spring Cloud 注册中心</a></li><li><a href="/keith-book/Spring/SpringCloud/服务调用.html" class="sidebar-link">Spring Cloud 服务调用</a></li><li><a href="/keith-book/Spring/SpringCloud/服务网关.html" class="sidebar-link">Spring Cloud 服务网关</a></li><li><a href="/keith-book/Spring/SpringCloud/链路追踪.html" class="sidebar-link">Spring Cloud 链路追踪</a></li><li><a href="/keith-book/Spring/SpringCloud/配置中心.html" class="sidebar-link">Spring Cloud 配置中心</a></li><li><a href="/keith-book/Spring/SpringCloud/健康检查.html" class="sidebar-link">Spring Cloud Admin 健康检查</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="spring-aop"><a href="#spring-aop" class="header-anchor">#</a> Spring AOP</h1> <p>开启Aop 使用 <code>@Aspect</code> 标注其为切面类，并把该类加入容器</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Aspect</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SpringAspect</span> <span class="token punctuation">{</span>
+    
+<span class="token punctuation">}</span>
+</code></pre></div><p>在配置类中开启Aop模式 <code>@EnableAspectJAutoProxy</code></p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Configuration</span>
+<span class="token annotation punctuation">@EnableAspectJAutoProxy</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SpringConfig</span> <span class="token punctuation">{</span>
+
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="spring-aop常用注解"><a href="#spring-aop常用注解" class="header-anchor">#</a> Spring AOP常用注解</h2> <p>@Before：前置通知，目标方法之前执行</p> <p>@After：后置通知，目标方法之后执行（必然执行）</p> <p>@AfterReturning：返回后通知，执行方法结束前执行（异常不执行）</p> <p>@AfterThrowing：异常通知，出现异常时执行</p> <p>@Around：环绕通知，环绕目标方法执行</p> <h2 id="spring-aop执行顺序"><a href="#spring-aop执行顺序" class="header-anchor">#</a> Spring Aop执行顺序</h2> <p><strong>Spring4</strong></p> <p>正常：@Around @Before @Around @After @AfterReturning</p> <p>异常：@Around @Before @After @AfterThrowing</p> <p><strong>Spring5</strong></p> <p>正常：@Around @Before @AfterReturning @After @Around</p> <p>异常：@Around @Before @AfterThrowing @After</p> <h2 id="spring-aop-原理"><a href="#spring-aop-原理" class="header-anchor">#</a> Spring Aop 原理</h2> <blockquote><p>使用动态代理执行目标方法</p></blockquote> <h3 id="执行流程"><a href="#执行流程" class="header-anchor">#</a> 执行流程</h3> <div class="language- extra-class"><pre class="language-text"><code>1. @EnableAspectJAutoProxy 为容器中增加一个 AspectJAutoProxyRegistrar 类
+2. 容器创建
+	2.1 registerBeanPostProcessors() 注册后置处理器
+	2.2 finishBeanFactoryInitialization() 初始化剩下的单实例Bean
+		2.2.1 创建业务逻辑和切面组件
+		2.2.2 AnnotationAwareAspectJAutoProxyCreator拦截组件创建过程
+		2.2.3 组件创建完之后，判断组件若需要增强，切面通知方法包装成Advisor，给目标对象创建一个代理对象（默认使用cglib创建）
+3. 代理对象执行目标方法 CglibAopProxy.intercept()
+	3.1 得到目标方法的拦截器链，包装成拦截器MethodInterceptor
+	3.2 利用拦截器的链式机制依次进入每一个拦截器进行执行
+</code></pre></div><h3 id="动态代理"><a href="#动态代理" class="header-anchor">#</a> 动态代理</h3> <p>Spring 提供了两种方式来生成代理对象: JDKProxy 和 Cglib，具体使用哪种方式生成由AopProxyFactory 根据 AdvisedSupport 对象的配置来决定。默认的策略是如果目标类是接口，则使用 JDK 动态代理技术，否则使用 Cglib 来生成代理。</p> <p><strong>JDK动态接口代理</strong></p> <blockquote><p>需要有接口</p></blockquote> <p>JDK 动态代理主要涉及到 java.lang.reflect 包中的两个类：Proxy 和 InvocationHandler。InvocationHandler是一个接口，通过实现该接口定义横切逻辑，并通过反射机制调用目标类的代码，动态将横切逻辑和业务逻辑编制在一起。Proxy 利用 InvocationHandler 动态创建一个符合某一接口的实例，生成目标类的代理对象。</p> <p><strong>CGLib 动态代理</strong></p> <blockquote><p>不需要有接口</p></blockquote> <p>CGLib 全称为 Code Generation Library，是一个强大的高性能，高质量的代码生成类库，可以在运行期扩展 Java 类与实现 Java 接口，CGLib 封装了 asm，可以再运行期动态生成新的 class。和 JDK 动态代理相比较：JDK 创建代理有一个限制，就是只能为接口创建代理实例，而对于没有通过接口定义业务方法的类，则可以通过 CGLib 创建动态代理。</p> <h3 id="spring-创建代理对象"><a href="#spring-创建代理对象" class="header-anchor">#</a> Spring 创建代理对象</h3> <p>如果该Bean有Advice则返回代理对象，否则返回普通对象</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token keyword">protected</span> <span class="token class-name">Object</span> <span class="token function">wrapIfNecessary</span><span class="token punctuation">(</span><span class="token class-name">Object</span> bean<span class="token punctuation">,</span> <span class="token class-name">String</span> beanName<span class="token punctuation">,</span> <span class="token class-name">Object</span> cacheKey<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name">StringUtils</span><span class="token punctuation">.</span><span class="token function">hasLength</span><span class="token punctuation">(</span>beanName<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>targetSourcedBeans<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>beanName<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> bean<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name">Boolean</span><span class="token punctuation">.</span>FALSE<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>advisedBeans<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>cacheKey<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> bean<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isInfrastructureClass</span><span class="token punctuation">(</span>bean<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">shouldSkip</span><span class="token punctuation">(</span>bean<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> beanName<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>advisedBeans<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>cacheKey<span class="token punctuation">,</span> <span class="token class-name">Boolean</span><span class="token punctuation">.</span>FALSE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> bean<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// Create proxy if we have advice.</span>
+    <span class="token class-name">Object</span><span class="token punctuation">[</span><span class="token punctuation">]</span> specificInterceptors <span class="token operator">=</span> <span class="token function">getAdvicesAndAdvisorsForBean</span><span class="token punctuation">(</span>bean<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> beanName<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>specificInterceptors <span class="token operator">!=</span> DO_NOT_PROXY<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>advisedBeans<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>cacheKey<span class="token punctuation">,</span> <span class="token class-name">Boolean</span><span class="token punctuation">.</span>TRUE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Object</span> proxy <span class="token operator">=</span> <span class="token function">createProxy</span><span class="token punctuation">(</span>
+            bean<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> beanName<span class="token punctuation">,</span> specificInterceptors<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">SingletonTargetSource</span><span class="token punctuation">(</span>bean<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>proxyTypes<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>cacheKey<span class="token punctuation">,</span> proxy<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> proxy<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">this</span><span class="token punctuation">.</span>advisedBeans<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>cacheKey<span class="token punctuation">,</span> <span class="token class-name">Boolean</span><span class="token punctuation">.</span>FALSE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> bean<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>如果是接口，创建JDK代理对象，否则创建Cglib代理对象</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token class-name">AopProxy</span> <span class="token function">createAopProxy</span><span class="token punctuation">(</span><span class="token class-name">AdvisedSupport</span> config<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">AopConfigException</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">isOptimize</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span> config<span class="token punctuation">.</span><span class="token function">isProxyTargetClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">hasNoUserSuppliedProxyInterfaces</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">&gt;</span></span> targetClass <span class="token operator">=</span> config<span class="token punctuation">.</span><span class="token function">getTargetClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>targetClass <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">AopConfigException</span><span class="token punctuation">(</span><span class="token string">&quot;TargetSource cannot determine target class: &quot;</span> <span class="token operator">+</span>
+                        <span class="token string">&quot;Either an interface or a target is required for proxy creation.&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>targetClass<span class="token punctuation">.</span><span class="token function">isInterface</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token class-name">Proxy</span><span class="token punctuation">.</span><span class="token function">isProxyClass</span><span class="token punctuation">(</span>targetClass<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">JdkDynamicAopProxy</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ObjenesisCglibAopProxy</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">JdkDynamicAopProxy</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+</code></pre></div><h2 id="spring-事务"><a href="#spring-事务" class="header-anchor">#</a> Spring 事务</h2> <h3 id="配置事务步骤"><a href="#配置事务步骤" class="header-anchor">#</a> 配置事务步骤</h3> <ol><li><p>配置数据源</p></li> <li><p>配置事务管理器 <code>PlatformTransactionManager</code></p></li> <li><p>开启事务 <code>@EnableTransactionManagement</code></p></li></ol> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Configuration</span>
+<span class="token annotation punctuation">@EnableTransactionManagement</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">JdbcConfig</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> <span class="token class-name">DataSource</span> <span class="token function">dataSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">HikariDataSource</span> dataSource <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HikariDataSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        dataSource<span class="token punctuation">.</span><span class="token function">setUsername</span><span class="token punctuation">(</span><span class="token string">&quot;root&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        dataSource<span class="token punctuation">.</span><span class="token function">setPassword</span><span class="token punctuation">(</span><span class="token string">&quot;root&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        dataSource<span class="token punctuation">.</span><span class="token function">setDriverClassName</span><span class="token punctuation">(</span><span class="token string">&quot;com.mysql.jdbc.Driver&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        dataSource<span class="token punctuation">.</span><span class="token function">setJdbcUrl</span><span class="token punctuation">(</span><span class="token string">&quot;jdbc:mysql//localhost:3306/test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> dataSource<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * 配置事务管理器
+     */</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> <span class="token class-name">PlatformTransactionManager</span> <span class="token function">transactionManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">DataSourceTransactionManager</span><span class="token punctuation">(</span><span class="token function">dataSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="事务管理器"><a href="#事务管理器" class="header-anchor">#</a> 事务管理器</h3> <p>Spring只是个容器，因此它并不做任何事务的具体实现。他只是提供了事务管理的接口PlatformTransactionManager，具体内容由就由各个事务管理器来实现。</p> <p>原理：通过 <code>TransactionAwareDataSourceProxy</code> 包装 <code>DataSource</code></p> <p>而在 <code>PlatformTransactionManager</code> 的实现类中可以操作 <code>DataSource</code> ，在 Spring 中实现 <code>commit</code> 和 <code>rollback</code></p> <h3 id="transactional-注解参数"><a href="#transactional-注解参数" class="header-anchor">#</a> Transactional 注解参数</h3> <div class="language-java extra-class"><pre class="language-java"><code><span class="token comment">/**
+ * 事务管理器
+ */</span>
+<span class="token class-name">String</span> <span class="token function">transactionManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 事务传播行为
+ */</span>
+<span class="token class-name">Propagation</span> <span class="token function">propagation</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token class-name">Propagation</span><span class="token punctuation">.</span>REQUIRED<span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 事务隔离级别
+ */</span>
+<span class="token class-name">Isolation</span> <span class="token function">isolation</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token class-name">Isolation</span><span class="token punctuation">.</span>DEFAULT<span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 事务的超时时间
+ */</span>
+<span class="token keyword">int</span> <span class="token function">timeout</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token class-name">TransactionDefinition</span><span class="token punctuation">.</span>TIMEOUT_DEFAULT<span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 该事务是否为只读
+ */</span>
+<span class="token keyword">boolean</span> <span class="token function">readOnly</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 哪种异常需要回滚
+ */</span>
+<span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">Throwable</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">rollbackFor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 哪种异常不需要回滚
+ */</span>
+<span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">Throwable</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">noRollbackFor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="spring-事务传播行为"><a href="#spring-事务传播行为" class="header-anchor">#</a> Spring 事务传播行为</h3> <div class="language-java extra-class"><pre class="language-java"><code><span class="token comment">/**
+ * 若当前事务存在，则在当前事务中运行，否则开启一个新事务
+ * Support a current transaction, create a new one if none exists.
+ */</span>
+<span class="token function">REQUIRED</span><span class="token punctuation">(</span><span class="token class-name">TransactionDefinition</span><span class="token punctuation">.</span>PROPAGATION_REQUIRED<span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+<span class="token comment">/**
+ * 若当前事务存在，则在当前事务中运行，否则不开启事务
+ * Support a current transaction, execute non-transactionally if none exists.
+ */</span>
+<span class="token function">SUPPORTS</span><span class="token punctuation">(</span><span class="token class-name">TransactionDefinition</span><span class="token punctuation">.</span>PROPAGATION_SUPPORTS<span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+<span class="token comment">/**
+ * 若当前事务不存在则抛异常
+ * Support a current transaction, throw an exception if none exists.
+ */</span>
+<span class="token function">MANDATORY</span><span class="token punctuation">(</span><span class="token class-name">TransactionDefinition</span><span class="token punctuation">.</span>PROPAGATION_MANDATORY<span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+<span class="token comment">/**
+ * 开启一个事务并挂起当前事务
+ * Create a new transaction, and suspend the current transaction if one exists.
+ */</span>
+<span class="token function">REQUIRES_NEW</span><span class="token punctuation">(</span><span class="token class-name">TransactionDefinition</span><span class="token punctuation">.</span>PROPAGATION_REQUIRES_NEW<span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+<span class="token comment">/**
+ * 运行在事务中被挂起
+ * Execute non-transactionally, suspend the current transaction if one exists.
+ */</span>
+<span class="token function">NOT_SUPPORTED</span><span class="token punctuation">(</span><span class="token class-name">TransactionDefinition</span><span class="token punctuation">.</span>PROPAGATION_NOT_SUPPORTED<span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+<span class="token comment">/**
+ * 在事务中运行将会抛异常
+ * Execute non-transactionally, throw an exception if a transaction exists.
+ */</span>
+<span class="token function">NEVER</span><span class="token punctuation">(</span><span class="token class-name">TransactionDefinition</span><span class="token punctuation">.</span>PROPAGATION_NEVER<span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+<span class="token comment">/**
+ * 嵌套在当前事务中运行
+ * Execute within a nested transaction if a current transaction exists,
+ * behave like PROPAGATION_REQUIRED else. There is no analogous feature in EJB.
+ */</span>
+<span class="token function">NESTED</span><span class="token punctuation">(</span><span class="token class-name">TransactionDefinition</span><span class="token punctuation">.</span>PROPAGATION_NESTED<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="spring-事务失效场景"><a href="#spring-事务失效场景" class="header-anchor">#</a> Spring 事务失效场景</h3> <ol><li>数据库引擎不支持事务：InnoDB支持事务，MyISAM不支持事务</li> <li>数据源没配置事务管理器</li> <li>没有抛出异常，或异常类型错误</li> <li>方法没有被切面管理，即不是代理对象</li></ol> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">OrderServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">OrderService</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Transactional</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">update</span><span class="token punctuation">(</span><span class="token class-name">Order</span> order<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">updateOrder</span><span class="token punctuation">(</span>order<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token comment">// 新开的事务不管用，因为没有被切面管理</span>
+    <span class="token annotation punctuation">@Transactional</span><span class="token punctuation">(</span>propagation <span class="token operator">=</span> <span class="token class-name">Propagation</span><span class="token punctuation">.</span>REQUIRES_NEW<span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">updateOrder</span><span class="token punctuation">(</span><span class="token class-name">Order</span> order<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// update order</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">/**
+ * 解决上述问题可以将新开的事务写在不同类中
+ */</span>
+<span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ServiceA</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> <span class="token class-name">ServiceB</span> serviceB<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Transactional</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">doSomething</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        serviceB<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ServiceB</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Transactional</span><span class="token punctuation">(</span>propagation <span class="token operator">=</span> <span class="token class-name">Propagation</span><span class="token punctuation">.</span>REQUIRES_NEW<span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment">// 向数据库中添加数据</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">/**
+ * 解决方案2: 配置文件中加 &lt;aop:config expose-proxy=&quot;true&quot;&gt;
+ * 并且使用如下方式调用:
+ * ((ServiceA) AopContext.currentProxy()).insert();
+ */</span>
+</code></pre></div><h3 id="附录"><a href="#附录" class="header-anchor">#</a> 附录</h3> <p><strong>声明式事务和编程式事务</strong></p> <p>编程式事务：通过硬编码的形式手动控制事务的提交和回滚。</p> <p>声明式事务：只需告诉Spring哪个方法是事务方法即可。</p> <p><strong>Spring事务异常</strong></p> <p>运行时异常：可以不用处理，默认都回滚。</p> <p>编译时异常：要么try-catch，要么thows，默认不回滚。</p></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">2/24/2021, 5:49:24 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/keith-book/Spring/Spring/SpringIoc.html" class="prev">
+        Spring IOC
+      </a></span> <span class="next"><a href="/keith-book/Spring/Spring/SpringMvc.html">
+        Spring MVC
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/keith-book/assets/js/app.7ae60ab7.js" defer></script><script src="/keith-book/assets/js/2.044773f5.js" defer></script><script src="/keith-book/assets/js/25.b2d0686f.js" defer></script>
+  </body>
+</html>

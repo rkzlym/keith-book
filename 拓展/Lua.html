@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Lua | 鸿鹄笔记</title>
+    <meta name="generator" content="VuePress 1.8.0">
+    <link rel="icon" content="/favicon.ico">
+    <meta name="description" content="鸿鹄的个人笔记">
+    <meta rel="author" content="Keith">
+    
+    <link rel="preload" href="/keith-book/assets/css/0.styles.86c07c9d.css" as="style"><link rel="preload" href="/keith-book/assets/js/app.7ae60ab7.js" as="script"><link rel="preload" href="/keith-book/assets/js/2.044773f5.js" as="script"><link rel="preload" href="/keith-book/assets/js/34.2d831459.js" as="script"><link rel="prefetch" href="/keith-book/assets/js/10.13f771ae.js"><link rel="prefetch" href="/keith-book/assets/js/100.af11b532.js"><link rel="prefetch" href="/keith-book/assets/js/101.b5e393e3.js"><link rel="prefetch" href="/keith-book/assets/js/102.7a7d2386.js"><link rel="prefetch" href="/keith-book/assets/js/103.4b5c8925.js"><link rel="prefetch" href="/keith-book/assets/js/104.8c63d13c.js"><link rel="prefetch" href="/keith-book/assets/js/105.2bfbf884.js"><link rel="prefetch" href="/keith-book/assets/js/106.47faa20d.js"><link rel="prefetch" href="/keith-book/assets/js/107.9ad2a314.js"><link rel="prefetch" href="/keith-book/assets/js/108.008b5fa7.js"><link rel="prefetch" href="/keith-book/assets/js/109.62761423.js"><link rel="prefetch" href="/keith-book/assets/js/11.a6a3b5c9.js"><link rel="prefetch" href="/keith-book/assets/js/110.8afb8e61.js"><link rel="prefetch" href="/keith-book/assets/js/111.57012fed.js"><link rel="prefetch" href="/keith-book/assets/js/112.535b424f.js"><link rel="prefetch" href="/keith-book/assets/js/113.c23530b0.js"><link rel="prefetch" href="/keith-book/assets/js/114.834b12cd.js"><link rel="prefetch" href="/keith-book/assets/js/115.ce1b3169.js"><link rel="prefetch" href="/keith-book/assets/js/116.65b1520c.js"><link rel="prefetch" href="/keith-book/assets/js/117.fd80cfe9.js"><link rel="prefetch" href="/keith-book/assets/js/118.f05a98aa.js"><link rel="prefetch" href="/keith-book/assets/js/119.4cea8196.js"><link rel="prefetch" href="/keith-book/assets/js/12.42246af7.js"><link rel="prefetch" href="/keith-book/assets/js/120.275abc51.js"><link rel="prefetch" href="/keith-book/assets/js/121.0a4ec53d.js"><link rel="prefetch" href="/keith-book/assets/js/122.aebc3a0f.js"><link rel="prefetch" href="/keith-book/assets/js/123.a9c61bf2.js"><link rel="prefetch" href="/keith-book/assets/js/124.54f656c9.js"><link rel="prefetch" href="/keith-book/assets/js/125.554faf7e.js"><link rel="prefetch" href="/keith-book/assets/js/126.88f70416.js"><link rel="prefetch" href="/keith-book/assets/js/127.7aeb22c3.js"><link rel="prefetch" href="/keith-book/assets/js/128.5e8f8a6c.js"><link rel="prefetch" href="/keith-book/assets/js/129.d96c386d.js"><link rel="prefetch" href="/keith-book/assets/js/13.614d862e.js"><link rel="prefetch" href="/keith-book/assets/js/14.d938dc50.js"><link rel="prefetch" href="/keith-book/assets/js/15.27956206.js"><link rel="prefetch" href="/keith-book/assets/js/16.8259d213.js"><link rel="prefetch" href="/keith-book/assets/js/17.59fccf41.js"><link rel="prefetch" href="/keith-book/assets/js/18.1ae9a1fd.js"><link rel="prefetch" href="/keith-book/assets/js/19.3f56180c.js"><link rel="prefetch" href="/keith-book/assets/js/20.a6a8e2d9.js"><link rel="prefetch" href="/keith-book/assets/js/21.fa3c5532.js"><link rel="prefetch" href="/keith-book/assets/js/22.8c3384e6.js"><link rel="prefetch" href="/keith-book/assets/js/23.8ea8dbc6.js"><link rel="prefetch" href="/keith-book/assets/js/24.d65bce25.js"><link rel="prefetch" href="/keith-book/assets/js/25.b2d0686f.js"><link rel="prefetch" href="/keith-book/assets/js/26.fdc5f5b5.js"><link rel="prefetch" href="/keith-book/assets/js/27.8bb47b1d.js"><link rel="prefetch" href="/keith-book/assets/js/28.e087e2b0.js"><link rel="prefetch" href="/keith-book/assets/js/29.4306565c.js"><link rel="prefetch" href="/keith-book/assets/js/3.83866d44.js"><link rel="prefetch" href="/keith-book/assets/js/30.92b9c15a.js"><link rel="prefetch" href="/keith-book/assets/js/31.a231c5d0.js"><link rel="prefetch" href="/keith-book/assets/js/32.30b3c540.js"><link rel="prefetch" href="/keith-book/assets/js/33.d4ae83e5.js"><link rel="prefetch" href="/keith-book/assets/js/35.fd638673.js"><link rel="prefetch" href="/keith-book/assets/js/36.a936bf23.js"><link rel="prefetch" href="/keith-book/assets/js/37.f0a03b08.js"><link rel="prefetch" href="/keith-book/assets/js/38.635b6ac3.js"><link rel="prefetch" href="/keith-book/assets/js/39.dc3d7a09.js"><link rel="prefetch" href="/keith-book/assets/js/4.e2dc8d0c.js"><link rel="prefetch" href="/keith-book/assets/js/40.06264354.js"><link rel="prefetch" href="/keith-book/assets/js/41.a5492cc2.js"><link rel="prefetch" href="/keith-book/assets/js/42.be57bef1.js"><link rel="prefetch" href="/keith-book/assets/js/43.88a27c79.js"><link rel="prefetch" href="/keith-book/assets/js/44.c4499e0a.js"><link rel="prefetch" href="/keith-book/assets/js/45.bc3d4bb0.js"><link rel="prefetch" href="/keith-book/assets/js/46.77fe74ff.js"><link rel="prefetch" href="/keith-book/assets/js/47.a6d9e6fb.js"><link rel="prefetch" href="/keith-book/assets/js/48.aef4698e.js"><link rel="prefetch" href="/keith-book/assets/js/49.a0d6928f.js"><link rel="prefetch" href="/keith-book/assets/js/5.281837e2.js"><link rel="prefetch" href="/keith-book/assets/js/50.97367378.js"><link rel="prefetch" href="/keith-book/assets/js/51.5aa97e63.js"><link rel="prefetch" href="/keith-book/assets/js/52.c8645f8c.js"><link rel="prefetch" href="/keith-book/assets/js/53.ddb048d3.js"><link rel="prefetch" href="/keith-book/assets/js/54.4b3240ad.js"><link rel="prefetch" href="/keith-book/assets/js/55.906f19b3.js"><link rel="prefetch" href="/keith-book/assets/js/56.ab84e214.js"><link rel="prefetch" href="/keith-book/assets/js/57.4b0773ba.js"><link rel="prefetch" href="/keith-book/assets/js/58.ba67fb3c.js"><link rel="prefetch" href="/keith-book/assets/js/59.c70cec7d.js"><link rel="prefetch" href="/keith-book/assets/js/6.a3b769ae.js"><link rel="prefetch" href="/keith-book/assets/js/60.328ff957.js"><link rel="prefetch" href="/keith-book/assets/js/61.821c95c9.js"><link rel="prefetch" href="/keith-book/assets/js/62.a8706fa5.js"><link rel="prefetch" href="/keith-book/assets/js/63.7893739a.js"><link rel="prefetch" href="/keith-book/assets/js/64.e0e82da5.js"><link rel="prefetch" href="/keith-book/assets/js/65.c8630545.js"><link rel="prefetch" href="/keith-book/assets/js/66.71acb88b.js"><link rel="prefetch" href="/keith-book/assets/js/67.1d69d8ae.js"><link rel="prefetch" href="/keith-book/assets/js/68.cbcd16b5.js"><link rel="prefetch" href="/keith-book/assets/js/69.7ad720f1.js"><link rel="prefetch" href="/keith-book/assets/js/7.4d8a2bf7.js"><link rel="prefetch" href="/keith-book/assets/js/70.94b0ffc1.js"><link rel="prefetch" href="/keith-book/assets/js/71.f82c5f63.js"><link rel="prefetch" href="/keith-book/assets/js/72.bc8c9c4e.js"><link rel="prefetch" href="/keith-book/assets/js/73.0705a1c5.js"><link rel="prefetch" href="/keith-book/assets/js/74.5f096bb0.js"><link rel="prefetch" href="/keith-book/assets/js/75.3f8747a5.js"><link rel="prefetch" href="/keith-book/assets/js/76.651eb39a.js"><link rel="prefetch" href="/keith-book/assets/js/77.f999879e.js"><link rel="prefetch" href="/keith-book/assets/js/78.61f7757f.js"><link rel="prefetch" href="/keith-book/assets/js/79.8bd2dd06.js"><link rel="prefetch" href="/keith-book/assets/js/8.d352d476.js"><link rel="prefetch" href="/keith-book/assets/js/80.b123974d.js"><link rel="prefetch" href="/keith-book/assets/js/81.2009dcf1.js"><link rel="prefetch" href="/keith-book/assets/js/82.29cd7333.js"><link rel="prefetch" href="/keith-book/assets/js/83.936db179.js"><link rel="prefetch" href="/keith-book/assets/js/84.bc885c59.js"><link rel="prefetch" href="/keith-book/assets/js/85.d4e8c66d.js"><link rel="prefetch" href="/keith-book/assets/js/86.7cc46a2b.js"><link rel="prefetch" href="/keith-book/assets/js/87.2c8ce44d.js"><link rel="prefetch" href="/keith-book/assets/js/88.bb2c361f.js"><link rel="prefetch" href="/keith-book/assets/js/89.9a1ee5e4.js"><link rel="prefetch" href="/keith-book/assets/js/9.29357314.js"><link rel="prefetch" href="/keith-book/assets/js/90.aa69ffbe.js"><link rel="prefetch" href="/keith-book/assets/js/91.a8944021.js"><link rel="prefetch" href="/keith-book/assets/js/92.cd8a456d.js"><link rel="prefetch" href="/keith-book/assets/js/93.0b16e3c6.js"><link rel="prefetch" href="/keith-book/assets/js/94.d8822045.js"><link rel="prefetch" href="/keith-book/assets/js/95.fa963ca4.js"><link rel="prefetch" href="/keith-book/assets/js/96.c4728133.js"><link rel="prefetch" href="/keith-book/assets/js/97.f29d3516.js"><link rel="prefetch" href="/keith-book/assets/js/98.64cb768c.js"><link rel="prefetch" href="/keith-book/assets/js/99.7f8d1f38.js">
+    <link rel="stylesheet" href="/keith-book/assets/css/0.styles.86c07c9d.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/keith-book/" class="home-link router-link-active"><img src="/keith-book/favicon.ico" alt="鸿鹄笔记" class="logo"> <span class="site-name can-hide">鸿鹄笔记</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/keith-book/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/keith-book/Java/" class="nav-link">
+  Java
+</a></div><div class="nav-item"><a href="/keith-book/Spring/" class="nav-link">
+  Spring
+</a></div><div class="nav-item"><a href="/keith-book/数据存储/" class="nav-link">
+  数据存储
+</a></div><div class="nav-item"><a href="/keith-book/设计模式/" class="nav-link">
+  设计模式
+</a></div><div class="nav-item"><a href="/keith-book/数据结构/" class="nav-link">
+  数据结构
+</a></div><div class="nav-item"><a href="/keith-book/服务器/" class="nav-link">
+  服务器
+</a></div><div class="nav-item"><a href="/keith-book/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/keith-book/拓展/" class="nav-link">
+  拓展
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/keith-book/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/keith-book/Java/" class="nav-link">
+  Java
+</a></div><div class="nav-item"><a href="/keith-book/Spring/" class="nav-link">
+  Spring
+</a></div><div class="nav-item"><a href="/keith-book/数据存储/" class="nav-link">
+  数据存储
+</a></div><div class="nav-item"><a href="/keith-book/设计模式/" class="nav-link">
+  设计模式
+</a></div><div class="nav-item"><a href="/keith-book/数据结构/" class="nav-link">
+  数据结构
+</a></div><div class="nav-item"><a href="/keith-book/服务器/" class="nav-link">
+  服务器
+</a></div><div class="nav-item"><a href="/keith-book/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/keith-book/拓展/" class="nav-link">
+  拓展
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><a href="/keith-book/拓展/" class="sidebar-heading clickable open"><span>拓展</span> <!----></a> <ul class="sidebar-links sidebar-group-items"><li><a href="/keith-book/拓展/计算机网络.html" class="sidebar-link">计算机网络</a></li><li><a href="/keith-book/拓展/JMH.html" class="sidebar-link">JMH Java准测试工具套件</a></li><li><a href="/keith-book/拓展/Lua.html" class="active sidebar-link">Lua</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/keith-book/拓展/Lua.html#lua-程序设计" class="sidebar-link">Lua 程序设计</a></li><li class="sidebar-sub-header"><a href="/keith-book/拓展/Lua.html#lua-基本语法" class="sidebar-link">Lua 基本语法</a></li><li class="sidebar-sub-header"><a href="/keith-book/拓展/Lua.html#lua-整合-redis" class="sidebar-link">Lua 整合 redis</a></li></ul></li><li><a href="/keith-book/拓展/大型系统设计.html" class="sidebar-link">高并发系统设计</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="lua"><a href="#lua" class="header-anchor">#</a> Lua</h1> <h2 id="lua-程序设计"><a href="#lua-程序设计" class="header-anchor">#</a> Lua 程序设计</h2> <p>Lua 是由巴西里约热内卢天主教大学（Pontifical Catholic University of Rio de Janeiro）里的一个研究小组于1993年开发的一种轻量、小巧的脚本语言，用标准 C 语言编写，其设计目的是为了嵌入应用程序中，从而为应用程序提供灵活的扩展和定制功能。</p> <p>官网：http://www.lua.org/</p> <p>Redis 在 2.6 版本中推出了脚本功能，允许开发者将 Lua 语言编写的脚本传到 Redis 中执行。使用 Lua 脚本的优点有如下几点:</p> <ul><li><p>减少网络开销：本来需要多次请求的操作，可以一次请求完成，从而节约网络开销；</p></li> <li><p>原子操作：Redis 会将整个脚本作为一个整体执行，中间不会执行其它命令；</p></li> <li><p>复用：客户端发送的脚本会存储在 Redis 中，从而实现脚本的复用。</p></li></ul> <h2 id="lua-基本语法"><a href="#lua-基本语法" class="header-anchor">#</a> Lua 基本语法</h2> <h3 id="注释"><a href="#注释" class="header-anchor">#</a> 注释</h3> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token comment">-- 两个减号是行注释</span>
+
+<span class="token comment">--[[
+
+ 这是块注释
+
+ --]]</span>
+</code></pre></div><h3 id="变量"><a href="#变量" class="header-anchor">#</a> 变量</h3> <h4 id="数字类型"><a href="#数字类型" class="header-anchor">#</a> 数字类型</h4> <p>Lua的数字只有double型，64bits</p> <p>你可以以如下的方式表示数字</p> <div class="language-lua extra-class"><pre class="language-lua"><code>num <span class="token operator">=</span> <span class="token number">1024</span>
+
+num <span class="token operator">=</span> <span class="token number">3.0</span>
+
+num <span class="token operator">=</span> <span class="token number">3.1416</span>
+
+num <span class="token operator">=</span> <span class="token number">314.16e-2</span>
+
+num <span class="token operator">=</span> <span class="token number">0.31416E1</span>
+
+num <span class="token operator">=</span> <span class="token number">0xff</span>
+
+num <span class="token operator">=</span> <span class="token number">0x56</span>
+</code></pre></div><h4 id="字符串"><a href="#字符串" class="header-anchor">#</a> 字符串</h4> <p>可以用单引号，也可以用双引号</p> <p>也可以使用转义字符‘\n’ （换行）， ‘\r’ （回车）， ‘\t’ （横向制表）， ‘\v’ （纵向制表）， ‘\’ （反斜杠）， ‘\”‘ （双引号）， 以及 ‘\” （单引号)等等</p> <p>下面的四种方式定义了完全相同的字符串（其中的两个中括号可以用于定义有换行的字符串）</p> <div class="language- extra-class"><pre class="language-text"><code>a = 'alo\n123&quot;'
+
+a = &quot;alo\n123\&quot;&quot;
+
+a = '\97lo\10\04923&quot;'
+
+a = [[alo
+
+123&quot;]]
+</code></pre></div><h4 id="空值"><a href="#空值" class="header-anchor">#</a> 空值</h4> <p>C语言中的NULL在Lua中是nil，比如你访问一个没有声明过的变量，就是nil</p> <h4 id="布尔类型"><a href="#布尔类型" class="header-anchor">#</a> 布尔类型</h4> <p>只有nil和false是 false</p> <p>数字0，‘’空字符串（’\0’）都是true</p> <h4 id="作用域"><a href="#作用域" class="header-anchor">#</a> 作用域</h4> <p>lua中的变量如果没有特殊说明，全是全局变量，那怕是语句块或是函数里。</p> <p>变量前加local关键字的是局部变量。</p> <h3 id="控制语句"><a href="#控制语句" class="header-anchor">#</a> 控制语句</h3> <h4 id="while循环"><a href="#while循环" class="header-anchor">#</a> while循环</h4> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">while</span> <span class="token number">0</span> <span class="token operator">&lt;=</span> <span class="token number">10</span> <span class="token keyword">do</span>
+    <span class="token function">print</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+i <span class="token operator">=</span> i <span class="token operator">+</span><span class="token number">1</span>
+<span class="token keyword">end</span>
+</code></pre></div><h4 id="if-else"><a href="#if-else" class="header-anchor">#</a> if-else</h4> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">local</span> <span class="token keyword">function</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> age <span class="token operator">=</span> <span class="token number">140</span>
+<span class="token keyword">local</span> sex <span class="token operator">=</span> <span class="token string">'Male'</span>
+  <span class="token keyword">if</span> age <span class="token operator">==</span> <span class="token number">40</span> <span class="token keyword">and</span> sex <span class="token operator">==</span><span class="token string">&quot;Male&quot;</span> <span class="token keyword">then</span>
+    <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">&quot; 男人四十一枝花 &quot;</span><span class="token punctuation">)</span>
+  <span class="token keyword">elseif</span> age <span class="token operator">&gt;</span> <span class="token number">60</span> <span class="token keyword">and</span> sex <span class="token operator">~=</span><span class="token string">&quot;Female&quot;</span> <span class="token keyword">then</span>
+    <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">&quot;old man without country!&quot;</span><span class="token punctuation">)</span>
+  <span class="token keyword">elseif</span> age <span class="token operator">&lt;</span> <span class="token number">20</span> <span class="token keyword">then</span>
+    io<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">&quot;too young, too naive!\n&quot;</span><span class="token punctuation">)</span>
+  <span class="token keyword">else</span>
+  <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">&quot;Your age is &quot;</span><span class="token operator">..</span>age<span class="token punctuation">)</span>
+  <span class="token keyword">end</span>
+<span class="token keyword">end</span>
+
+<span class="token comment">-- 调用</span>
+<span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="for循环"><a href="#for循环" class="header-anchor">#</a> for循环</h4> <div class="language-lua extra-class"><pre class="language-lua"><code>sum <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2</span> <span class="token keyword">do</span>
+    sum <span class="token operator">=</span> sum <span class="token operator">+</span> i
+<span class="token keyword">end</span>
+<span class="token function">print</span><span class="token punctuation">(</span>sum<span class="token punctuation">)</span>
+</code></pre></div><h4 id="函数"><a href="#函数" class="header-anchor">#</a> 函数</h4> <p>普通函数</p> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">function</span> <span class="token function">myPower</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span>y<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> y<span class="token operator">+</span>x
+<span class="token keyword">end</span>
+power2 <span class="token operator">=</span> <span class="token function">myPower</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span>power2<span class="token punctuation">)</span>
+</code></pre></div><p>匿名函数</p> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">function</span> <span class="token function">newCounter</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+   <span class="token keyword">local</span> i <span class="token operator">=</span> <span class="token number">0</span>
+   <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>     <span class="token comment">-- anonymous function</span>
+        i <span class="token operator">=</span> i <span class="token operator">+</span> <span class="token number">1</span>
+        <span class="token keyword">return</span> i
+    <span class="token keyword">end</span>
+<span class="token keyword">end</span>
+
+c1 <span class="token operator">=</span> <span class="token function">newCounter</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token function">c1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment">--&gt; 1</span>
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token function">c1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment">--&gt; 2</span>
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token function">c1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="返回值"><a href="#返回值" class="header-anchor">#</a> 返回值</h4> <p>多返回值</p> <div class="language-lua extra-class"><pre class="language-lua"><code>name<span class="token punctuation">,</span> age<span class="token punctuation">,</span> bGay <span class="token operator">=</span> <span class="token string">&quot;yiming&quot;</span><span class="token punctuation">,</span> <span class="token number">37</span><span class="token punctuation">,</span> <span class="token keyword">false</span><span class="token punctuation">,</span> <span class="token string">&quot;yimingl@hotmail.com&quot;</span>
+<span class="token function">print</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>age<span class="token punctuation">,</span>bGay<span class="token punctuation">)</span>
+</code></pre></div><p>函数返回值</p> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">function</span> <span class="token function">isMyGirl</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+ <span class="token keyword">return</span> name <span class="token operator">==</span> <span class="token string">'xiao6'</span> <span class="token punctuation">,</span> name
+<span class="token keyword">end</span>
+
+<span class="token keyword">local</span> bol<span class="token punctuation">,</span>name <span class="token operator">=</span> <span class="token function">isMyGirl</span><span class="token punctuation">(</span><span class="token string">'xiao6'</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>bol<span class="token punctuation">)</span>
+</code></pre></div><h3 id="集合"><a href="#集合" class="header-anchor">#</a> 集合</h3> <h4 id="table"><a href="#table" class="header-anchor">#</a> Table</h4> <p>key，value的键值对 类似 map</p> <div class="language-lua extra-class"><pre class="language-lua"><code>lucy <span class="token operator">=</span> <span class="token punctuation">{</span>name<span class="token operator">=</span><span class="token string">'xiao6'</span><span class="token punctuation">,</span>age<span class="token operator">=</span><span class="token number">18</span><span class="token punctuation">,</span>height<span class="token operator">=</span><span class="token number">165.5</span><span class="token punctuation">}</span>
+xiao6<span class="token punctuation">.</span>age<span class="token operator">=</span><span class="token number">35</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>xiao6<span class="token punctuation">.</span>name<span class="token punctuation">,</span>xiao6<span class="token punctuation">.</span>age<span class="token punctuation">,</span>xiao6<span class="token punctuation">.</span>height<span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span>xiao6<span class="token punctuation">)</span>
+</code></pre></div><h4 id="数组"><a href="#数组" class="header-anchor">#</a> 数组</h4> <div class="language-lua extra-class"><pre class="language-lua"><code>arr <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">,</span> <span class="token string">&quot;xiao6&quot;</span><span class="token punctuation">,</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">&quot;memeda&quot;</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span> <span class="token keyword">end</span><span class="token punctuation">}</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>arr<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="数组遍历"><a href="#数组遍历" class="header-anchor">#</a> 数组遍历</h4> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token keyword">in</span> <span class="token function">pairs</span><span class="token punctuation">(</span>arr<span class="token punctuation">)</span> <span class="token keyword">do</span>
+   <span class="token function">print</span><span class="token punctuation">(</span>k<span class="token punctuation">,</span> v<span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+</code></pre></div><h4 id="面向对象"><a href="#面向对象" class="header-anchor">#</a> 面向对象</h4> <div class="language-lua extra-class"><pre class="language-lua"><code>person <span class="token operator">=</span> <span class="token punctuation">{</span>name<span class="token operator">=</span><span class="token string">'xiao6'</span><span class="token punctuation">,</span>age <span class="token operator">=</span> <span class="token number">18</span><span class="token punctuation">}</span>
+  <span class="token keyword">function</span>  person<span class="token punctuation">.</span><span class="token function">eat</span><span class="token punctuation">(</span>food<span class="token punctuation">)</span>
+    <span class="token function">print</span><span class="token punctuation">(</span>person<span class="token punctuation">.</span>name <span class="token operator">..</span><span class="token string">&quot; eating &quot;</span><span class="token operator">..</span>food<span class="token punctuation">)</span>
+  <span class="token keyword">end</span>
+person<span class="token punctuation">.</span><span class="token function">eat</span><span class="token punctuation">(</span><span class="token string">&quot;xxoo&quot;</span><span class="token punctuation">)</span>
+</code></pre></div><h2 id="lua-整合-redis"><a href="#lua-整合-redis" class="header-anchor">#</a> Lua 整合 redis</h2> <h3 id="在redis中执行简单脚本"><a href="#在redis中执行简单脚本" class="header-anchor">#</a> 在redis中执行简单脚本</h3> <p>登录到客户端后执行</p> <h4 id="hello-world"><a href="#hello-world" class="header-anchor">#</a> Hello world</h4> <div class="language-properties extra-class"><pre class="language-properties"><code><span class="token comment">#命令    脚本        	参数个数</span>
+eval	&quot;return 1+1&quot;    0
+</code></pre></div><h4 id="参数"><a href="#参数" class="header-anchor">#</a> 参数</h4> <div class="language-lua extra-class"><pre class="language-lua"><code>EVAL <span class="token string">&quot;local msg='hello world' return msg..KEYS[1]&quot;</span> <span class="token number">1</span> AAA BBB
+</code></pre></div><p>表是基于1的，也就是说索引以数值1开始。所以在表中的第一个元素就是mytable[1]，第二个就是mytable[2]等等。 表中不能有nil值。如果一个操作表中有[1, nil, 3, 4]，那么结果将会是[1]——表将会在第一个nil截断。</p> <h3 id="独立脚本"><a href="#独立脚本" class="header-anchor">#</a> 独立脚本</h3> <h4 id="获取key的value"><a href="#获取key的value" class="header-anchor">#</a> 获取key的value</h4> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">local</span> key<span class="token operator">=</span>KEYS<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+
+<span class="token keyword">local</span> list<span class="token operator">=</span>redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">&quot;get&quot;</span><span class="token punctuation">,</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+
+<span class="token keyword">return</span> list<span class="token punctuation">;</span>
+</code></pre></div><h4 id="读取redis集合中的数据"><a href="#读取redis集合中的数据" class="header-anchor">#</a> 读取redis集合中的数据</h4> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">local</span> key<span class="token operator">=</span>KEYS<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+
+<span class="token keyword">local</span> list<span class="token operator">=</span>redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">&quot;lrange&quot;</span><span class="token punctuation">,</span>key<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">return</span> list<span class="token punctuation">;</span>
+</code></pre></div><h4 id="统计点击次数"><a href="#统计点击次数" class="header-anchor">#</a> 统计点击次数</h4> <div class="language-lua extra-class"><pre class="language-lua"><code><span class="token keyword">local</span> msg<span class="token operator">=</span><span class="token string">'count:'</span>
+<span class="token keyword">local</span> count <span class="token operator">=</span> redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">&quot;get&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;count&quot;</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> <span class="token keyword">not</span> count <span class="token keyword">then</span>
+        redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">&quot;set&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;count&quot;</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+
+redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">&quot;incr&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;count&quot;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">return</span> msg<span class="token operator">..</span>count<span class="token operator">+</span><span class="token number">1</span>
+</code></pre></div><h4 id="执行lua脚本"><a href="#执行lua脚本" class="header-anchor">#</a> 执行lua脚本</h4> <h5 id="本地执行"><a href="#本地执行" class="header-anchor">#</a> 本地执行</h5> <div class="language- extra-class"><pre class="language-text"><code>redis-cli --eval test.lua aaa,bbb
+</code></pre></div><h5 id="远程执行"><a href="#远程执行" class="header-anchor">#</a> 远程执行</h5> <div class="language-lua extra-class"><pre class="language-lua"><code>redis<span class="token operator">-</span>cli <span class="token operator">-</span>h <span class="token number">192.168</span><span class="token number">.2</span><span class="token number">.161</span> <span class="token operator">-</span>a密码 <span class="token comment">--eval /usr/local/luascript/test.lua name age , xiao6</span>
+</code></pre></div><h3 id="lua-与-redis-交互"><a href="#lua-与-redis-交互" class="header-anchor">#</a> Lua 与 Redis 交互</h3> <h4 id="lua-脚本获取-eval-evalsha-命令的参数"><a href="#lua-脚本获取-eval-evalsha-命令的参数" class="header-anchor">#</a> Lua 脚本获取 EVAL &amp; EVALSHA 命令的参数</h4> <p>通过 Lua 脚本的全局变量 KEYS 和 ARGV，能够访问 EVAL 和 EVALSHA 命令的 key [key ...] 参数和 arg [arg ...] 参数。</p> <p>作为 Lua Table，能够将 KEYS 和 ARGV 作为一维数组使用，其下标从 1 开始。</p> <h4 id="lua-脚本内部执行-redis-命令"><a href="#lua-脚本内部执行-redis-命令" class="header-anchor">#</a> Lua 脚本内部执行 Redis 命令</h4> <p>Lua 脚本内部允许通过内置函数执行 Redis 命令：</p> <p>redis.call()</p> <p>redis.pcall()</p> <p>两者非常相似，区别在于：</p> <p>若 Redis 命令执行错误，redis.call() 将错误抛出（即 EVAL &amp; EVALSHA 执行出错）；</p> <p>redis.pcall() 将错误内容返回。</p> <p>local msg='count:'  local count = redis.call(&quot;get&quot;,&quot;count&quot;)  if not count then          redis.call(&quot;set&quot;,&quot;count&quot;,1)  end  redis.call(&quot;incr&quot;,&quot;count&quot;)  return msg..count+1</p> <h3 id="redis-watch-multi-exec-与lua"><a href="#redis-watch-multi-exec-与lua" class="header-anchor">#</a> redis WATCH/MULTI/EXEC 与Lua</h3> <p>redis 原生支持 监听、事务、批处理，那么还需要lua吗？</p> <ul><li><p>两者不存在竞争关系，而是增强关系，lua可以完成redis自身没有的功能</p></li> <li><p>在lua中可以使用上一步的结果，也就是可以开发<strong>后面操作依赖前面操作的执行结果的应用</strong>，MULT中的命令都是独立操作</p></li> <li><p>redis可以编写模块增强功能，但是c语言写模块，太难了，lua简单的多</p></li> <li><p>计算向数据移动</p></li> <li><p>原子操作</p></li></ul> <p>lua脚本尽量短小并且尽量保证同一事物写在一段脚本内，因为redis是单线程的，过长的执行会造成阻塞，影响服务器性能。</p> <h3 id="redis-lua-脚本管理"><a href="#redis-lua-脚本管理" class="header-anchor">#</a> Redis Lua 脚本管理</h3> <p>1.script load  此命令用于将Lua脚本加载到Redis内存中</p> <p>2.script exists  scripts exists sha1 [sha1 …]  此命令用于判断sha1是否已经加载到Redis内存中</p> <p>3.script flush  此命令用于清除Redis内存已经加载的所有Lua脚本,在执行script flush后,sha1不复存在</p> <p>4.script kill  此命令用于杀掉正在执行的Lua脚本</p> <h3 id="死锁"><a href="#死锁" class="header-anchor">#</a> 死锁</h3> <p>下面代码会进入死循环，导致redis无法接受其他命令。</p> <div class="language-lua extra-class"><pre class="language-lua"><code>eval <span class="token string">&quot;while true do end&quot;</span> <span class="token number">0</span> 
+</code></pre></div><div class="language-lua extra-class"><pre class="language-lua"><code><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token punctuation">:</span><span class="token number">6379</span><span class="token operator">&gt;</span> keys <span class="token operator">*</span>
+<span class="token punctuation">(</span>error<span class="token punctuation">)</span> BUSY Redis is busy running a script<span class="token punctuation">.</span> You can only call SCRIPT KILL <span class="token keyword">or</span> SHUTDOWN NOSAVE<span class="token punctuation">.</span>
+</code></pre></div><p>但是可以接受 SCRIPT KILL or SHUTDOWN NOSAVE. 两个命令</p> <p>SHUTDOWN NOSAVE 不会进行持久化的操作</p> <p>SCRIPT KILL 可以杀死正在执行的进程</p> <h3 id="生产环境下部署"><a href="#生产环境下部署" class="header-anchor">#</a> 生产环境下部署</h3> <h4 id="加载到redis"><a href="#加载到redis" class="header-anchor">#</a> 加载到redis</h4> <div class="language-lua extra-class"><pre class="language-lua"><code>redis<span class="token operator">-</span>cli script load <span class="token string">&quot;$(cat test.lua)&quot;</span>
+</code></pre></div><p>得到sha1值</p> <p>执行</p> <div class="language-lua extra-class"><pre class="language-lua"><code>redis<span class="token operator">-</span>cli evalsha <span class="token string">&quot;7a2054836e94e19da22c13f160bd987fbc9ef146&quot;</span> <span class="token number">0</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">2/2/2021, 2:15:25 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/keith-book/拓展/JMH.html" class="prev">
+        JMH Java准测试工具套件
+      </a></span> <span class="next"><a href="/keith-book/拓展/大型系统设计.html">
+        高并发系统设计
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/keith-book/assets/js/app.7ae60ab7.js" defer></script><script src="/keith-book/assets/js/2.044773f5.js" defer></script><script src="/keith-book/assets/js/34.2d831459.js" defer></script>
+  </body>
+</html>
