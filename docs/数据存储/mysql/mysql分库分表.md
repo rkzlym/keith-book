@@ -21,3 +21,23 @@ MyCat技术原理中最重要的一个动词是“拦截”，它拦截了用户
 
 > 轻量级的 Java 框架，增强版的 JDBC
 
+```properties
+spring.shardingsphere.datasource.names=ds
+
+spring.shardingsphere.datasource.ds.type=com.alibaba.druid.pool.DruidDataSource
+spring.shardingsphere.datasource.ds.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.shardingsphere.datasource.ds.url=jdbc:mysql://127.0.0.1:3306/tripper?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+spring.shardingsphere.datasource.ds.username=root
+spring.shardingsphere.datasource.ds.password=root
+
+spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds.t_order$->{1..2}
+
+spring.shardingsphere.sharding.tables.t_order.key-generator.column=id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
+
+spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=id
+spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{id % 2 + 1}
+
+spring.main.allow-bean-definition-overriding=true
+```
+

@@ -46,7 +46,7 @@
 
 回表：普通列创建索引，普通列索引的叶子节点存放的是主键，所以按普通列查找的时候先根据普通列的 B+ 树找到主键再根据主键的 B+ 树找到整行数据
 
-覆盖索引：查询的列是主键，不用回表查询
+覆盖索引：查询的列是索引列，不用回表查询
 
 ```sql
 -- name建了索引，id是主键索引
@@ -162,6 +162,15 @@ explain select * from staffs where name = 'July' and age > 25;
 ```mysql
 explain select name,age,pos from staffs where name = 'July' and age = 25 and pos = 'dev';
 ```
+
+### 3.4 最左匹配原理
+
+假如创建一个（a,b）的联合索引，那么它的索引树是这样的
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20200910005504881.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI2ODkzMw==,size_16,color_FFFFFF,t_70#pic_center)
+可以看到a的值是有顺序的：1，1，2，2，3，3；b的值是没有顺序的1，2，1，4，1，2
+
+所以 b = 2 这种查询条件没有办法利用索引，因为联合索引首先是按 a 排序的，b是无序的。
 
 ## 4. 创建索引情景
 

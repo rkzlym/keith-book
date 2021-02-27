@@ -27,6 +27,8 @@ LRU
 
 核心算法：LinkedHashMap
 
+原理：可以重写 `removeEldestEntry` 方法，使得在容量超出 size 的时候，可以执行淘汰策略
+
 ```java
 public class LruCacheDemo<K, V> extends LinkedHashMap<K, V> {
 

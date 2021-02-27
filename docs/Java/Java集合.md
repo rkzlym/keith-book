@@ -195,7 +195,7 @@ JDK8：
 
 ### LinkedHashMap
 
-基于链表实现的 HashMap
+有序基于链表实现的 HashMap
 
 ### TreeMap
 

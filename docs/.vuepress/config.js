@@ -26,7 +26,7 @@ module.exports = {
                     title: 'Java',
                     path: '/Java/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/Java/Java基础',
                         '/Java/Java集合',
@@ -42,7 +42,7 @@ module.exports = {
                     title: 'Spring',
                     path: '/Spring/Spring',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/Spring/Spring/SpringIoc',
                         '/Spring/Spring/SpringAop',
@@ -56,7 +56,7 @@ module.exports = {
                     title: 'Spring Cloud',
                     path: '/Spring/SpringCloud',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/Spring/SpringCloud/注册中心',
                         '/Spring/SpringCloud/服务调用',
@@ -72,14 +72,9 @@ module.exports = {
                     title: 'mysql',
                     path: '/数据存储/mysql/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
-                        '/数据存储/mysql/mysql建库建表',
-                        '/数据存储/mysql/mysql约束',
-                        '/数据存储/mysql/mysql流程控制语句',
-                        '/数据存储/mysql/mysql函数',
-                        '/数据存储/mysql/mysql变量',
-                        '/数据存储/mysql/mysql存储过程',
+                        '/数据存储/mysql/mysql基础',
                         '/数据存储/mysql/mysql事务',
                         '/数据存储/mysql/mysql索引',
                         '/数据存储/mysql/mysql锁',
@@ -95,7 +90,7 @@ module.exports = {
                     title: 'redis',
                     path: '/数据存储/redis/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/数据存储/redis/redis基础',
                         '/数据存储/redis/redis命令速查',
@@ -115,7 +110,7 @@ module.exports = {
                     title: 'mq',
                     path: '/数据存储/mq/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/数据存储/mq/RabbitMQ基础',
                         '/数据存储/mq/RabbitMQ高级',
@@ -126,7 +121,7 @@ module.exports = {
                     title: 'elasticsearch',
                     path: '/数据存储/elasticsearch/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
 
                     ],
@@ -135,7 +130,7 @@ module.exports = {
                     title: 'mongodb',
                     path: '/数据存储/mongodb/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
 
                     ],
@@ -146,7 +141,7 @@ module.exports = {
                     title: '创建型模式',
                     path: '/设计模式/创建型模式/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/设计模式/创建型模式/工厂方法模式',
                         '/设计模式/创建型模式/抽象工厂模式',
@@ -159,7 +154,7 @@ module.exports = {
                     title: '结构型模式',
                     path: '/设计模式/结构型模式/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/设计模式/结构型模式/适配器模式',
                         '/设计模式/结构型模式/桥接模式',
@@ -174,7 +169,7 @@ module.exports = {
                     title: '行为型模式',
                     path: '/设计模式/行为型模式/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/设计模式/行为型模式/责任链模式',
                         '/设计模式/行为型模式/命令模式',
@@ -194,7 +189,7 @@ module.exports = {
                     title: '数据结构',     
                     path: '/数据结构/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/数据结构/1.时间空间复杂度',
                         '/数据结构/2.链表',
@@ -212,7 +207,7 @@ module.exports = {
                     title: 'Linux',     
                     path: '/服务器/Linux/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/服务器/Linux/1.Linux常用命令',
                         '/服务器/Linux/2.IO模型',
@@ -229,7 +224,7 @@ module.exports = {
                     title: 'Docker',     
                     path: '/服务器/Docker/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/服务器/Docker/1.Docker基本操作',
                         '/服务器/Docker/2.Docker安装Redis',
@@ -243,7 +238,7 @@ module.exports = {
                     title: '分布式',     
                     path: '/服务器/分布式/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/服务器/分布式/1.分布式锁',
                         '/服务器/分布式/2.分布式事务',
@@ -258,7 +253,7 @@ module.exports = {
                     title: '前端',     
                     path: '/前端/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/前端/WebPack',
                         '/前端/Vue脚手架',
@@ -270,7 +265,7 @@ module.exports = {
                     title: '拓展',     
                     path: '/拓展/',
                     collapsable: false,
-                    sidebarDepth: 2,
+                    sidebarDepth: 1,
                     children: [
                         '/拓展/计算机网络',
                         '/拓展/JMH',
