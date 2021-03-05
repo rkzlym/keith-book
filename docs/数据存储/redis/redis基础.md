@@ -1,4 +1,58 @@
-# redis基础
+# Basic
+
+## Type
+
+### String
+
+### List
+
+栈：同向命令，如 lpush + lpop，rpush + rpop
+
+队列：反向命令：如 lpush + rpop，rpush + lpop
+
+```shell
+# 查看list命令
+help @list
+# 取出指定 key 的 start 到 end 个元素
+LRANGE KEY START END
+# 例：取出 k1 的所有元素
+LRANGE k1 0 -1
+
+# 实现一个简单的阻塞队列
+BLPOP k1 0 # 客户端1阻塞
+LPUSH k1 1 2 3 # 客户端2压入数据客户端1取消阻塞
+```
+
+### Hash
+
+```shell
+HSET sean name zzl
+HMSET sean age 18 address bj
+hget sean name
+hmget sean name age
+hkeys sean
+```
+
+### Set
+
+```shell
+# 向set里加入数据并去重
+sadd kset 1 1 2 3 4 5 6
+# 随机取出3个元素，去重
+srandmember kset 3
+# 随机取出3个元素，可以有重复
+srandmember kset -3
+# 弹出一个元素
+spop kset
+# 取两个集合的交集
+sinter a b
+# 取两个集合的并集
+sunion a b
+# 取a集合对于b集合的差集
+sdiff a b
+```
+
+### Sorted Set
 
 ## redis管道
 
@@ -88,54 +142,6 @@ object encoding key
 
 ```shell
 redis-cli --raw
-```
-
-## List
-
-栈：同向命令，如 lpush + lpop，rpush + rpop
-
-队列：反向命令：如 lpush + rpop，rpush + lpop
-
-```shell
-# 查看list命令
-help @list
-# 取出指定 key 的 start 到 end 个元素
-LRANGE KEY START END
-# 例：取出 k1 的所有元素
-LRANGE k1 0 -1
-
-# 实现一个简单的阻塞队列
-BLPOP k1 0 # 客户端1阻塞
-LPUSH k1 1 2 3 # 客户端2压入数据客户端1取消阻塞
-```
-
-## Hash
-
-```shell
-HSET sean name zzl
-HMSET sean age 18 address bj
-hget sean name
-hmget sean name age
-hkeys sean
-```
-
-## Set
-
-```shell
-# 向set里加入数据并去重
-sadd kset 1 1 2 3 4 5 6
-# 随机取出3个元素，去重
-srandmember kset 3
-# 随机取出3个元素，可以有重复
-srandmember kset -3
-# 弹出一个元素
-spop kset
-# 取两个集合的交集
-sinter a b
-# 取两个集合的并集
-sunion a b
-# 取a集合对于b集合的差集
-sdiff a b
 ```
 
 ## Sorted Set
