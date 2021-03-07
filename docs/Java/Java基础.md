@@ -235,7 +235,7 @@ public static void setFieldValue(String fieldName, Object object, Object value) 
 }
 ```
 
-## 反射中Class.forName和ClassLoader.loadClass的区别
+**反射中Class.forName和ClassLoader.loadClass的区别**
 
 1. class.forName除了将类的class文件加载到jvm中之外，还会对类进行解释，执行类中的static块，还会执行给静态变量赋值的静态方法
 
@@ -310,6 +310,139 @@ public class Client {
         msg.send("Hello World");
     }
 }
+```
+
+## Stream Api
+
+Stream 是数据渠道，用于操作数据源所生成的元素序列。
+
+1. Stream 不存储元素
+2. Stream 不改变源对象，他们会返回一个持有结果的新的 Stream
+3. Stream 操作是延迟执行的，这意味着他们会等到需要结果的时候执行
+
+Stream 操作步骤：创建流 -> 中间操作 -> 终止操作
+
+**Stream Create**
+
+```java
+// 1.集合类
+Collection.stream();
+// 2.数组
+Arrays.stream(T[]);
+// 3.of
+Stream.of(T... values);
+// 4.创建无限流
+// 4.1.迭代，案例：获取前10个偶数
+Stream.iterate(final T seed, final UnaryOperator<T> f);
+Stream.iterate(0, x -> x + 2).limit(10).forEach(System.out::println);
+// 4.2.生成，案例：获取前10个随机数
+Stream.genrate(Supplier<T> s);
+Stream.generate(Math::random).limit(10).forEach(System.out::println);
+```
+
+**Stream Middle Operation**
+
+```java
+/**
+ * 筛选和切片
+ * - filter     接收lambda，从流冲排除某些元素
+ * - limit      截断流，使其元素不超过给定数量
+ * - skip(n)    跳过元素，返回一个扔掉了前n个元素的流，若流中元素不足n个，则返回一个空流，与limit互补
+ * - distinct   筛选，通过流所生成元素的hashCode()和equals()去除重复元素
+ */
+emps.stream().filter(e -> e.getSalary() >= 100).limit(3).forEach(System.out::println);
+emps.stream().filter(e -> e.getSalary() >= 100).skip(1).forEach(System.out::println);
+emps.stream().filter(e -> e.getSalary() >= 100).distinct().forEach(System.out::println);
+
+/**
+ * 映射
+ * map      接收lambda，将元素转换成其它形式或提取信息。接收另一个函数作为参数，该函数会被应用到每个元素上，并将其映射成一个新元素。
+ * flatMap  接收一个函数作为参数，将流中的每个值都换成另一个流，然后把所有流连接成一个流，类似于list.allAll()
+ * mapToDouble
+ * mapToInt
+ * mapToLong
+ */
+list.stream().map(String::toUpperCase).forEach(System.out::println);
+/**
+ * 排序
+ * sorted()                 自然排序(Comparable)
+ * sorted(Comparator com)   定制排序(Comparator)
+ */
+list.stream().sorted().forEach(System.out::println);
+```
+
+**Stream Termination**
+
+匹配和查找
+
+```java
+// 是否匹配所有元素 allMatch
+boolean b = emps.stream().allMatch(e -> e.getStatus().equals(Employee.Status.BUSY));
+
+// 至少匹配一个元素 anyMatch
+boolean b1 = emps.stream().anyMatch(e -> e.getStatus().equals(Employee.Status.BUSY));
+
+// 检查是否没有匹配所有元素 noneMatch
+boolean b2 = emps.stream().noneMatch(e -> e.getStatus().equals(Employee.Status.BUSY));
+
+// 倒排后返回第一个元素 findFirst
+Optional<Employee> op = emps.stream().sorted(Comparator.comparingDouble(Employee::getSalary).reversed()).findFirst();
+System.out.println(op.get());
+
+// 返回任意元素的值 findAny
+Optional<Employee> op1 = emps.stream().filter(e -> e.getStatus().equals(Employee.Status.FREE)).findAny();
+System.out.println(op1.get());
+
+// 返回元素总个数 count
+long count = emps.stream().count();
+
+// 返回流中最大值 max
+Optional<Employee> max = emps.stream().max(Comparator.comparingDouble(Employee::getSalary));
+System.out.println(max.get());
+
+// 返回流中最小值 min
+Optional<Double> min = emps.stream().map(Employee::getSalary).min(Double::compare);
+System.out.println(min.get());
+```
+
+归约：可以将流中的元素反复结合起来，得到一个值
+
+```java
+reduce(T identity, BinaryOperator);
+reduce(BinaryOperator);
+// 案例：求和
+List<Integer> list = Arrays.asList(1,2,3,4,5,6,7,8,9);
+Integer sum = list.stream().reduce(0, Integer::sum);
+```
+
+收集：将流转换为其它形式，接收一个Collector接口的实现，用于给Stream中元素做汇总的方法
+
+```java
+// 收集为List
+List<String> list = emps.stream().map(Employee::getName).collect(Collectors.toList());
+// 分组
+Map<Employee.Status, List<Employee>> map = emps.stream()
+    .collect(Collectors.groupingBy(Employee::getStatus));
+// 多级分组
+Map<Employee.Status, Map<String, List<Employee>>> map = emps.stream()
+    .collect(Collectors.groupingBy(Employee::getStatus, Collectors.groupingBy(e -> {
+        if (e.getAge() <= 35) {
+            return "青年";
+        } else {
+            return "老年";
+        }
+    })));
+// 分区
+Map<Boolean, List<Employee>> map = emps.stream()
+    .collect(Collectors.partitioningBy(e -> e.getSalary() > 8000));
+// 统计
+DoubleSummaryStatistics summary = emps.stream()
+    .collect(Collectors.summarizingDouble(Employee::getSalary));
+System.out.println(summary.getSum());
+System.out.println(summary.getAverage());
+System.out.println(summary.getMax());
+// 拼接
+String str = emps.stream().map(Employee::getName).collect(Collectors.joining(","));
 ```
 
 ## 对象
