@@ -12,5 +12,4 @@ RBAC模型（Role-Based Access Control：基于角色的访问控制）
 
 ## RABC 数据库表设计
 
-![image-20210327205252460](C:\Users\a\AppData\Roaming\Typora\typora-user-images\image-20210327205252460.png)
-
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210327205902709.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
