@@ -13,5 +13,4 @@ features:
 - title: 
   details: 
 footer: MIT Licensed | Copyright © 2021-present Evan You
-
 ---
