@@ -16,13 +16,18 @@ vi runbroker.sh
 JAVA_OPT="${JAVA_OPT} -server -Xms512m -Xmx512m -Xmn128m"
 ```
 
-启动 RocketMQ
+启动/关闭 RocketMQ
 
 ```shell
 # Start Name Server
 nohup sh bin/mqnamesrv &
 # Start Broker
 nohup sh bin/mqbroker -n localhost:9876 &
+
+# Shutdown Name Server
+sh bin/mqshutdown namesrv
+# Shutdown Broker
+sh bin/mqshutdown broker
 ```
 
 查看启动日志
