@@ -1,13 +1,14 @@
 # RocketMQ
 
-快速开始 http://rocketmq.apache.org/docs/quick-start/
+> http://rocketmq.apache.org
 
-## Server
+## 安装
 
-下载解压完后 修改配置文件
+### Server
+
+下载最新的 binary release，修改配置（原因是默认配置消耗太多内存）
 
 ```shell
-# 修改默认大小
 vi runserver.sh
 JAVA_OPT="${JAVA_OPT} -server -Xms1g -Xmx1g -Xmn256m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"
 
@@ -24,6 +25,15 @@ nohup sh bin/mqnamesrv &
 nohup sh bin/mqbroker -n localhost:9876 &
 ```
 
+查看启动日志
+
+```sh
+# 查看 namesrv 的启动日志
+tail -f ~/logs/rocketmqlogs/namesrv.log
+# 查看 broker 的启动日志
+tail -f ~/logs/rocketmqlogs/broker.log
+```
+
 测试
 
 ```shell
@@ -36,19 +46,17 @@ export NAMESRV_ADDR=localhost:9876
 sh bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer
 ```
 
-## Consule
+### Console
 
-rocketmq externals github
+下载 rocketmq-externals：https://github.com/apache/rocketmq-externals
 
-https://github.com/apache/rocketmq-externals
-
-解压后修改 rocketmq-consule 模块中的 application.properties
+解压后修改 rocketmq-console 模块中的 application.properties
 
 ```properties
 rocketmq.config.namesrvAddr=localhost:9876
 ```
 
-在 rocketmq-consule 目录下编译
+在 rocketmq-console 目录下编译
 
 ```shell
 mvn clean package -Dmaven.test.skip=true

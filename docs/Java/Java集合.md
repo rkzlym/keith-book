@@ -201,6 +201,15 @@ JDK8：
 
 基于红黑树实现的有序Map
 
+```java
+// 自定义排序规则
+new TreeMap<String, String>(new Comparator<String>() {
+  @Override
+  public int compare(String o1, String o2) {
+    return 0;
+  }
+});
+
 ### ConcurrentHashMap
 
 1.7：Segment + HashEntry + Unsafe
